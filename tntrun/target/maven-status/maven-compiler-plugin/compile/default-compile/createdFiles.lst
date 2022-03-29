@@ -1,0 +1,11 @@
+br\com\acenetwork\tntrun\constant\State.class
+br\com\acenetwork\tntrun\Main$2.class
+br\com\acenetwork\tntrun\listener\PlayerMode.class
+br\com\acenetwork\tntrun\Main$3.class
+br\com\acenetwork\tntrun\player\craft\CraftCompetitor.class
+br\com\acenetwork\tntrun\Main.class
+br\com\acenetwork\tntrun\GlobalScoreboard.class
+br\com\acenetwork\tntrun\Main$1.class
+br\com\acenetwork\tntrun\player\Competitor.class
+br\com\acenetwork\tntrun\listener\PlayerJoin.class
+br\com\acenetwork\tntrun\listener\GeneralEvents.class

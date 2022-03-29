@@ -1,0 +1,6 @@
+name: AceSurvival
+main: br.com.acenetwork.survival.Main
+version: 0.0.1
+api-version: 1.16
+authors: [CruzAPI]
+depend: [Citizens]

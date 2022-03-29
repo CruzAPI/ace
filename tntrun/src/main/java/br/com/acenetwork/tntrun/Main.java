@@ -1,0 +1,341 @@
+package br.com.acenetwork.tntrun;
+
+import java.io.File;
+import java.io.IOException;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Difficulty;
+import org.bukkit.GameRule;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import br.com.acenetwork.commons.Commons;
+import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import br.com.acenetwork.commons.player.craft.CraftCommonWatcher;
+import br.com.acenetwork.tntrun.constant.State;
+import br.com.acenetwork.tntrun.listener.GeneralEvents;
+import br.com.acenetwork.tntrun.listener.PlayerJoin;
+import br.com.acenetwork.tntrun.listener.PlayerMode;
+import br.com.acenetwork.tntrun.player.Competitor;
+
+public class Main extends JavaPlugin
+{
+	private static final Map<Block, Integer> ACTIVATED_BLOCKS = new HashMap<>();
+	private static final List<Competitor> ELIMINATED = new ArrayList<>();
+	
+	private static Main instance;
+	private static int maxPlayers;
+	private static int minPlayers;
+	private static Location spawnLocation;
+	private static boolean announceWinner;
+	
+	private static final int MAX_TIMER = 60;
+	private static int timer = MAX_TIMER;
+	private static State state = State.STARTING;
+	
+	private static int taskA;
+	
+	
+	@Override
+	public void onLoad()
+	{
+		Bukkit.getServer().unloadWorld("world", false);
+		deleteDir(new File("world"));
+		
+		try
+		{
+			FileUtils.copyDirectory(new File("map"), new File("world"));
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	private void deleteDir(File file)
+	{
+		if(file.isDirectory())
+		{
+			String[] children = file.list();
+			
+			for(int i = 0; i < children.length; i++)
+			{
+				deleteDir(new File(file, children[i]));
+			}
+		}
+		
+		file.delete();
+	}
+	@Override
+	public void onEnable()
+	{
+		instance = this;
+		
+		Bukkit.getPluginManager().registerEvents(new PlayerMode(), this);
+		
+		Commons.init(this);
+		
+		Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
+		Bukkit.getPluginManager().registerEvents(new GeneralEvents(), this);
+		
+		
+		
+		maxPlayers = 12;
+		minPlayers = 1; //maxPlayers / 3;
+		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5D, 44.0D, 0.5D, 0.0F, 0.0F);
+		
+		World w = Bukkit.getWorld("world");
+		
+		w.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+		w.setGameRule(GameRule.DO_MOB_SPAWNING, false);
+		w.setGameRule(GameRule.MOB_GRIEFING, false);
+		w.setTime(18000L);
+		w.setAutoSave(false);
+		w.setDifficulty(Difficulty.PEACEFUL);
+		
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				int players = CraftCommonPlayer.getAll(Competitor.class).size();
+				
+				if(announceWinner)
+				{
+					return;
+				}
+				
+				switch(state)
+				{
+				case STARTING:
+					if(players < minPlayers)
+					{
+						timer = MAX_TIMER;
+					}
+					else
+					{
+						timer--;
+						
+						if(players > maxPlayers / 1.2 && timer > 20)
+						{
+							timer = 20;
+						}
+						
+						if(timer == 0)
+						{
+							state = State.STARTED;
+							
+							for(Competitor cp : CraftCommonPlayer.getAll(Competitor.class))
+							{
+								Player p = cp.getPlayer();
+								p.teleport(spawnLocation);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
+							}
+						}
+					}
+					break;
+				case STARTED:
+					if(taskA == 0 && timer > 5)
+					{
+						taskA = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.this, () ->
+						{
+							for(Competitor cp : CraftCommonPlayer.getAll(Competitor.class))
+							{
+								Player p = cp.getPlayer();
+								Location l = p.getLocation();
+								
+								if(l.getY() < 0.0D)
+								{
+									Main.eliminate(cp);
+									continue;
+								}
+								
+								final World w = l.getWorld();
+								final int by = l.getBlockY() - 1;
+								final int bx = l.getBlockX();
+								final int bz = l.getBlockZ();
+								final int nx = bx >= 0 ? 1 : -1;
+								final int nz = bz >= 0 ? 1 : -1;
+								
+								double rx = Math.abs(l.getX() % (int) l.getX());
+								double rz = Math.abs(l.getZ() % (int) l.getZ());
+								
+								Integer x = null;
+								Integer z = null;
+								
+								if(rx <= 0.3D)
+								{
+									x = bx - 1 * nx;
+								}
+								else if(rx >= 0.7D)
+								{
+									x = bx + 1 * nx;
+								}
+								
+								if(rz <= 0.3D)
+								{
+									z = bz - 1 * nz;
+								}
+								else if(rz >= 0.7D)
+								{
+									z = bz + 1 * nz;
+								}
+
+								Block b = w.getBlockAt(bx, by, bz);
+								
+								if(Main.activateBlock(b))
+								{
+									continue;
+								}
+								
+								if(x != null && Main.activateBlock(w.getBlockAt(x, by, bz)))
+								{
+									continue;
+								}
+								
+								if(z != null && Main.activateBlock(w.getBlockAt(bx, by, z)))
+								{
+									continue;
+								}
+								
+								if(x != null && z != null && Main.activateBlock(w.getBlockAt(x, by, z)))
+								{
+									continue;
+								}
+							}
+						}, 0L, 1L);
+					}
+					
+					timer++;
+					break;
+				default:
+					break;
+				}
+				
+				GlobalScoreboard.updateAll();
+			}
+		}, 0L, 20L);
+	}
+	
+	public static boolean activateBlock(Block b)
+	{
+		if(!b.getType().hasGravity())
+		{	
+			return false;
+		}
+		
+		if(ACTIVATED_BLOCKS.containsKey(b))
+		{
+			return true;
+		}
+		
+		int id = Bukkit.getScheduler().scheduleSyncDelayedTask(instance, () ->
+		{
+			b.setType(Material.AIR);
+			b.getRelative(BlockFace.DOWN).setType(Material.AIR);
+			ACTIVATED_BLOCKS.remove(b);
+		}, 5L);
+		
+		ACTIVATED_BLOCKS.put(b, id);
+		return true;
+	}
+	
+	public static void eliminate(Competitor cp)
+	{
+		ELIMINATED.add(cp);
+		new CraftCommonWatcher(cp.getPlayer());
+		GlobalScoreboard.updateAll();
+		cp.getPlayer().teleport(spawnLocation);
+		
+		Set<Competitor> set = CraftCommonPlayer.getAll(Competitor.class);
+		
+		int players = set.size();
+		
+		if(players == 1)
+		{
+			eliminate(set.iterator().next());
+		}
+		else if(players <= 0)
+		{
+			announceWinner();
+		}
+	}
+	
+	public static void announceWinner()
+	{
+		if(announceWinner)
+		{
+			return;
+		}
+		
+		announceWinner = true;
+		
+		Collections.reverse(ELIMINATED);
+		
+		for(int i = 0; i < ELIMINATED.size(); i++)
+		{
+			Bukkit.broadcastMessage((i + 1) + "° " + ELIMINATED.get(i).getPlayer().getDisplayName());
+		}
+		
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable()
+		{
+			int time = 15;
+			
+			@Override
+			public void run()
+			{
+				if(time == 0)
+				{
+					Bukkit.shutdown();
+				}
+				
+				time--;
+			}
+		}, 0L, 20L);
+	}
+	
+	public static Main getInstance()
+	{
+		return instance;
+	}
+
+	public static String getTimer()
+	{
+		int seconds = timer % 60;
+		int minutes = timer / 60;
+		
+		DecimalFormat df = new DecimalFormat("00");
+		
+		return df.format(minutes) + ":" + df.format(seconds);
+	}
+
+	public static int getMaxPlayers()
+	{
+		return maxPlayers;
+	}
+
+	public static State getState()
+	{
+		return state;
+	}
+
+	public static Location getSpawnLocation()
+	{
+		return spawnLocation;
+	}
+}
