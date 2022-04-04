@@ -91,9 +91,7 @@ public class PlayerQuit implements Listener
 					
 					@Override
 					public void run()
-					{
-						Bukkit.broadcastMessage(seconds + "");
-						
+					{						
 						if(seconds == 0)
 						{
 							removeCombatLogger(npc);

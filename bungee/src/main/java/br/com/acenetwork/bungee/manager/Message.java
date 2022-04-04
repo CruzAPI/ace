@@ -1,10 +1,11 @@
-package br.com.acenetwork.commons.manager;
+package br.com.acenetwork.bungee.manager;
 
 import java.io.File;
 
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import br.com.acenetwork.commons.manager.CommonsConfig.Type;
+import br.com.acenetwork.bungee.manager.Config.Type;
+import net.md_5.bungee.config.Configuration;
+import net.md_5.bungee.config.ConfigurationProvider;
+import net.md_5.bungee.config.YamlConfiguration;
 
 public class Message
 {
@@ -14,15 +15,16 @@ public class Message
 		{
 			switch(locale)
 			{
-				case "pt_br":
-					break;
+//				case "pt_br":
+//					break;
 				default:
 					locale = "en_us";
 					break;
 			}
 			
-			File file = CommonsConfig.getFile(Type.MESSAGE, false, locale);
-			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+			ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+			File file = Config.getFile(Type.MESSAGE, false, locale);
+			Configuration config = provider.load(file);
 			
 			String value = config.getString(key.replace('.', ':'));
 			

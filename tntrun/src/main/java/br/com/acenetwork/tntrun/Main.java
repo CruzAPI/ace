@@ -15,25 +15,35 @@ import org.bukkit.Difficulty;
 import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import br.com.acenetwork.commons.Commons;
+import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonWatcher;
 import br.com.acenetwork.tntrun.constant.State;
+import br.com.acenetwork.tntrun.event.PlayerCountChangeEvent;
+import br.com.acenetwork.tntrun.event.StateChangeEvent;
+import br.com.acenetwork.tntrun.event.TimerChangeEvent;
+import br.com.acenetwork.tntrun.executor.Timer;
 import br.com.acenetwork.tntrun.listener.GeneralEvents;
 import br.com.acenetwork.tntrun.listener.PlayerJoin;
+import br.com.acenetwork.tntrun.listener.PlayerLogin;
 import br.com.acenetwork.tntrun.listener.PlayerMode;
+import br.com.acenetwork.tntrun.listener.TimerChange;
 import br.com.acenetwork.tntrun.player.Competitor;
 
-public class Main extends JavaPlugin
+public class Main extends JavaPlugin implements Listener
 {
 	private static final Map<Block, Integer> ACTIVATED_BLOCKS = new HashMap<>();
 	private static final List<Competitor> ELIMINATED = new ArrayList<>();
@@ -44,12 +54,12 @@ public class Main extends JavaPlugin
 	private static Location spawnLocation;
 	private static boolean announceWinner;
 	
-	private static final int MAX_TIMER = 60;
+	private static final int MAX_TIMER = 120;
 	private static int timer = MAX_TIMER;
 	private static State state = State.STARTING;
 	
 	private static int taskA;
-	
+	private static int taskB;
 	
 	@Override
 	public void onLoad()
@@ -81,6 +91,7 @@ public class Main extends JavaPlugin
 		
 		file.delete();
 	}
+	
 	@Override
 	public void onEnable()
 	{
@@ -90,13 +101,18 @@ public class Main extends JavaPlugin
 		
 		Commons.init(this);
 		
+		Commons.registerCommand(new Timer(), "timer");
+		
+		Bukkit.getPluginManager().registerEvents(this, this);
+		Bukkit.getPluginManager().registerEvents(new TimerChange(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
+		Bukkit.getPluginManager().registerEvents(new PlayerLogin(), this);
 		Bukkit.getPluginManager().registerEvents(new GeneralEvents(), this);
 		
 		
 		
 		maxPlayers = 12;
-		minPlayers = 1; //maxPlayers / 3;
+		minPlayers = 2; //maxPlayers / 3;
 		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5D, 44.0D, 0.5D, 0.0F, 0.0F);
 		
 		World w = Bukkit.getWorld("world");
@@ -107,8 +123,11 @@ public class Main extends JavaPlugin
 		w.setTime(18000L);
 		w.setAutoSave(false);
 		w.setDifficulty(Difficulty.PEACEFUL);
-		
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable()
+	}
+	
+	public static void startTaskB()
+	{
+		taskB = Bukkit.getScheduler().scheduleSyncRepeatingTask(instance, new Runnable()
 		{
 			@Override
 			public void run()
@@ -119,26 +138,26 @@ public class Main extends JavaPlugin
 				{
 					return;
 				}
-				
+								
 				switch(state)
 				{
 				case STARTING:
 					if(players < minPlayers)
 					{
-						timer = MAX_TIMER;
+						Main.setTime(MAX_TIMER);
 					}
 					else
 					{
-						timer--;
+						Main.setTime(timer - 1);
 						
 						if(players > maxPlayers / 1.2 && timer > 20)
 						{
-							timer = 20;
+							Main.setTime(20);
 						}
 						
-						if(timer == 0)
+						if(timer <= 0)
 						{
-							state = State.STARTED;
+							Main.setState(State.STARTED);
 							
 							for(Competitor cp : CraftCommonPlayer.getAll(Competitor.class))
 							{
@@ -152,7 +171,7 @@ public class Main extends JavaPlugin
 				case STARTED:
 					if(taskA == 0 && timer > 5)
 					{
-						taskA = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.this, () ->
+						taskA = Bukkit.getScheduler().scheduleSyncRepeatingTask(instance, () ->
 						{
 							for(Competitor cp : CraftCommonPlayer.getAll(Competitor.class))
 							{
@@ -161,7 +180,7 @@ public class Main extends JavaPlugin
 								
 								if(l.getY() < 0.0D)
 								{
-									Main.eliminate(cp);
+									new CraftCommonWatcher(p);
 									continue;
 								}
 								
@@ -172,8 +191,11 @@ public class Main extends JavaPlugin
 								final int nx = bx >= 0 ? 1 : -1;
 								final int nz = bz >= 0 ? 1 : -1;
 								
-								double rx = Math.abs(l.getX() % (int) l.getX());
-								double rz = Math.abs(l.getZ() % (int) l.getZ());
+								final double lx = l.getX();
+								final double lz = l.getZ();
+								
+								double rx = Math.abs(lx % 1);
+								double rz = Math.abs(lz % 1);
 								
 								Integer x = null;
 								Integer z = null;
@@ -221,13 +243,11 @@ public class Main extends JavaPlugin
 						}, 0L, 1L);
 					}
 					
-					timer++;
+					Main.setTime(timer + 1);
 					break;
 				default:
 					break;
 				}
-				
-				GlobalScoreboard.updateAll();
 			}
 		}, 0L, 20L);
 	}
@@ -258,21 +278,29 @@ public class Main extends JavaPlugin
 	public static void eliminate(Competitor cp)
 	{
 		ELIMINATED.add(cp);
-		new CraftCommonWatcher(cp.getPlayer());
-		GlobalScoreboard.updateAll();
-		cp.getPlayer().teleport(spawnLocation);
 		
 		Set<Competitor> set = CraftCommonPlayer.getAll(Competitor.class);
 		
 		int players = set.size();
 		
-		if(players == 1)
-		{
-			eliminate(set.iterator().next());
-		}
-		else if(players <= 0)
+		if(players <= 0)
 		{
 			announceWinner();
+			return;
+		}
+		
+		Player p = cp.getPlayer();
+		p.teleport(spawnLocation);
+		
+		for(CommonPlayer cpall : CraftCommonPlayer.SET)
+		{
+			cpall.sendMessage("tntrun.player-eliminated", p.getDisplayName());
+			cpall.sendMessage("tntrun.players-remaining", set.size());
+		}
+		
+		if(players == 1)
+		{
+			new CraftCommonWatcher(set.iterator().next().getPlayer());
 		}
 	}
 	
@@ -287,9 +315,37 @@ public class Main extends JavaPlugin
 		
 		Collections.reverse(ELIMINATED);
 		
-		for(int i = 0; i < ELIMINATED.size(); i++)
+		for(CommonPlayer cpall : CraftCommonPlayer.SET)
 		{
-			Bukkit.broadcastMessage((i + 1) + "° " + ELIMINATED.get(i).getPlayer().getDisplayName());
+			Player all = cpall.getPlayer();
+			
+			all.sendMessage("§a§l§m                                                 ");
+			
+			for(int i = 0; i < ELIMINATED.size(); i++)
+			{
+				Competitor c = ELIMINATED.get(i);
+				Player p = c.getPlayer();
+				
+				if(i == 0)
+				{
+					cpall.sendMessage("tntrun.firstplace", p.getDisplayName());
+				}
+				else if(i == 1)
+				{
+					cpall.sendMessage("tntrun.secondplace", p.getDisplayName());
+				}
+				else if(i == 2)
+				{
+					cpall.sendMessage("tntrun.thirdplace", p.getDisplayName());
+				}
+				else if(all == p)
+				{
+					all.sendMessage(" ");
+					cpall.sendMessage("tntrun.place", i + 1, p.getDisplayName());
+				}
+			}
+			
+			all.sendMessage("§a§l§m                                                 ");
 		}
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable()
@@ -337,5 +393,52 @@ public class Main extends JavaPlugin
 	public static Location getSpawnLocation()
 	{
 		return spawnLocation;
+	}
+	
+	public static void setTime(int seconds)
+	{
+		if(timer != (timer = Math.max(seconds, 0)))
+		{
+			Bukkit.getPluginManager().callEvent(new TimerChangeEvent(timer));
+		}
+	}
+	
+	public static void setState(State state)
+	{
+		if(Main.state != (Main.state = state))
+		{
+			Bukkit.getPluginManager().callEvent(new StateChangeEvent(state));
+		}
+	}
+	
+	@EventHandler
+	public void on(PlayerCountChangeEvent e)
+	{
+		if(state == State.STARTING)
+		{
+			if(taskB != 0 && e.getCount() < minPlayers)
+			{
+				Main.setTime(MAX_TIMER);
+				Bukkit.getScheduler().cancelTask(taskB);
+				taskB = 0;
+				
+				for(CommonPlayer cp : CraftCommonPlayer.SET)
+				{
+					Player p = cp.getPlayer();
+					cp.sendMessage("tntrun.timer-has-been-reset");
+					cp.sendMessage("tntrun.waiting-players");
+					p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 0.6F);
+				}
+			}
+			else if(taskB == 0 && e.getCount() >= minPlayers)
+			{
+				startTaskB();
+			}
+		}
+	}
+
+	public static int getMinPlayers()
+	{
+		return minPlayers;
 	}
 }

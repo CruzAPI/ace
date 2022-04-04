@@ -28,6 +28,7 @@ br\com\acenetwork\commons\listener\PlayerDeath.class
 br\com\acenetwork\commons\executor\Permission.class
 br\com\acenetwork\commons\inventory\Timer.class
 br\com\acenetwork\commons\listener\EntitySpawn.class
+br\com\acenetwork\commons\CommonsScoreboard.class
 br\com\acenetwork\commons\executor\Unmute.class
 br\com\acenetwork\commons\player\craft\CraftCommonPlayer.class
 br\com\acenetwork\commons\manager\CommonsConfig$1.class

@@ -21,6 +21,8 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 	public void reset()
 	{
 		setInvis(false);
+		
+		p.setCollidable(true);
 		p.setGameMode(GameMode.SURVIVAL);
 	}
 	

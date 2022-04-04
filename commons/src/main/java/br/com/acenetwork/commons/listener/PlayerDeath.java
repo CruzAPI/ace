@@ -7,8 +7,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
 import br.com.acenetwork.commons.manager.Message;
-import br.com.acenetwork.commons.player.CommonPlayer;
-import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 
 public class PlayerDeath implements Listener
 {

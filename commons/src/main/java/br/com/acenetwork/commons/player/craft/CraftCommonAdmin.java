@@ -4,10 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Chest;
 import org.bukkit.block.Container;
-import org.bukkit.block.DoubleChest;
-import org.bukkit.block.EnderChest;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,12 +13,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.DoubleChestInventory;
 import org.bukkit.inventory.Inventory;
 
 import br.com.acenetwork.commons.player.CommonAdmin;
@@ -40,8 +37,10 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 	{
 		super.reset();
 		setInvis(true);
-		getPlayer().setGameMode(GameMode.CREATIVE);
-		getPlayer().setAllowFlight(true);
+		
+		p.setCollidable(false);
+		p.setGameMode(GameMode.CREATIVE);
+		p.setAllowFlight(true);
 	}
 
 	@Override
@@ -56,7 +55,30 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 		return build;
 	}
 	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void on(PlayerGameModeChangeEvent e)
+	{
+		if(e.getPlayer() != p)
+		{
+			return;
+		}
+		
+		if(e.getNewGameMode() != GameMode.CREATIVE)
+		{
+			e.setCancelled(true);
+		}
+	}
 	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onEntityTarget(EntityTargetEvent e)
+	{
+		if(e.getTarget() != p)
+		{
+			return;
+		}
+		
+		e.setCancelled(!build);
+	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent e)
@@ -66,7 +88,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 			return;
 		}
 		
-		e.setCancelled(!canBuild());
+		e.setCancelled(!build);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -77,7 +99,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 			return;
 		}
 
-		e.setCancelled(!canBuild());
+		e.setCancelled(!build);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -88,7 +110,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 			return;
 		}
 
-		e.setCancelled(!canBuild());
+		e.setCancelled(!build);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -99,7 +121,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 			return;
 		}
 
-		e.setCancelled(!canBuild());
+		e.setCancelled(!build);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -110,7 +132,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 			return;
 		}
 
-		e.setCancelled(!canBuild());
+		e.setCancelled(!build);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -121,7 +143,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 			return;
 		}
 
-		e.setCancelled(!canBuild());
+		e.setCancelled(!build);
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -134,7 +156,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 
 		Block b = e.getClickedBlock();
 		
-		e.setCancelled(!canBuild());
+		e.setCancelled(!build);
 		
 		if(b != null && b.getState() instanceof Container)
 		{

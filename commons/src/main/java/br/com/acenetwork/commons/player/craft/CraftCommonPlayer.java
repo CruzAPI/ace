@@ -7,7 +7,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -17,11 +16,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.util.Vector;
 
 import br.com.acenetwork.commons.Commons;
+import br.com.acenetwork.commons.CommonsScoreboard;
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.inventory.GUI;
@@ -37,6 +38,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	protected final Player p;
 	
 	private GUI gui;
+	private CommonsScoreboard commonsScoreboard;
 	private Tag tag;
 	private long combat;
 	private long playerCombat;
@@ -44,7 +46,6 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	private boolean specs;
 	private boolean invis;
 	private boolean ignoreInvisAndSpecs;
-	private boolean scoreboard = true;
 	
 	public CraftCommonPlayer(Player p)
 	{
@@ -52,17 +53,18 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 		
 		CommonPlayer previous = get(p);
 		
+		SET.add(this);
+		
 		if(previous != null)	
 		{
 			specs = previous.canSpecs();
+			commonsScoreboard = previous.getCommonsScoreboard();
 			previous.delete();
 		}
 		
 		reset();
 		
 		Bukkit.getPluginManager().registerEvents(this, Commons.getPlugin());
-		
-		SET.add(this);
 	}
 	
 	public static <T extends CommonPlayer> Set<T> getAll(Class<T> type)
@@ -79,7 +81,6 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	public boolean delete()
 	{
 		reset();
-		
 		HandlerList.unregisterAll(this);
 		return SET.remove(this);
 	}
@@ -221,6 +222,17 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	public Player getPlayer()
 	{
 		return p;
+	}
+	
+	@EventHandler
+	public void on(PlayerQuitEvent e)
+	{
+		if(e.getPlayer() != p)
+		{
+			return;
+		}
+		
+		setCommonsScoreboard(null);
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -410,6 +422,31 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	}
 
 	@Override
+	public CommonsScoreboard getCommonsScoreboard()
+	{
+		return commonsScoreboard;
+	}
+	
+	@Override
+	public void setCommonsScoreboard(CommonsScoreboard commonsScoreboard)
+	{
+		if(this.commonsScoreboard != null)
+		{
+			HandlerList.unregisterAll(this.commonsScoreboard);
+		}
+		
+		if((this.commonsScoreboard = commonsScoreboard) != null)
+		{
+			Bukkit.getPluginManager().registerEvents(this.commonsScoreboard, Commons.getPlugin());
+			p.setScoreboard(commonsScoreboard.getScoreboard());
+		}
+		else
+		{
+			p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+		}
+	}
+
+	@Override
 	public GUI getGUI()
 	{
 		return gui;
@@ -425,25 +462,14 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	}
 	
 	@Override
-	public void toggleScoreboard()
-	{
-		scoreboard = !scoreboard;
-	}
-	
-	@Override
-	public void updateScoreboard()
-	{
-		p.getScoreboard().clearSlot(DisplaySlot.SIDEBAR);
-	}
-	
-	@Override
 	public void reset()
 	{
 		for(PotionEffect effect : p.getActivePotionEffects())
 		{
 			p.removePotionEffect(effect.getType());
 		}
-
+		
+		p.setCollidable(true);
 		p.setVelocity(new Vector());
 		p.setMaximumNoDamageTicks(20);
 		p.setFireTicks(0);

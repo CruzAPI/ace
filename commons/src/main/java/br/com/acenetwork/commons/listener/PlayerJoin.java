@@ -39,6 +39,11 @@ public class PlayerJoin implements Listener
 		CommonPlayer cp = CraftCommonPlayer.get(p);		
 		cp.setTag(cp.getBestTag());
 		
+		if(cp.hasPermission("cmd.specs"))
+		{
+			p.chat("/specs");
+		}
+		
 		for(CommonPlayer cpall : CraftCommonPlayer.SET)
 		{
 			if(cpall.isInvis())

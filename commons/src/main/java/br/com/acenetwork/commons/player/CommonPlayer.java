@@ -4,14 +4,15 @@ import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.util.Vector;
 
+import br.com.acenetwork.commons.CommonsScoreboard;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.inventory.GUI;
 
 public interface CommonPlayer extends Listener
 {
+	CommonsScoreboard getCommonsScoreboard();
+	void setCommonsScoreboard(CommonsScoreboard commonsScoreboard);
 	UUID getUniqueID();
 	String getUUID();
 	Tag getTag();
@@ -36,8 +37,6 @@ public interface CommonPlayer extends Listener
 	String getClan();
 	Tag getBestTag();
 	Player getLastPlayerDamage();
-	void toggleScoreboard();
-	void updateScoreboard();
 	Player getPlayer();
 	void reset();
 }

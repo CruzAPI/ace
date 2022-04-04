@@ -11,6 +11,5 @@ public class EntityTarget implements Listener
 	public void on(EntityTargetEvent e)
 	{
 		e.setCancelled(false);
-		Bukkit.broadcastMessage(e.getEntity() + " " + e.getTarget());
 	}
 }

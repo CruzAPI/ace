@@ -8,6 +8,7 @@
   	<module>commons</module>
   	<module>survival</module>
   	<module>tntrun</module>
+  	<module>bungee</module>
   </modules>
   <build>
     <defaultGoal>clean install</defaultGoal>

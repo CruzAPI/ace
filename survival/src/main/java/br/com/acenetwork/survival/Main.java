@@ -1,8 +1,11 @@
 package br.com.acenetwork.survival;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Locale;
 
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -62,7 +65,7 @@ public class Main extends JavaPlugin
 		for(Player all : Bukkit.getOnlinePlayers())
 		{
 			all.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
-		}	
+		}
 	}
 	
 	@Override

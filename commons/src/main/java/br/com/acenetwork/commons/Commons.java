@@ -3,15 +3,12 @@ package br.com.acenetwork.commons;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.command.TabExecutor;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -45,8 +42,6 @@ import br.com.acenetwork.commons.listener.PlayerDeath;
 import br.com.acenetwork.commons.listener.PlayerJoin;
 import br.com.acenetwork.commons.listener.PlayerLogin;
 import br.com.acenetwork.commons.listener.PlayerQuit;
-import br.com.acenetwork.commons.manager.CommonsConfig;
-import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 
@@ -151,7 +146,6 @@ public class Commons
 	
 	public static File getDataFolder()
 	{
-//		return new File(System.getProperty("user.home") +  "/.aceconfig");
-		return new File("/var/lib/pufferpanel/.aceconfig");
+		return new File(System.getProperty("user.home") +  "/.aceconfig");
 	}
 }

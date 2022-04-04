@@ -76,7 +76,7 @@ public class Reset implements TabExecutor
 					String name = CommonsUtil.getNameByUUID(uuid);
 					double balance = config.getDouble("balance");
 
-					sql += "(default, '" + name + "', '" + uuid + "', " + balance + ", 0), ";
+					sql += "(default, '" + uuid + "', '" + name + "', " + balance + "), ";
 				}
 				
 				sql = sql.substring(0, sql.length() - 2) + ";";
