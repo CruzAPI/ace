@@ -6,6 +6,7 @@ import java.io.FileReader;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -164,7 +165,25 @@ public class CommonsUtil
 		
 		Bukkit.getServer().sendPluginMessage(Commons.getPlugin(), "commons:commons", out.toByteArray());
 	}
-
+	
+	public static boolean compareDisplayName(ItemStack i1, ItemStack i2)
+	{
+		return  i1 != null && i1.hasItemMeta() && i1.getItemMeta().hasDisplayName() && 
+				i2 != null && i2.hasItemMeta() && i2.getItemMeta().hasDisplayName() && 
+				i1.getItemMeta().getDisplayName().equals(i2.getItemMeta().getDisplayName());
+	}
+	
+	public static void bungeeSendPlayer(String playerName, String serverInfo)
+	{
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		
+		out.writeUTF("sendplayer");
+		out.writeUTF(playerName);
+		out.writeUTF(serverInfo);
+		
+		Bukkit.getServer().sendPluginMessage(Commons.getPlugin(), "commons:commons", out.toByteArray());
+	}
+	
 	public static String getUUIDByName(String name)
 	{
 		File namesFile = CommonsConfig.getFile(Type.NAMES, false, name.toLowerCase());

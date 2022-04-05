@@ -66,7 +66,7 @@ public class TimerChange implements Listener
 					p.playSound(p.getLocation(), Sound.UI_BUTTON_CLICK, 1.0F, 1.0F);
 				}
 			}
-			else if(seconds == 30 || seconds == 15 || seconds == 10 || (seconds < 5 && seconds > 0))
+			else if(seconds == 30 || seconds == 15 || seconds == 10 || (seconds <= 5 && seconds > 0))
 			{
 				for(CommonPlayer cp : CraftCommonPlayer.SET)
 				{

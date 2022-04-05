@@ -1,7 +1,10 @@
 package br.com.acenetwork.commons;
 
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerLocaleChangeEvent;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
@@ -15,11 +18,16 @@ public abstract class CommonsScoreboard implements Listener
 	protected final Scoreboard scoreboard;
 	protected final Objective objective;
 	
-	public CommonsScoreboard(CommonPlayer cp, String id)
+	protected String locale;
+	
+	public CommonsScoreboard(CommonPlayer cp)
 	{
+		Player p = cp.getPlayer();
+		locale = p.getLocale();
+
 		this.cp = cp;
 		this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-		this.objective = this.scoreboard.registerNewObjective(id, "dummy", id);
+		this.objective = this.scoreboard.registerNewObjective(p.getName(), "dummy", p.getName());
 		
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		
@@ -92,5 +100,16 @@ public abstract class CommonsScoreboard implements Listener
 	public Scoreboard getScoreboard()
 	{
 		return scoreboard;
+	}
+	
+	@EventHandler
+	public void a(PlayerLocaleChangeEvent e)
+	{
+		if(e.getPlayer() != cp.getPlayer())
+		{
+			return;
+		}
+		
+		locale = e.getLocale();
 	}
 }

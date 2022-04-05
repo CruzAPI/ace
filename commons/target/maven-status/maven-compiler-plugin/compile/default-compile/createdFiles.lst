@@ -6,7 +6,9 @@ br\com\acenetwork\commons\executor\Ignore.class
 br\com\acenetwork\commons\executor\AdminCMD.class
 br\com\acenetwork\commons\executor\MuteCMD.class
 br\com\acenetwork\commons\inventory\Banishment.class
+br\com\acenetwork\commons\event\PlayerModeChangeEvent.class
 br\com\acenetwork\commons\executor\ChatClean.class
+br\com\acenetwork\commons\PluginMessage.class
 br\com\acenetwork\commons\player\CommonPlayer.class
 br\com\acenetwork\commons\listener\PlayerJoin.class
 br\com\acenetwork\commons\executor\Build.class
@@ -26,6 +28,7 @@ br\com\acenetwork\commons\executor\Broadcast.class
 br\com\acenetwork\commons\player\craft\CraftCommonAdmin.class
 br\com\acenetwork\commons\listener\PlayerDeath.class
 br\com\acenetwork\commons\executor\Permission.class
+br\com\acenetwork\commons\event\BungeePlayerCountEvent.class
 br\com\acenetwork\commons\inventory\Timer.class
 br\com\acenetwork\commons\listener\EntitySpawn.class
 br\com\acenetwork\commons\CommonsScoreboard.class
@@ -46,6 +49,7 @@ br\com\acenetwork\commons\constants\Tag.class
 br\com\acenetwork\commons\listener\InventoryClose.class
 br\com\acenetwork\commons\executor\Ping.class
 br\com\acenetwork\commons\Commons.class
+br\com\acenetwork\commons\CommonsHotbar.class
 br\com\acenetwork\commons\manager\Message.class
 br\com\acenetwork\commons\manager\CommonsConfig.class
 br\com\acenetwork\commons\listener\PlayerLogin.class

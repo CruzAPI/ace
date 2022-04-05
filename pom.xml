@@ -9,6 +9,7 @@
   	<module>survival</module>
   	<module>tntrun</module>
   	<module>bungee</module>
+  	<module>lobby</module>
   </modules>
   <build>
     <defaultGoal>clean install</defaultGoal>

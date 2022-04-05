@@ -15,6 +15,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -164,7 +165,17 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 			
 			if(e.isCancelled())
 			{
-				Inventory inv = Bukkit.createInventory(p, chest.getInventory().getSize());
+				Inventory inv;
+				
+				if(chest.getInventory().getType() == InventoryType.CHEST)
+				{
+					inv = Bukkit.createInventory(p, chest.getInventory().getSize());
+				}
+				else
+				{
+					inv = Bukkit.createInventory(p, chest.getInventory().getType());
+				}
+				
 				inv.setContents(chest.getInventory().getContents());
 				p.openInventory(inv);
 			}

@@ -3,14 +3,32 @@ package br.com.acenetwork.bungee;
 import java.io.File;
 import java.io.IOException;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+
 import br.com.acenetwork.bungee.manager.Config;
 import br.com.acenetwork.bungee.manager.Config.Type;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
 public class Util
 {
+	public static void sendDataPlayerCount(int count)
+	{
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		
+		out.writeUTF("playercount");
+		out.writeInt(count);
+		
+		for(ServerInfo info : ProxyServer.getInstance().getServers().values())
+		{
+			info.sendData("commons:commons", out.toByteArray());
+		}
+	}
+	
 	public static boolean hasPermission(String uuid, String perm)
 	{
 		if(perm == null)

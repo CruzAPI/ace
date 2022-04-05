@@ -3,8 +3,10 @@ package br.com.acenetwork.bungee.listener;
 import java.io.File;
 import java.io.IOException;
 
+import br.com.acenetwork.bungee.Util;
 import br.com.acenetwork.bungee.manager.Config;
 import br.com.acenetwork.bungee.manager.Config.Type;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -18,6 +20,8 @@ public class PostLogin implements Listener
 	@EventHandler
 	public void on(PostLoginEvent e)
 	{
+		Util.sendDataPlayerCount(ProxyServer.getInstance().getPlayers().size());
+		
 		ProxiedPlayer p = e.getPlayer();
 		
 		ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);

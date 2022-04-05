@@ -22,9 +22,11 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.util.Vector;
 
 import br.com.acenetwork.commons.Commons;
+import br.com.acenetwork.commons.CommonsHotbar;
 import br.com.acenetwork.commons.CommonsScoreboard;
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Tag;
+import br.com.acenetwork.commons.event.PlayerModeChangeEvent;
 import br.com.acenetwork.commons.inventory.GUI;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
@@ -39,6 +41,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	
 	private GUI gui;
 	private CommonsScoreboard commonsScoreboard;
+	private CommonsHotbar commonsHotbar;
 	private Tag tag;
 	private long combat;
 	private long playerCombat;
@@ -64,6 +67,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 		
 		reset();
 		
+		Bukkit.getPluginManager().callEvent(new PlayerModeChangeEvent(this));
 		Bukkit.getPluginManager().registerEvents(this, Commons.getPlugin());
 	}
 	
@@ -232,6 +236,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 			return;
 		}
 		
+		setCommonsHotbar(null);
 		setCommonsScoreboard(null);
 	}
 	
@@ -445,7 +450,27 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 			p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 		}
 	}
-
+	
+	@Override
+	public CommonsHotbar getCommonsHotbar()
+	{
+		return commonsHotbar;
+	}
+	
+	@Override
+	public void setCommonsHotbar(CommonsHotbar commonsHotbar)
+	{
+		if(this.commonsHotbar != null)
+		{
+			HandlerList.unregisterAll(this.commonsHotbar);
+		}
+		
+		if((this.commonsHotbar = commonsHotbar) != null)
+		{
+			Bukkit.getPluginManager().registerEvents(this.commonsHotbar, Commons.getPlugin());
+		}
+	}
+	
 	@Override
 	public GUI getGUI()
 	{

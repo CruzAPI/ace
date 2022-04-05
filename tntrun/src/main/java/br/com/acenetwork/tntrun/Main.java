@@ -28,6 +28,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import br.com.acenetwork.commons.Commons;
+import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonWatcher;
@@ -113,7 +114,7 @@ public class Main extends JavaPlugin implements Listener
 		
 		maxPlayers = 12;
 		minPlayers = 2; //maxPlayers / 3;
-		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5D, 44.0D, 0.5D, 0.0F, 0.0F);
+		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5D, 71.5D, 0.5D, -90.0F, 0.0F);
 		
 		World w = Bukkit.getWorld("world");
 		
@@ -300,7 +301,9 @@ public class Main extends JavaPlugin implements Listener
 		
 		if(players == 1)
 		{
-			new CraftCommonWatcher(set.iterator().next().getPlayer());
+			Player winner = set.iterator().next().getPlayer();
+			winner.playSound(winner.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 1.0F);
+			new CraftCommonWatcher(winner);
 		}
 	}
 	
@@ -350,12 +353,16 @@ public class Main extends JavaPlugin implements Listener
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable()
 		{
-			int time = 15;
+			int time = 12;
 			
 			@Override
 			public void run()
 			{
-				if(time == 0)
+				if(time == 2)
+				{
+					Bukkit.getOnlinePlayers().stream().forEach(x -> CommonsUtil.bungeeSendPlayer(x.getName(), "lobby"));
+				}
+				else if(time <= 0)
 				{
 					Bukkit.shutdown();
 				}
@@ -427,7 +434,7 @@ public class Main extends JavaPlugin implements Listener
 					Player p = cp.getPlayer();
 					cp.sendMessage("tntrun.timer-has-been-reset");
 					cp.sendMessage("tntrun.waiting-players");
-					p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 0.6F);
+					p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
 				}
 			}
 			else if(taskB == 0 && e.getCount() >= minPlayers)
@@ -440,5 +447,10 @@ public class Main extends JavaPlugin implements Listener
 	public static int getMinPlayers()
 	{
 		return minPlayers;
+	}
+
+	public static boolean hasAnnouncedWinner()
+	{
+		return announceWinner;
 	}
 }

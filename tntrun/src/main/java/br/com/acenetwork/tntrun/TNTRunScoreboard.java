@@ -16,13 +16,9 @@ import br.com.acenetwork.tntrun.player.Competitor;
 
 public class TNTRunScoreboard extends CommonsScoreboard
 {
-	private String locale;
-	
 	public TNTRunScoreboard(CommonPlayer cp)
 	{
-		super(cp, cp.getPlayer().getName());
-		
-		locale = cp.getPlayer().getLocale();
+		super(cp);
 		
 		objective.setDisplayName("§f§lTNT RUN");
 		setScore(6);
@@ -107,7 +103,6 @@ public class TNTRunScoreboard extends CommonsScoreboard
 			return;
 		}
 		
-		locale = e.getLocale();
 		updateScore(5, getPrefix(5), null);
 		updateScore(3, getPrefix(3), getSuffix(3));
 	}

@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import br.com.acenetwork.commons.CommonsHotbar;
 import br.com.acenetwork.commons.CommonsScoreboard;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.inventory.GUI;
@@ -13,6 +14,8 @@ public interface CommonPlayer extends Listener
 {
 	CommonsScoreboard getCommonsScoreboard();
 	void setCommonsScoreboard(CommonsScoreboard commonsScoreboard);
+	CommonsHotbar getCommonsHotbar();
+	void setCommonsHotbar(CommonsHotbar commonsHotbar);
 	UUID getUniqueID();
 	String getUUID();
 	Tag getTag();

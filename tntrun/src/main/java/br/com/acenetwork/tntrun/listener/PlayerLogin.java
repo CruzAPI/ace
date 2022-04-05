@@ -25,9 +25,15 @@ public class PlayerLogin implements Listener
 			return;
 		}
 		
-		if(Main.getState() == State.STARTING && CraftCommonPlayer.getAll(Competitor.class).size() >= Main.getMaxPlayers())
+		if(Main.hasAnnouncedWinner())
+		{
+			e.setResult(Result.KICK_OTHER);
+			e.setKickMessage("§cServer restarting...");
+		}
+		else if(Main.getState() == State.STARTING && CraftCommonPlayer.getAll(Competitor.class).size() >= Main.getMaxPlayers())
 		{
 			e.setResult(Result.KICK_FULL);
+			e.setKickMessage("§cServer full.");
 		}
 	}
 }
