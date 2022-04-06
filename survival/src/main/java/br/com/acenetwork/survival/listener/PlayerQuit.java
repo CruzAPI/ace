@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
@@ -56,13 +57,14 @@ public class PlayerQuit implements Listener
 				equipment.set(Equipment.EquipmentSlot.CHESTPLATE, p.getInventory().getItem(EquipmentSlot.CHEST));
 				equipment.set(Equipment.EquipmentSlot.LEGGINGS, p.getInventory().getItem(EquipmentSlot.LEGS));
 				equipment.set(Equipment.EquipmentSlot.BOOTS, p.getInventory().getItem(EquipmentSlot.FEET));
-				equipment.set(Equipment.EquipmentSlot.HAND, p.getInventory().getItem(EquipmentSlot.HAND));
+//				equipment.set(Equipment.EquipmentSlot.HAND, p.getInventory().getItem(EquipmentSlot.HAND));
 				equipment.set(Equipment.EquipmentSlot.OFF_HAND, p.getInventory().getItem(EquipmentSlot.OFF_HAND));
 				
 				Inventory inventory = npc.getTrait(Inventory.class);
 				
 				inventory.setContents(p.getInventory().getContents());
 					
+//				player.getInventory().setHeldItemSlot(p.getInventory().getHeldItemSlot());
 				player.setExp(p.getExp());
 				player.setLevel(p.getLevel());
 				player.setFireTicks(p.getFireTicks());

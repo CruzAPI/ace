@@ -29,6 +29,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.CommonsUtil;
+import br.com.acenetwork.commons.executor.Stop;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonWatcher;
@@ -112,8 +113,8 @@ public class Main extends JavaPlugin implements Listener
 		
 		
 		
-		maxPlayers = 12;
-		minPlayers = 2; //maxPlayers / 3;
+		minPlayers = 4;
+		maxPlayers = minPlayers * 5;
 		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5D, 71.5D, 0.5D, -90.0F, 0.0F);
 		
 		World w = Bukkit.getWorld("world");
@@ -322,7 +323,7 @@ public class Main extends JavaPlugin implements Listener
 		{
 			Player all = cpall.getPlayer();
 			
-			all.sendMessage("§a§l§m                                                 ");
+			all.sendMessage("§a§l§m ]                                                   [ ");
 			
 			for(int i = 0; i < ELIMINATED.size(); i++)
 			{
@@ -348,28 +349,17 @@ public class Main extends JavaPlugin implements Listener
 				}
 			}
 			
-			all.sendMessage("§a§l§m                                                 ");
+			all.sendMessage("§a§l§m ]                                                   [ ");
 		}
 		
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable()
+		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable()
 		{
-			int time = 12;
-			
 			@Override
 			public void run()
 			{
-				if(time == 2)
-				{
-					Bukkit.getOnlinePlayers().stream().forEach(x -> CommonsUtil.bungeeSendPlayer(x.getName(), "lobby"));
-				}
-				else if(time <= 0)
-				{
-					Bukkit.shutdown();
-				}
-				
-				time--;
+				Stop.stop();
 			}
-		}, 0L, 20L);
+		}, 200L);
 	}
 	
 	public static Main getInstance()

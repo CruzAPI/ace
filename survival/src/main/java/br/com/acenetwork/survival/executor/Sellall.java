@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import br.com.acenetwork.commons.constants.Language;
+import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
@@ -50,7 +51,7 @@ public class Sellall implements TabExecutor
 			File priceFile = Config.getFile(Type.PRICE, false);
 			YamlConfiguration priceConfig = YamlConfiguration.loadConfiguration(priceFile);
 			
-			File playerFile = Config.getFile(Type.PLAYER, true, cp.getUUID());
+			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, cp.getUUID());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 			
 			double balance = playerConfig.getDouble("balance");

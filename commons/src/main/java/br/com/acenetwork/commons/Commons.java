@@ -29,6 +29,7 @@ import br.com.acenetwork.commons.executor.Permission;
 import br.com.acenetwork.commons.executor.Ping;
 import br.com.acenetwork.commons.executor.Reply;
 import br.com.acenetwork.commons.executor.Specs;
+import br.com.acenetwork.commons.executor.Stop;
 import br.com.acenetwork.commons.executor.TagCMD;
 import br.com.acenetwork.commons.executor.Tell;
 import br.com.acenetwork.commons.executor.Test;
@@ -48,7 +49,8 @@ import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 public class Commons
 {
 	private static JavaPlugin plugin;
-
+	private static boolean restarting;
+	
 	public static void init(JavaPlugin plugin)
 	{
 		Commons.plugin = plugin;
@@ -80,6 +82,7 @@ public class Commons
 		registerCommand(new Ping(), "ping");
 		registerCommand(new Reply(), "reply", "r");
 		registerCommand(new Specs(), "specs");
+		registerCommand(new Stop(), "stop");
 		registerCommand(new TagCMD(), "tag");
 		registerCommand(new Tell(), "tell", "msg", "t", "w", "whisper");
 		registerCommand(new Test(), "test");
@@ -147,5 +150,15 @@ public class Commons
 	public static File getDataFolder()
 	{
 		return new File(System.getProperty("user.home") +  "/.aceconfig");
+	}
+
+	public static void setRestarting(boolean value)
+	{
+		restarting = value;
+	}
+	
+	public static boolean isRestarting()
+	{
+		return restarting;
 	}
 }

@@ -12,11 +12,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -126,9 +126,9 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerDropItem(PlayerDropItemEvent e)
+	public void onPlayerDropItem(EntityDropItemEvent e)
 	{		
-		if(e.getPlayer() != p)
+		if(e.getEntity() != p)
 		{
 			return;
 		}

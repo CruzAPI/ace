@@ -35,20 +35,25 @@ public class Alert extends Command
 		
 		if(args.length > 0)
 		{
-			String msg = "";
-
-		 	for(int i = 0; i < args.length; i++)			
-		 	{
-		 		msg += args[i] + " ";
-		 	}
-
-		 	msg = msg.substring(0, msg.length() - 1);
-		 	
-			ProxyServer.getInstance().broadcast("§4§lALERT §f" + msg.replace('&', '§'));
+			alert(args);
 		}
 		else
 		{
 			sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + getName()));
 		}
+	}
+	
+	public static void alert(String... args)
+	{
+		String msg = "";
+
+	 	for(int i = 0; i < args.length; i++)			
+	 	{
+	 		msg += args[i] + " ";
+	 	}
+
+	 	msg = msg.substring(0, msg.length() - 1);
+	 	
+		ProxyServer.getInstance().broadcast("§4§lALERT §f" + msg.replace('&', '§'));
 	}
 }

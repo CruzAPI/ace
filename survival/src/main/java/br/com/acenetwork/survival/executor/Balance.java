@@ -11,8 +11,6 @@ import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
-import br.com.acenetwork.survival.manager.Config;
-import br.com.acenetwork.survival.manager.Config.Type;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -101,7 +99,7 @@ public class Balance implements TabExecutor
 			return true;
 		}
 
-		File file = Config.getFile(Type.PLAYER, true, targetUUID);
+		File file = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, targetUUID);
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
 		double balance = config.getDouble("balance");

@@ -1,6 +1,8 @@
 package br.com.acenetwork.lobby;
 
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerLocaleChangeEvent;
 
 import br.com.acenetwork.commons.CommonsScoreboard;
 import br.com.acenetwork.commons.event.BungeePlayerCountEvent;
@@ -58,5 +60,20 @@ public class LobbyScoreboard extends CommonsScoreboard
 	public void on(BungeePlayerCountEvent e)
 	{
 		playerCount = e.getCount();
+		updateScore(5, null, getSuffix(5));
+	}
+	
+	@EventHandler
+	public void on(PlayerLocaleChangeEvent e)
+	{
+		Player p = e.getPlayer();
+		
+		if(cp.getPlayer() != p)
+		{
+			return;
+		}
+		
+		setScore(5, getPrefix(5), getSuffix(5));
+		setScore(3, getPrefix(3), getSuffix(3));
 	}
 }

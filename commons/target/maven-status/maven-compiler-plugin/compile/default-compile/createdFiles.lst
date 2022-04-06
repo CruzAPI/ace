@@ -9,6 +9,7 @@ br\com\acenetwork\commons\inventory\Banishment.class
 br\com\acenetwork\commons\event\PlayerModeChangeEvent.class
 br\com\acenetwork\commons\executor\ChatClean.class
 br\com\acenetwork\commons\PluginMessage.class
+br\com\acenetwork\commons\executor\Stop.class
 br\com\acenetwork\commons\player\CommonPlayer.class
 br\com\acenetwork\commons\listener\PlayerJoin.class
 br\com\acenetwork\commons\executor\Build.class
@@ -27,6 +28,7 @@ br\com\acenetwork\commons\executor\Specs.class
 br\com\acenetwork\commons\executor\Broadcast.class
 br\com\acenetwork\commons\player\craft\CraftCommonAdmin.class
 br\com\acenetwork\commons\listener\PlayerDeath.class
+br\com\acenetwork\commons\listener\PlayerJoin$1.class
 br\com\acenetwork\commons\executor\Permission.class
 br\com\acenetwork\commons\event\BungeePlayerCountEvent.class
 br\com\acenetwork\commons\inventory\Timer.class

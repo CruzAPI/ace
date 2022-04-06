@@ -103,4 +103,39 @@ public class Util
 		
 		return false;
 	}
+	
+	public static String getUUIDByName(String name)
+	{
+		ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+		
+		File namesFile = Config.getFile(Type.NAMES, false, name.toLowerCase());
+		
+		try
+		{
+			Configuration namesConfig = provider.load(namesFile);
+			return namesConfig.getString("uuid");
+		}
+		catch(IOException e)
+		{
+			return null;
+		}
+	}
+
+	public static String getNameByUUID(String uuid)
+	{
+		ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+		
+		File playerFile = Config.getFile(Type.PLAYER, false, uuid);
+		
+		try
+		{
+			Configuration playerConfig = provider.load(playerFile);
+			return playerConfig.getString("name");
+		}
+		catch(IOException e)
+		{
+			return null;
+		}
+		
+	}
 }

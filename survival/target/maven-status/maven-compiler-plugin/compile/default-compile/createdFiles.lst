@@ -1,5 +1,4 @@
 br\com\acenetwork\survival\listener\PlayerQuit.class
-br\com\acenetwork\survival\executor\Reset.class
 br\com\acenetwork\survival\executor\Balance.class
 br\com\acenetwork\survival\listener\BlockBreak$1.class
 br\com\acenetwork\survival\listener\PlayerRespawn.class
@@ -11,7 +10,6 @@ br\com\acenetwork\survival\Util.class
 br\com\acenetwork\survival\listener\PlayerQuit$1.class
 br\com\acenetwork\survival\player\SurvivalPlayer.class
 br\com\acenetwork\survival\executor\Track$1.class
-br\com\acenetwork\survival\manager\Database.class
 br\com\acenetwork\survival\listener\EntityTarget.class
 br\com\acenetwork\survival\manager\Config.class
 br\com\acenetwork\survival\player\craft\CraftSurvivalPlayer.class

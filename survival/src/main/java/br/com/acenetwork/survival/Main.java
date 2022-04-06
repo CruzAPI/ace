@@ -1,18 +1,14 @@
 package br.com.acenetwork.survival;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.survival.executor.Balance;
 import br.com.acenetwork.survival.executor.Price;
-import br.com.acenetwork.survival.executor.Reset;
 import br.com.acenetwork.survival.executor.Sell;
 import br.com.acenetwork.survival.executor.Sellall;
 import br.com.acenetwork.survival.executor.Track;
@@ -53,7 +49,6 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Price(), "price");
 		Commons.registerCommand(new Sell(), "sell");
 		Commons.registerCommand(new Sellall(), "sellall");
-		Commons.registerCommand(new Reset(), "reset");
 		Commons.registerCommand(new Track(), "track");		
 		
 		

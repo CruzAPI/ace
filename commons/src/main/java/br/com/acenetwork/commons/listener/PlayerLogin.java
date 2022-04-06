@@ -5,10 +5,12 @@ import java.io.File;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
+import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.executor.BanCMD;
@@ -17,7 +19,7 @@ import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 
 public class PlayerLogin implements Listener
 {
-	@EventHandler
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void on(PlayerLoginEvent e)
 	{
 		Player p = e.getPlayer();
@@ -64,9 +66,16 @@ public class PlayerLogin implements Listener
 
 					e.setResult(Result.KICK_BANNED);
 					e.setKickMessage(kickMessage);
-					break;
+					return;
 				}
 			}
+		}
+		
+		if(Commons.isRestarting())
+		{
+			e.setResult(Result.KICK_OTHER);
+			e.setKickMessage("§cServer restarting...");
+			return;
 		}
 	}
 }

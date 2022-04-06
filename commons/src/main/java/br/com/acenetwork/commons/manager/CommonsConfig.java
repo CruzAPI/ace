@@ -11,6 +11,7 @@ public class CommonsConfig
 {
 	public enum Type
 	{
+		BALANCE_FOLDER, BALANCE_RAID_PLAYER, BALANCE_RAID_FOLDER, BALANCE_TNTRUN_PLAYER, BALANCE_TNTRUN_FOLDER, 
 		CLANS_JSON, MESSAGE, GROUP, USER, NAMES, PLAYER, BANNED_PLAYERS, BANNED_IPS, MUTED_PLAYERS;
 	}
 
@@ -21,41 +22,60 @@ public class CommonsConfig
 
 		switch(type)
 		{
-			case CLANS_JSON:
-				file = new File(Commons.getDataFolder(), "ace_clans.json");
-				break;
-			case MESSAGE:
-				file = new File(Commons.getDataFolder() + "/messages", args[0] + ".yml");
-				break;
-			case MUTED_PLAYERS:
-				file = new File(Commons.getDataFolder() + "/muted-players", args[0] + ".yml");
-				break;
-			case BANNED_IPS:
-				file = new File(Commons.getDataFolder() + "/banned-ips", args[0] + ".yml");
-				break;
-			case BANNED_PLAYERS:
-				file = new File(Commons.getDataFolder() + "/banned-players", args[0] + ".yml");
-				break;
-			case GROUP:
-				file = new File(Commons.getDataFolder() + "/permissions/groups", args[0] + ".yml");
-				break;
-			case USER:
-				file = new File(Commons.getDataFolder() + "/permissions/users", args[0] + ".yml");
-				break;
-			case NAMES:
-				file = new File(Commons.getDataFolder() + "/names", args[0] + ".yml");
-				break;
-			case PLAYER:
-				file = new File(Commons.getDataFolder() + "/players", args[0] + ".yml");
-				break;
-			default:
-				return null;
+		case BALANCE_FOLDER:
+			file = new File(Commons.getDataFolder() + "/balance");
+			break;
+		case BALANCE_RAID_FOLDER:
+			file = new File(Commons.getDataFolder() + "/balance/raid");
+			break;
+		case BALANCE_TNTRUN_FOLDER:
+			file = new File(Commons.getDataFolder() + "/balance/tntrun");
+			break;
+		case BALANCE_RAID_PLAYER:
+			file = new File(Commons.getDataFolder() + "/balance/raid", args[0] + ".yml");
+			config = YamlConfiguration.loadConfiguration(file);
+			config.set("max-balance", 1000.0D);
+			break;
+		case BALANCE_TNTRUN_PLAYER:
+			file = new File(Commons.getDataFolder() + "/balance/tntrun", args[0] + ".yml");
+			config = YamlConfiguration.loadConfiguration(file);
+			config.set("max-balance", 200.0D);
+			break;
+		case CLANS_JSON:
+			file = new File(Commons.getDataFolder(), "ace_clans.json");
+			break;
+		case MESSAGE:
+			file = new File(Commons.getDataFolder() + "/messages", args[0] + ".yml");
+			break;
+		case MUTED_PLAYERS:
+			file = new File(Commons.getDataFolder() + "/muted-players", args[0] + ".yml");
+			break;
+		case BANNED_IPS:
+			file = new File(Commons.getDataFolder() + "/banned-ips", args[0] + ".yml");
+			break;
+		case BANNED_PLAYERS:
+			file = new File(Commons.getDataFolder() + "/banned-players", args[0] + ".yml");
+			break;
+		case GROUP:
+			file = new File(Commons.getDataFolder() + "/permissions/groups", args[0] + ".yml");
+			break;
+		case USER:
+			file = new File(Commons.getDataFolder() + "/permissions/users", args[0] + ".yml");
+			break;
+		case NAMES:
+			file = new File(Commons.getDataFolder() + "/names", args[0] + ".yml");
+			break;
+		case PLAYER:
+			file = new File(Commons.getDataFolder() + "/players", args[0] + ".yml");
+			break;
+		default:
+			return null;
 		}
-		
-		file.toPath().getParent().toFile().mkdirs();
 		
 		if(createNewFile && !file.exists())
 		{
+			file.toPath().getParent().toFile().mkdirs();
+			
 			try
 			{
 				file.createNewFile();

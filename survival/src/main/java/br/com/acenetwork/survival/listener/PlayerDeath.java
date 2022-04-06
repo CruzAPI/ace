@@ -13,12 +13,11 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
 import br.com.acenetwork.commons.CommonsUtil;
+import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Main;
-import br.com.acenetwork.survival.manager.Config;
-import br.com.acenetwork.survival.manager.Config.Type;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Inventory;
@@ -37,10 +36,10 @@ public class PlayerDeath implements Listener
 		{			
 			String killerUUID = CommonsUtil.getUUIDByName(killer.getName());
 			
-			File playerFile = Config.getFile(Type.PLAYER, true, playerUUID);
+			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, playerUUID);
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 	
-			File killerFile = Config.getFile(Type.PLAYER, true, killerUUID);
+			File killerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, killerUUID);
 			YamlConfiguration killerConfig = YamlConfiguration.loadConfiguration(killerFile);
 			
 			double playerBalance = playerConfig.getDouble("balance");

@@ -7,11 +7,11 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDropItemEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -46,13 +46,13 @@ public class GeneralEvents implements Listener
 	}
 	
 	@EventHandler
-	public void on(PlayerDropItemEvent e)
+	public void on(EntityDropItemEvent e)
 	{
 		e.setCancelled(true);
 	}
 	
 	@EventHandler
-	public void on(PlayerPickupItemEvent e)
+	public void on(EntityPickupItemEvent e)
 	{
 		e.setCancelled(true);
 	}
