@@ -1,4 +1,4 @@
-package br.com.acenetwork.survival.executor;
+package br.com.acenetwork.commons.executor;
 
 import java.io.File;
 import java.text.DecimalFormat;
@@ -20,7 +20,24 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class Balance implements TabExecutor
-{	
+{
+	public enum Type
+	{
+		RAID(CommonsConfig.Type.BALANCE_RAID_PLAYER), MINIGAME(CommonsConfig.Type.BALANCE_MINIGAME_PLAYER);
+		
+		private final CommonsConfig.Type fileType;
+		
+		Type(CommonsConfig.Type fileType)
+		{
+			this.fileType = fileType;
+		}
+		
+		public CommonsConfig.Type getFileType()
+		{
+			return fileType;
+		}
+	}
+	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
@@ -63,7 +80,7 @@ public class Balance implements TabExecutor
 			uuid = cp.getUUID();
 		}
 		
-		DecimalFormat df = new DecimalFormat("0.##");
+		DecimalFormat df = getDecimalFormat();
 		
 		String targetUUID;
 
@@ -98,30 +115,41 @@ public class Balance implements TabExecutor
 			sender.sendMessage(Message.getMessage(locale, "cmd.user-not-found"));
 			return true;
 		}
-
-		File file = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, targetUUID);
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
-		double balance = config.getDouble("balance");
-		double maxBalance = config.getDouble("max-balance");
 		
-		String formatBalance = df.format(balance);
-		String formatMaxBalance = df.format(maxBalance);
-
-		if(targetUUID.equals(uuid))
+		for(Type type : Type.values())
 		{
-			sender.sendMessage(Message.getMessage(locale, "cmd.balance.self", formatBalance + "/" + formatMaxBalance));
-		}
-		else
-		{
-			File commonsPlayerFile = CommonsConfig.getFile(CommonsConfig.Type.PLAYER, false, targetUUID);
-			YamlConfiguration commonsPlayerConfig = YamlConfiguration.loadConfiguration(commonsPlayerFile);
-
-			String username = commonsPlayerConfig.getString("name");
-
-			sender.sendMessage(Message.getMessage(locale, "cmd.balance.other", username, formatBalance + "/" + formatMaxBalance));
-		}
+			File file = CommonsConfig.getFile(type.getFileType(), true, targetUUID);
+			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+			
+			double balance = config.getDouble("balance");
+			double maxBalance = config.getDouble("max-balance");
+			
+			String formatBalance = df.format(balance);
+			String formatMaxBalance = df.format(maxBalance);
+			
+			String balanceType = file.getParentFile().getName();
+			
+			if(targetUUID.equals(uuid))
+			{
+				sender.sendMessage(Message.getMessage(locale, "cmd.balance." + balanceType + ".self", formatBalance + "/" + formatMaxBalance));
+			}
+			else
+			{
+				File commonsPlayerFile = CommonsConfig.getFile(CommonsConfig.Type.PLAYER, false, targetUUID);
+				YamlConfiguration commonsPlayerConfig = YamlConfiguration.loadConfiguration(commonsPlayerFile);
+				
+				String username = commonsPlayerConfig.getString("name");
+				
+				sender.sendMessage(Message.getMessage(locale, "cmd.balance." + balanceType + ".other", username, formatBalance + "/" + formatMaxBalance));
+			}
+		}	
 		
 		return false;
-	}	
+	}
+	
+	public static DecimalFormat getDecimalFormat()
+	{
+		return new DecimalFormat("0.##");
+	}
 }

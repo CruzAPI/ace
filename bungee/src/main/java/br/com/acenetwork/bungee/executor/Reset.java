@@ -3,6 +3,7 @@ package br.com.acenetwork.bungee.executor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
@@ -12,6 +13,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import br.com.acenetwork.bungee.Main;
 import br.com.acenetwork.bungee.Util;
@@ -56,6 +58,11 @@ public class Reset extends Command
 		
 		if(args.length == 0)
 		{
+			if(Main.TEST)
+			{
+				sender.sendMessage("§5§lTEST MODE!");
+			}
+			
 			sender.sendMessage(Message.getMessage(locale, "cmd.reset.confirm"));
 		}
 		else if(args.length == 1 && args[0].equalsIgnoreCase("confirm"))
@@ -126,7 +133,7 @@ public class Reset extends Command
 		
 		try(Database database = new Database())
 		{
-			String table = "Coins";
+			String table = Main.TEST ? "Test" : "Coins";
 			
 			PreparedStatement ps1 = database.connection.prepareStatement("truncate table `" + table + "`;");
 			
@@ -137,7 +144,7 @@ public class Reset extends Command
 			File[] balanceFolders = new File[]
 			{
 				Config.getFile(Type.BALANCE_RAID_FOLDER, true),
-				Config.getFile(Type.BALANCE_TNTRUN_FOLDER, true)
+				Config.getFile(Type.BALANCE_MINIGAME_FOLDER, true)
 			};
 			
 			for(File balanceFolder : balanceFolders)
@@ -182,7 +189,29 @@ public class Reset extends Command
 				database.connection.prepareStatement(sql).execute();
 			}
 			
-			deleteDir(Config.getFile(Type.BALANCE_FOLDER, false));
+			Instant now = Instant.now();
+			ZonedDateTime znow = now.atZone(ZoneId.systemDefault());
+			
+			File balanceFolder = Config.getFile(Type.BALANCE_FOLDER, false);
+			
+//			for(int i = 1; ; i++)
+//			{
+//				String fileName = znow.getYear() + "-" + znow.getMonthValue() + "-" + znow.getDayOfMonth() + "-" + i;
+//				
+//				File file = Config.getFile(Type.BALANCE_HISTORY_ZIP, false, fileName);
+//				
+//				if(file.exists())
+//				{
+//					continue;
+//				}
+//				
+//				file.getParentFile().mkdirs();
+//				Files.copy(balanceFolder.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+//				break;
+//			}
+//			
+			
+			deleteDir(balanceFolder);
 			
 			Configuration resetConfig = provider.load(resetFile);
 			resetConfig.set("last-reset", getTodayResetDayOfMonth());
@@ -193,14 +222,22 @@ public class Reset extends Command
 			
 			ProxyServer.getInstance().getConsole().sendMessage(Message.getMessage("en_us", "cmd.reset.points-reset"));
 			
+			if(Main.TEST)
+			{
+				Runtime.getRuntime().exec(System.getProperty("user.home") + "/reset/testpay.bash");
+			}
+			else
+			{
+				Runtime.getRuntime().exec(System.getProperty("user.home") + "/reset/pay.bash");
+			}
+			
 			return true;
 		}
 		catch(IOException e)
 		{
 			e.printStackTrace();
+			return false;
 		}
-		
-		return false;
 	}
 	
 	public static int getLastResetDayOfMonth()

@@ -13,7 +13,9 @@ public class Config
 {
 	public enum Type
 	{
-		BALANCE_FOLDER, BALANCE_RAID_PLAYER, BALANCE_RAID_FOLDER, BALANCE_TNTRUN_PLAYER, BALANCE_TNTRUN_FOLDER, 
+		MOTD,
+		BALANCE_FOLDER, BALANCE_RAID_PLAYER, BALANCE_RAID_FOLDER, BALANCE_MINIGAME_PLAYER, BALANCE_MINIGAME_FOLDER, 
+		BALANCE_HISTORY_FOLDER, BALANCE_HISTORY_ZIP,
 		DATABASE, RESET, MESSAGE, GROUP, USER, NAMES, PLAYER, BANNED_IPS, BANNED_PLAYERS;
 	}
 
@@ -25,20 +27,29 @@ public class Config
 		
 		switch(type)
 		{
+		case MOTD:
+			file = new File(Main.getCommonsDataFolder(), "motd.yml");
+			break;
 		case BALANCE_FOLDER:
 			file = new File(Main.getCommonsDataFolder() + "/balance");
+			break;
+		case BALANCE_HISTORY_FOLDER:
+			file = new File(Main.getCommonsDataFolder() + "/balance_history");
+			break;
+		case BALANCE_HISTORY_ZIP:
+			file = new File(Main.getCommonsDataFolder() + "/balance_history/" + args[0]);
 			break;
 		case BALANCE_RAID_FOLDER:
 			file = new File(Main.getCommonsDataFolder() + "/balance/raid");
 			break;
-		case BALANCE_TNTRUN_FOLDER:
-			file = new File(Main.getCommonsDataFolder() + "/balance/tntrun");
-			break;
 		case BALANCE_RAID_PLAYER:
 			file = new File(Main.getCommonsDataFolder() + "/balance/raid", args[0] + ".yml");
 			break;
-		case BALANCE_TNTRUN_PLAYER:
-			file = new File(Main.getCommonsDataFolder() + "/balance/tntrun", args[0] + ".yml");
+		case BALANCE_MINIGAME_FOLDER:
+			file = new File(Main.getCommonsDataFolder() + "/balance/minigame");
+			break;
+		case BALANCE_MINIGAME_PLAYER:
+			file = new File(Main.getCommonsDataFolder() + "/balance/minigame", args[0] + ".yml");
 			break;
 		case DATABASE:
 			file = new File(Main.getCommonsDataFolder(), "database.yml");
@@ -92,9 +103,9 @@ public class Config
 					switch(type)
 					{
 					case BALANCE_RAID_PLAYER:
-						config.set("max-balance", 1000.0D);
+						config.set("max-balance", 800.0D);
 						break;
-					case BALANCE_TNTRUN_PLAYER:
+					case BALANCE_MINIGAME_PLAYER:
 						config.set("max-balance", 200.0D);
 						break;
 					default:

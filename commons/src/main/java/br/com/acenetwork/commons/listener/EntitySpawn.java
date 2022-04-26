@@ -19,10 +19,10 @@ public class EntitySpawn implements Listener
 
 		if(entity instanceof Item)
 		{
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Commons.getPlugin(), () ->
-			{
-				entity.remove();
-			}, 2L* 60L * 20L);
+//			Bukkit.getScheduler().scheduleSyncDelayedTask(Commons.getPlugin(), () ->
+//			{
+//				entity.remove();
+//			}, 2L* 60L * 20L);
 		}
 	}
 }

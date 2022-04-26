@@ -17,7 +17,7 @@ public class PlayerDeath implements Listener
 		
 		if(!e.getKeepInventory() && e.getDrops().size() > 0)
 		{
-			p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.dropped-items-will-be-cleaned", 2));
+//			p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.dropped-items-will-be-cleaned", 2));
 		}
 	}
 }

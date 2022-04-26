@@ -59,8 +59,6 @@ public class PlayerJoin implements Listener
 			
 			p.getInventory().setContents(contents);
 			p.teleport((Location) config.get("location"), TeleportCause.PLUGIN);
-			p.setExp(NumberConversions.toFloat(config.get("exp")));
-			p.setLevel(config.getInt("level"));
 			p.setFireTicks(config.getInt("fire-ticks"));
 			p.setFallDistance(NumberConversions.toFloat(config.get("fall-distance")));
 			p.addPotionEffects((List<PotionEffect>) config.getList("potion-effects"));

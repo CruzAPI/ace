@@ -57,14 +57,12 @@ public class PlayerQuit implements Listener
 				equipment.set(Equipment.EquipmentSlot.CHESTPLATE, p.getInventory().getItem(EquipmentSlot.CHEST));
 				equipment.set(Equipment.EquipmentSlot.LEGGINGS, p.getInventory().getItem(EquipmentSlot.LEGS));
 				equipment.set(Equipment.EquipmentSlot.BOOTS, p.getInventory().getItem(EquipmentSlot.FEET));
-//				equipment.set(Equipment.EquipmentSlot.HAND, p.getInventory().getItem(EquipmentSlot.HAND));
 				equipment.set(Equipment.EquipmentSlot.OFF_HAND, p.getInventory().getItem(EquipmentSlot.OFF_HAND));
 				
 				Inventory inventory = npc.getTrait(Inventory.class);
 				
 				inventory.setContents(p.getInventory().getContents());
 					
-//				player.getInventory().setHeldItemSlot(p.getInventory().getHeldItemSlot());
 				player.setExp(p.getExp());
 				player.setLevel(p.getLevel());
 				player.setFireTicks(p.getFireTicks());
@@ -131,8 +129,6 @@ public class PlayerQuit implements Listener
 			
 			config.set("inventory", inventory.getContents());
 			config.set("location", p.getLocation());
-			config.set("exp", p.getExp());
-			config.set("level", p.getLevel());
 			config.set("fire-ticks", p.getFireTicks());
 			config.set("fall-distance", p.getFallDistance());
 			config.set("potion-effects", p.getActivePotionEffects());

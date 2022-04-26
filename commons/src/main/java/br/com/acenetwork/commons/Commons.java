@@ -3,7 +3,12 @@ package br.com.acenetwork.commons;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -15,8 +20,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.event.PlayerModeEvent;
 import br.com.acenetwork.commons.executor.AdminCMD;
+import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.executor.BanCMD;
-import br.com.acenetwork.commons.executor.Broadcast;
+import br.com.acenetwork.commons.executor.BroadcastCMD;
 import br.com.acenetwork.commons.executor.Build;
 import br.com.acenetwork.commons.executor.ChatCMD;
 import br.com.acenetwork.commons.executor.ChatClean;
@@ -43,6 +49,7 @@ import br.com.acenetwork.commons.listener.PlayerDeath;
 import br.com.acenetwork.commons.listener.PlayerJoin;
 import br.com.acenetwork.commons.listener.PlayerLogin;
 import br.com.acenetwork.commons.listener.PlayerQuit;
+import br.com.acenetwork.commons.manager.Broadcast;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 
@@ -50,12 +57,29 @@ public class Commons
 {
 	private static JavaPlugin plugin;
 	private static boolean restarting;
+	public static final boolean TEST = !new File(System.getProperty("user.dir")).getParentFile().getName().equals("acenetwork");
+	
+	public static void registerBroadcast(String key, Object... args)
+	{
+		BroadcastCMD.BROADCASTS.add(new Broadcast(key, args));
+	}
 	
 	public static void init(JavaPlugin plugin)
 	{
 		Commons.plugin = plugin;
-					
-		// Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "commons", new PluginMessage());
+		
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		System.out.println(bundle.getString("test.hello"));
+		if(TEST)
+		{
+			Bukkit.getConsoleSender().sendMessage("§dServer is in test mode!");
+		}
+		else
+		{
+			Bukkit.getConsoleSender().sendMessage("§aServer is in production!");
+		}
+		
+		Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "commons:commons", new PluginMessage());
 		Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "commons:commons");
 		
 		Bukkit.getPluginManager().registerEvents(new EntitySpawn(), plugin);
@@ -67,8 +91,9 @@ public class Commons
 		Bukkit.getPluginManager().registerEvents(new PlayerQuit(), plugin);
 
 		registerCommand(new AdminCMD(), "admin");
+		registerCommand(new Balance(), "balance", "bal", "points", "coins");
 		registerCommand(new BanCMD(), "ban");
-		registerCommand(new Broadcast(), "broadcast", "bc", "shout");
+		registerCommand(new BroadcastCMD(), "broadcast", "bc", "shout");
 		registerCommand(new Build(), "build");
 		registerCommand(new ChatClean(), "chatclean", "cc");
 		registerCommand(new ChatCMD(), "chat");
@@ -89,6 +114,14 @@ public class Commons
 		registerCommand(new Tp(), "teleport", "tp");
 		registerCommand(new Unmute(), "unmute");
 		registerCommand(new WatchCMD(), "watch");
+		
+		Commons.registerBroadcast("commons.broadcast1");
+		Commons.registerBroadcast("commons.broadcast2");
+		Commons.registerBroadcast("commons.broadcast3");
+		Commons.registerBroadcast("commons.broadcast4");
+		Commons.registerBroadcast("commons.broadcast5");
+		Commons.registerBroadcast("commons.broadcast6");
+		BroadcastCMD.suffle();
 		
 		for(Player all : Bukkit.getOnlinePlayers())
 		{
@@ -149,6 +182,11 @@ public class Commons
 	
 	public static File getDataFolder()
 	{
+		if(TEST)
+		{
+			return new File(System.getProperty("user.home") +  "/.aceconfigtest");
+		}
+		
 		return new File(System.getProperty("user.home") +  "/.aceconfig");
 	}
 

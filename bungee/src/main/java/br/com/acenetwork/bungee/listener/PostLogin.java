@@ -38,6 +38,8 @@ public class PostLogin implements Listener
 			namesConfig.set("uuid", p.getUniqueId().toString());
 			provider.save(namesConfig, namesFile);
 
+			playerFile.getParentFile().mkdirs();
+			
 			boolean newFile = playerFile.createNewFile();
 			Configuration playerConfig = provider.load(playerFile);
 

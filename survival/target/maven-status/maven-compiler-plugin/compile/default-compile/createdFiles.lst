@@ -1,5 +1,5 @@
+br\com\acenetwork\survival\executor\Sell$SellType.class
 br\com\acenetwork\survival\listener\PlayerQuit.class
-br\com\acenetwork\survival\executor\Balance.class
 br\com\acenetwork\survival\listener\BlockBreak$1.class
 br\com\acenetwork\survival\listener\PlayerRespawn.class
 br\com\acenetwork\survival\manager\Config$Type.class
@@ -12,6 +12,7 @@ br\com\acenetwork\survival\player\SurvivalPlayer.class
 br\com\acenetwork\survival\executor\Track$1.class
 br\com\acenetwork\survival\listener\EntityTarget.class
 br\com\acenetwork\survival\manager\Config.class
+br\com\acenetwork\survival\Main$1.class
 br\com\acenetwork\survival\player\craft\CraftSurvivalPlayer.class
 br\com\acenetwork\survival\manager\GlobalScoreboard.class
 br\com\acenetwork\survival\executor\Track.class

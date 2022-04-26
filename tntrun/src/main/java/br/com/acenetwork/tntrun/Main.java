@@ -19,6 +19,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.craftbukkit.libs.org.apache.commons.io.FileUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,6 +30,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.CommonsUtil;
+import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.executor.Stop;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
@@ -37,12 +39,15 @@ import br.com.acenetwork.tntrun.constant.State;
 import br.com.acenetwork.tntrun.event.PlayerCountChangeEvent;
 import br.com.acenetwork.tntrun.event.StateChangeEvent;
 import br.com.acenetwork.tntrun.event.TimerChangeEvent;
+import br.com.acenetwork.tntrun.executor.Start;
 import br.com.acenetwork.tntrun.executor.Timer;
 import br.com.acenetwork.tntrun.listener.GeneralEvents;
 import br.com.acenetwork.tntrun.listener.PlayerJoin;
 import br.com.acenetwork.tntrun.listener.PlayerLogin;
 import br.com.acenetwork.tntrun.listener.PlayerMode;
 import br.com.acenetwork.tntrun.listener.TimerChange;
+import br.com.acenetwork.tntrun.manager.Config;
+import br.com.acenetwork.tntrun.manager.Config.Type;
 import br.com.acenetwork.tntrun.player.Competitor;
 
 public class Main extends JavaPlugin implements Listener
@@ -51,13 +56,9 @@ public class Main extends JavaPlugin implements Listener
 	private static final List<Competitor> ELIMINATED = new ArrayList<>();
 	
 	private static Main instance;
-	private static int maxPlayers;
-	private static int minPlayers;
-	private static Location spawnLocation;
 	private static boolean announceWinner;
 	
-	private static final int MAX_TIMER = 120;
-	private static int timer = MAX_TIMER;
+	private static int timer;
 	private static State state = State.STARTING;
 	
 	private static int taskA;
@@ -78,7 +79,7 @@ public class Main extends JavaPlugin implements Listener
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void deleteDir(File file)
 	{
 		if(file.isDirectory())
@@ -104,18 +105,13 @@ public class Main extends JavaPlugin implements Listener
 		Commons.init(this);
 		
 		Commons.registerCommand(new Timer(), "timer");
+		Commons.registerCommand(new Start(), "start");
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getPluginManager().registerEvents(new TimerChange(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerJoin(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerLogin(), this);
 		Bukkit.getPluginManager().registerEvents(new GeneralEvents(), this);
-		
-		
-		
-		minPlayers = 4;
-		maxPlayers = minPlayers * 5;
-		spawnLocation = new Location(Bukkit.getWorld("world"), 0.5D, 71.5D, 0.5D, -90.0F, 0.0F);
 		
 		World w = Bukkit.getWorld("world");
 		
@@ -125,6 +121,8 @@ public class Main extends JavaPlugin implements Listener
 		w.setTime(18000L);
 		w.setAutoSave(false);
 		w.setDifficulty(Difficulty.PEACEFUL);
+		
+		timer = getMaxTimer();
 	}
 	
 	public static void startTaskB()
@@ -144,15 +142,15 @@ public class Main extends JavaPlugin implements Listener
 				switch(state)
 				{
 				case STARTING:
-					if(players < minPlayers)
+					if(players < getMinPlayers())
 					{
-						Main.setTime(MAX_TIMER);
+						Main.setTime(getMaxTimer());
 					}
 					else
 					{
 						Main.setTime(timer - 1);
 						
-						if(players > maxPlayers / 1.2 && timer > 20)
+						if(players > getMaxPlayers() / 1.2 && timer > 20)
 						{
 							Main.setTime(20);
 						}
@@ -164,7 +162,7 @@ public class Main extends JavaPlugin implements Listener
 							for(Competitor cp : CraftCommonPlayer.getAll(Competitor.class))
 							{
 								Player p = cp.getPlayer();
-								p.teleport(spawnLocation);
+								p.teleport(getSpawnLocation());
 								p.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 0));
 							}
 						}
@@ -292,7 +290,7 @@ public class Main extends JavaPlugin implements Listener
 		}
 		
 		Player p = cp.getPlayer();
-		p.teleport(spawnLocation);
+		p.teleport(getSpawnLocation());
 		
 		for(CommonPlayer cpall : CraftCommonPlayer.SET)
 		{
@@ -352,6 +350,56 @@ public class Main extends JavaPlugin implements Listener
 			all.sendMessage("§a§l§m ]                                                   [ ");
 		}
 		
+		if(timer > 120)
+		{
+			File file = Config.getFile(Type.TNTRUN_CONFIG, true);
+			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+			
+			for(int i = 0; i < 3 && i < ELIMINATED.size(); i++)
+			{
+				Competitor c = ELIMINATED.get(i);
+				
+				Balance.Type balanceType = Balance.Type.MINIGAME;
+				double oldBalance = c.getBalance(balanceType);
+				double maxBalance = c.getMaxBalance(balanceType);
+				
+				if(oldBalance >= maxBalance)
+				{
+					c.sendMessage("minigame.limit-reached");
+					continue;
+				}
+				
+				final double prize;
+				
+				switch(i)
+				{
+				case 0:
+					prize = config.getDouble("first-prize");
+					break;
+				case 1:
+					prize = config.getDouble("second-prize");
+					break;
+				default:
+					prize = config.getDouble("third-prize");
+					break;
+				}
+				
+				double newBalance = Math.min(oldBalance + prize, maxBalance);
+				double gain = newBalance - oldBalance;
+				
+				try
+				{
+					c.setBalance(balanceType, newBalance);
+					c.sendMessage("minigame.you-won-shards", gain);
+				}
+				catch(IOException e)
+				{
+					e.printStackTrace();
+					c.sendMessage("commons.unexpected-error");
+				}
+			}
+		}
+		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInstance(), new Runnable()
 		{
 			@Override
@@ -379,17 +427,15 @@ public class Main extends JavaPlugin implements Listener
 
 	public static int getMaxPlayers()
 	{
-		return maxPlayers;
+		File file = Config.getFile(Type.TNTRUN_CONFIG, true);
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		
+		return config.getInt("max-players");
 	}
 
 	public static State getState()
 	{
 		return state;
-	}
-
-	public static Location getSpawnLocation()
-	{
-		return spawnLocation;
 	}
 	
 	public static void setTime(int seconds)
@@ -413,9 +459,9 @@ public class Main extends JavaPlugin implements Listener
 	{
 		if(state == State.STARTING)
 		{
-			if(taskB != 0 && e.getCount() < minPlayers)
+			if(taskB != 0 && e.getCount() < getMinPlayers())
 			{
-				Main.setTime(MAX_TIMER);
+				Main.setTime(getMaxTimer());
 				Bukkit.getScheduler().cancelTask(taskB);
 				taskB = 0;
 				
@@ -427,16 +473,40 @@ public class Main extends JavaPlugin implements Listener
 					p.playSound(p.getLocation(), Sound.BLOCK_NOTE_BLOCK_BASS, 1.0F, 1.0F);
 				}
 			}
-			else if(taskB == 0 && e.getCount() >= minPlayers)
+			else if(taskB == 0 && e.getCount() >= getMinPlayers())
 			{
 				startTaskB();
 			}
 		}
 	}
-
+	
+	public static int getTaskB()
+	{
+		return taskB;
+	}
+	
+	private static int getMaxTimer()
+	{
+		File file = Config.getFile(Type.TNTRUN_CONFIG, true);
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		
+		return config.getInt("max-timer");
+	}
+	
+	public static Location getSpawnLocation()
+	{
+		File file = Config.getFile(Type.TNTRUN_CONFIG, true);
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		
+		return (Location) config.get("spawn-location");
+	}
+	
 	public static int getMinPlayers()
 	{
-		return minPlayers;
+		File file = Config.getFile(Type.TNTRUN_CONFIG, true);
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		
+		return config.getInt("min-players");
 	}
 
 	public static boolean hasAnnouncedWinner()

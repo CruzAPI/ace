@@ -1,7 +1,9 @@
 package br.com.acenetwork.survival.listener;
 
+import java.util.HashSet;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -22,7 +24,7 @@ public class PlayerLogin implements Listener
 		
 		if(e.getResult() == Result.ALLOWED)
 		{
-			for(Entry<Integer, String> entry : PlayerQuit.UUID_MAP.entrySet())
+			for(Entry<Integer, String> entry : new HashSet<>(PlayerQuit.UUID_MAP.entrySet()))
 			{
 				if(uuid.equals(entry.getValue()))
 				{

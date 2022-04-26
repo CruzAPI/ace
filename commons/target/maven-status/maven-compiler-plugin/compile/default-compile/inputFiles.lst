@@ -1,3 +1,4 @@
+C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\manager\Broadcast.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\event\BungeePlayerCountEvent.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\manager\Message.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\CommonsHotbar.java
@@ -26,6 +27,7 @@ C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\common
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\executor\Reply.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\executor\Invis.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\CommonsUtil.java
+C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\executor\BroadcastCMD.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\event\PlayerModeChangeEvent.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\inventory\Banishment.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\player\CommonPlayer.java
@@ -38,7 +40,7 @@ C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\common
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\executor\TagCMD.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\executor\Tell.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\inventory\GUI.java
-C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\executor\Broadcast.java
+C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\executor\Balance.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\listener\PlayerLogin.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\executor\Ping.java
 C:\Users\CruzAPI\workspace1\super\commons\src\main\java\br\com\acenetwork\commons\listener\InventoryClose.java

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import br.com.acenetwork.commons.constants.Language;
+import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
@@ -102,19 +103,14 @@ public class Price implements TabExecutor
 
 		if(priceConfig.contains(key))
 		{
-			int index = playerConfig.getInt(key);
-			List<Float> priceList = priceConfig.getFloatList(key);
-			String priceArray = "§a[";
-
-			for(int i = 0; i < priceList.size(); i++)
-			{
-				 priceArray += (index == i ? "§e" : "§a") + priceList.get(i) + "§a, ";
-			}
+			int amountSold = playerConfig.getInt(key);
+			double aceShards = priceConfig.getDouble(key + ".ace-shards");
+			int marketCap = priceConfig.getInt(key + ".market-cap");
+			int limit = priceConfig.getInt(key + ".limit");
 			
-			priceArray = priceArray.substring(0, priceArray.length() - 2) + "]";
+			String price = Balance.getDecimalFormat().format(aceShards / marketCap);
 			
-
-			p.sendMessage(String.format("§e%s§a: %s", key, priceArray));
+			p.sendMessage(String.format("§a%s: §e%s§a (%s/%s)", key, price, amountSold, limit));
 		}
 		else
 		{

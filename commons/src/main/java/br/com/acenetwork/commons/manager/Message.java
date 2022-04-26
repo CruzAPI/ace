@@ -8,7 +8,23 @@ import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 
 public class Message
 {
+	private final String locale;
+	private final String key;
+	private final Object[] args;
+	
+	public Message(String locale, String key, Object... args)
+	{
+		this.locale = locale;
+		this.key = key;
+		this.args = args;
+	}
+	
 	public static String getMessage(String locale, String key, Object... args)
+	{
+		return getMessage(locale, "", key, args);
+	}
+	
+	public static String getMessage(String locale, String path, String key, Object... args)
 	{
 		try
 		{
@@ -21,7 +37,7 @@ public class Message
 					break;
 			}
 			
-			File file = CommonsConfig.getFile(Type.MESSAGE, false, locale);
+			File file = CommonsConfig.getFile(Type.MESSAGE, true, path, locale);
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 			
 			String value = config.getString(key.replace('.', ':'));
@@ -42,5 +58,10 @@ public class Message
 		{
 			return key;
 		}
+	}
+	
+	public String getString()
+	{
+		return getMessage(locale, key, args);
 	}
 }

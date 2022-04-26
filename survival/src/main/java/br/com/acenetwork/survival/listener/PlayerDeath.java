@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
@@ -48,17 +49,11 @@ public class PlayerDeath implements Listener
 			double killerBalance = killerConfig.getDouble("balance");
 			double killerMaxBalance = killerConfig.getDouble("max-balance");
 			
-			double balanceStole = playerBalance * 0.08D;
-			double maxBalanceStole = playerMaxBalance * 0.08D;
+			double balanceStole = playerBalance * 0.2D;
+			double maxBalanceStole = playerMaxBalance * 0.2D;
 
-			double balanceLost = playerBalance * 0.02D;
-			double maxBalanceLost = playerMaxBalance * 0.02D;
-
-			double totalMaxBalanceLost = maxBalanceStole + maxBalanceLost;
-			double totalBalanceLost = balanceStole + balanceLost;
-
-			playerMaxBalance -= totalMaxBalanceLost;
-			playerBalance -= totalBalanceLost;
+			playerBalance -= balanceStole;
+			playerMaxBalance -= maxBalanceStole;
 
 			killerMaxBalance += maxBalanceStole;
 			killerBalance += balanceStole;
@@ -74,21 +69,18 @@ public class PlayerDeath implements Listener
 				playerConfig.save(playerFile);
 				killerConfig.save(killerFile);
 
-				// GlobalScoreboard.MAP.put(p, playerMaxBalance);
-				// GlobalScoreboard.MAP.put(killer, killerMaxBalance);
-				// GlobalScoreboard.update();
-
 				DecimalFormat df = new DecimalFormat("0.##");
 
-				p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.ace-lost", 
-					df.format(totalBalanceLost), 
-					df.format(totalMaxBalanceLost)));
+				p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.other-stole", 
+					df.format(balanceStole),
+					df.format(maxBalanceStole),
+					killer.getName()));
 				
 				CommonPlayer commonKiller = CraftCommonPlayer.get(killer);
 				
 				if(commonKiller != null)
 				{					
-					commonKiller.sendMessage("event.playerdeath.ace-stolen", 
+					commonKiller.sendMessage("event.playerdeath.you-stole", 
 						df.format(balanceStole), df.format(maxBalanceStole), p.getName());
 				}
 			}
@@ -129,6 +121,45 @@ public class PlayerDeath implements Listener
 		{			
 			cp.setCombat(false);
 			cp.setPlayerCombat(false);
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGH)
+	public void b(PlayerDeathEvent e)
+	{
+		Player p = e.getEntity();
+		
+		String playerUUID = CommonsUtil.getUUIDByName(p.getName());
+		
+		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, playerUUID);
+		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		
+		double playerBalance = playerConfig.getDouble("balance");
+		double playerMaxBalance = playerConfig.getDouble("max-balance");
+
+		double balanceLost = playerBalance * 0.01D;
+		double maxBalanceLost = playerMaxBalance * 0.01D;
+
+		playerBalance -= balanceLost;
+		playerMaxBalance -= maxBalanceLost;
+		
+		playerConfig.set("max-balance", playerMaxBalance);
+		playerConfig.set("balance", Math.min(playerMaxBalance, playerBalance));
+
+		try
+		{
+			playerConfig.save(playerFile);
+			
+			DecimalFormat df = new DecimalFormat("0.##");
+
+			p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.you-lost", 
+				df.format(balanceLost),
+				df.format(maxBalanceLost)));
+			
+		}
+		catch(IOException ex)
+		{
+			ex.printStackTrace();
 		}
 	}
 }

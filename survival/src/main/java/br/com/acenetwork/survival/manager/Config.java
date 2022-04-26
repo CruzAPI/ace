@@ -11,7 +11,7 @@ public class Config
 {
 	public enum Type
 	{
-		COMBATLOG, PRICE;
+		BOT, COMBATLOG, PRICE;
 	}
 
 	public static File getFile(Type type, boolean createNewFile, Object... args)
@@ -21,6 +21,9 @@ public class Config
 
 		switch(type)
 		{
+			case BOT:
+				file = new File(Main.getInstance().getDataFolder(), "bot.yml");
+				break;
 			case COMBATLOG:
 				file = new File(Main.getInstance().getDataFolder() + "/combatlog", args[0] + ".yml");
 				break;
@@ -42,6 +45,18 @@ public class Config
 				if(config == null)
 				{
 					config = YamlConfiguration.loadConfiguration(file);
+				}
+				
+				switch(type)
+				{
+				case BOT:
+					config.set("min-delay", 3L * 60L * 20L);
+					config.set("max-delay", 10L * 60L * 20L);
+					config.set("min-percent", 10);
+					config.set("max-percent", 50);
+					break;
+				default:
+					break;
 				}
 				
 				config.save(file);

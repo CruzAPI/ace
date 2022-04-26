@@ -4,16 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import br.com.acenetwork.commons.constants.Language;
+import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import br.com.acenetwork.survival.manager.AmountPrice;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -24,6 +30,11 @@ import org.bukkit.inventory.ItemStack;
 
 public class Sell implements TabExecutor
 {
+	public enum SellType
+	{
+		HAND, ALL;
+	}
+	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
@@ -44,81 +55,7 @@ public class Sell implements TabExecutor
 		
 		if(args.length == 0)
 		{
-			final ItemStack item = p.getInventory().getItemInMainHand();
-			final Material type = item.getType();
-			String key = type.toString();
-
-			final int amount = item.getAmount();
-			
-			if(type == Material.AIR)
-			{
-				cp.sendMessage("cmd.sell.need-holding-item");
-				return true;
-			}
-
-			File priceFile = Config.getFile(Type.PRICE, false);
-			YamlConfiguration priceConfig = YamlConfiguration.loadConfiguration(priceFile);
-
-			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, cp.getUUID());
-			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-			
-			double balance = playerConfig.getDouble("balance");
-			double maxBalance = playerConfig.getDouble("max-balance");
-
-			if(balance >= maxBalance && !p.isOp())
-			{
-				cp.sendMessage("cmd.sell.limit-reached");
-				return true;
-			}
-
-			int index = playerConfig.getInt(key);
-
-			try
-			{
-				float price = priceConfig.getFloatList(key).get(index);
-				
-				double limit = maxBalance - balance;
-				int amountToSell;
-				
-				double total;
-
-				if(p.isOp())
-				{
-					amountToSell = amount;
-					total = price * amountToSell;
-				}
-				else
-				{
-					amountToSell = (int) (limit / price) + (limit % price != 0 ? 1 : 0);
-					amountToSell = amountToSell >= amount ? amount : amountToSell;
-					total = price * amountToSell;;
-				}
-
-				playerConfig.set("balance", Math.min(maxBalance, balance + total));
-				playerConfig.set(key, index + 1);
-				playerConfig.save(playerFile);
-				
-				DecimalFormat df = new DecimalFormat("0.##");
-
-				p.getInventory().getItemInMainHand().setAmount(amount - amountToSell);
-				cp.sendMessage("cmd.sell.item-sold", amountToSell, key, df.format(total));
-			}
-			catch(IOException e)
-			{
-				e.printStackTrace();
-				cp.sendMessage("commons.unexpected-error");
-			}
-			catch(IndexOutOfBoundsException e)
-			{
-				if(index == 0)
-				{
-					cp.sendMessage("cmd.sell.item-not-for-sale");
-				}
-				else
-				{
-					cp.sendMessage("cmd.sell.cannot-sell-anymore");
-				}
-			}
+			sell(cp, SellType.HAND);
 		}
 		else
 		{
@@ -126,5 +63,157 @@ public class Sell implements TabExecutor
 		}
 
 		return false;
+	}
+	
+	public static void sell(CommonPlayer cp, SellType sellType)
+	{
+		Player p = cp.getPlayer();
+		
+		File priceFile = Config.getFile(Type.PRICE, false);
+		YamlConfiguration priceConfig = YamlConfiguration.loadConfiguration(priceFile);
+
+		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, cp.getUUID());
+		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		
+		double balance = playerConfig.getDouble("balance");
+		double maxBalance = playerConfig.getDouble("max-balance");
+		
+		Map<Material, AmountPrice> map = new HashMap<>();
+		
+		List<ItemStack> itemsToSell = new ArrayList<>();
+		
+		if(sellType == SellType.HAND)
+		{
+			itemsToSell.add(p.getInventory().getItemInMainHand());
+		}
+		else
+		{
+			for(ItemStack content : p.getInventory())
+			{
+				itemsToSell.add(content);
+			}
+		}
+		
+		double total = 0.0D;
+		
+		for(int i = 0; i < itemsToSell.size(); i++)
+		{
+			ItemStack item = itemsToSell.get(i);
+			
+			if(item == null || item.getType() == Material.AIR)
+			{
+				if(sellType == SellType.HAND)
+				{
+					cp.sendMessage("cmd.sell.need-holding-item");
+					return;
+				}
+				
+				continue;
+			}
+			
+			if(balance >= maxBalance)
+			{
+				if(i == 0)
+				{
+					cp.sendMessage("cmd.sell.limit-reached");
+					return;
+				}
+				
+				break;
+			}
+			
+			final Material type = item.getType();
+			
+			if(!priceConfig.contains(type.toString()))
+			{
+				if(sellType == SellType.HAND)
+				{
+					cp.sendMessage("cmd.sell.item-not-for-sale");
+					return;
+				}
+				
+				continue;
+			}
+			
+			int amountSold = playerConfig.getInt(type.toString());
+			int limit = priceConfig.getInt(type + ".limit");
+			
+			if(amountSold >= limit)
+			{
+				if(sellType == SellType.HAND)
+				{
+					cp.sendMessage("cmd.sell.cannot-sell-anymore");
+					return;
+				}
+				
+				continue;
+			}
+			
+			int marketCap = priceConfig.getInt(type + ".market-cap");
+			double aceShards = priceConfig.getDouble(type + ".ace-shards");
+			
+			final double a = aceShards;
+			final double b = marketCap;
+			final double c = maxBalance - balance;
+			
+			final int x = c >= a ? Integer.MAX_VALUE : (int) Math.ceil(((b * c) / (a - c)));
+			final int amountToSell = Math.max(0, Math.min(Math.min(item.getAmount(), limit - amountSold), x));
+			
+			item.setAmount(item.getAmount() - amountToSell);
+			playerConfig.set(type.toString(), amountSold + amountToSell);
+			
+			double oldPrice = aceShards / marketCap;
+			double newPrice = (aceShards - oldPrice * amountToSell) / (marketCap + amountToSell);
+			
+			final double finalPrice = (oldPrice + newPrice) / 2.0D;
+			
+			double shards = finalPrice * amountToSell;
+			
+			aceShards -= shards;
+			marketCap += amountToSell;
+			
+			priceConfig.set(type + ".market-cap", marketCap);
+			priceConfig.set(type + ".ace-shards", aceShards);
+			playerConfig.set("balance", Math.min(balance += shards, maxBalance));
+			
+			total += shards;
+			
+			AmountPrice ap = map.containsKey(type) ? map.get(type) : new AmountPrice();
+			
+			ap.amount += amountToSell;
+			ap.price += shards;
+			
+			map.put(type, ap);
+		}
+		
+		try
+		{
+			playerConfig.save(playerFile);
+			priceConfig.save(priceFile);
+			
+			if(map.isEmpty())
+			{
+				cp.sendMessage("cmd.sellall.no-items-to-sell");
+			}
+			else
+			{
+				for(Entry<Material, AmountPrice> entry : map.entrySet())
+				{
+					Material type = entry.getKey();
+					AmountPrice ap = entry.getValue();
+					cp.sendMessage("cmd.sell.item-sold", ap.amount, type, Balance.getDecimalFormat().format(ap.price));
+				}
+				
+				if(sellType == SellType.ALL)
+				{
+					cp.sendMessage("cmd.sellall.totalizing", Balance.getDecimalFormat().format(total));
+				}
+			}
+		}
+		catch(IOException ex)
+		{
+			ex.printStackTrace();
+			cp.sendMessage("commons.unexpected-error");
+		}
 	}
 }

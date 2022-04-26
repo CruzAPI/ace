@@ -1,6 +1,7 @@
 package br.com.acenetwork.commons.player.craft;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -27,6 +28,7 @@ import br.com.acenetwork.commons.CommonsScoreboard;
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.event.PlayerModeChangeEvent;
+import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.inventory.GUI;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
@@ -88,7 +90,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 		HandlerList.unregisterAll(this);
 		return SET.remove(this);
 	}
-
+	
 	@Override
 	public void setSpecs(boolean value)
 	{
@@ -215,7 +217,13 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	{
 		combat = value ? System.currentTimeMillis() : 0L;
 	}
-
+	
+	@Override
+	public void sendMessage(String path, String key, Object... args)
+	{
+		p.sendMessage(Message.getMessage(p.getLocale(), path, key, args));
+	}
+	
 	@Override
 	public void sendMessage(String key, Object... args)
 	{
@@ -475,6 +483,44 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	public GUI getGUI()
 	{
 		return gui;
+	}
+	
+	@Override
+	public double getBalance(Balance.Type balanceType)
+	{
+		File file = CommonsConfig.getFile(balanceType.getFileType(), true, getUUID());
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		
+		return config.getDouble("balance");
+	}
+	
+	@Override
+	public double getMaxBalance(Balance.Type balanceType)
+	{
+		File file = CommonsConfig.getFile(balanceType.getFileType(), true, getUUID());
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		
+		return config.getDouble("max-balance");
+	}
+	
+	@Override
+	public void setBalance(Balance.Type balanceType, double balance) throws IOException
+	{
+		File file = CommonsConfig.getFile(balanceType.getFileType(), true, getUUID());
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		
+		config.set("balance", balance);
+		config.save(file);
+	}
+	
+	@Override
+	public void setMaxBalance(Balance.Type balanceType, double balance) throws IOException
+	{
+		File file = CommonsConfig.getFile(balanceType.getFileType(), true, getUUID());
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		
+		config.set("max-balance", balance);
+		config.save(file);
 	}
 	
 	@Override

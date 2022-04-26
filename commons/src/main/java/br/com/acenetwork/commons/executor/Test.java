@@ -1,5 +1,6 @@
 package br.com.acenetwork.commons.executor;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -22,7 +23,8 @@ public class Test implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command arg1, String arg2, String[] args)
 	{
-//		Player p = (Player) sender;
+		Player p = (Player) sender;
+		p.sendMessage(p.isFlying() + " " + p.getAllowFlight() + " " + p.getVelocity());
 //		
 //		Chunk chunk = new Location(p.getWorld(), Integer.valueOf(args[0]), 70, Integer.valueOf(args[1])).getChunk();
 //		chunk.load(true);
