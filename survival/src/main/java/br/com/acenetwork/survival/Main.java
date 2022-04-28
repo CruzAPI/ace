@@ -21,6 +21,7 @@ import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.manager.Broadcast;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.survival.executor.Price;
+import br.com.acenetwork.survival.executor.Reset;
 import br.com.acenetwork.survival.executor.Sell;
 import br.com.acenetwork.survival.executor.Sellall;
 import br.com.acenetwork.survival.executor.Track;
@@ -85,6 +86,7 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Sell(), "sell");
 		Commons.registerCommand(new Sellall(), "sellall");
 		Commons.registerCommand(new Track(), "track");		
+		Commons.registerCommand(new Reset(), "reset");		
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
 		{

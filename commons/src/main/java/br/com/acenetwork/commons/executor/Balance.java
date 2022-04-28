@@ -16,27 +16,11 @@ import org.bukkit.entity.Player;
 
 import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.CommonsConfig;
+import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.manager.Message;
 
 public class Balance implements TabExecutor
 {
-	public enum Type
-	{
-		RAID(CommonsConfig.Type.BALANCE_RAID_PLAYER), MINIGAME(CommonsConfig.Type.BALANCE_MINIGAME_PLAYER);
-		
-		private final CommonsConfig.Type fileType;
-		
-		Type(CommonsConfig.Type fileType)
-		{
-			this.fileType = fileType;
-		}
-		
-		public CommonsConfig.Type getFileType()
-		{
-			return fileType;
-		}
-	}
-	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
@@ -115,39 +99,30 @@ public class Balance implements TabExecutor
 			return true;
 		}
 		
+		File file = CommonsConfig.getFile(Type.BALANCE_RAID_PLAYER, true, targetUUID);
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
-		for(Type type : Type.values())
+		double balance = config.getDouble("balance");
+		double maxBalance = config.getDouble("max-balance");
+		
+		String formatBalance = df.format(balance);
+		String formatMaxBalance = df.format(maxBalance);
+		
+		String balanceType = file.getParentFile().getName();
+		
+		if(targetUUID.equals(uuid))
 		{
-			if(type == Type.MINIGAME)
-			{
-				continue;
-			}
+			sender.sendMessage(Message.getMessage(locale, "cmd.balance.self", balanceType, formatBalance + "/" + formatMaxBalance));
+		}
+		else
+		{
+			File commonsPlayerFile = CommonsConfig.getFile(CommonsConfig.Type.PLAYER, false, targetUUID);
+			YamlConfiguration commonsPlayerConfig = YamlConfiguration.loadConfiguration(commonsPlayerFile);
 			
-			File file = CommonsConfig.getFile(type.getFileType(), true, targetUUID);
-			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+			String username = commonsPlayerConfig.getString("name");
 			
-			double balance = config.getDouble("balance");
-			double maxBalance = config.getDouble("max-balance");
-			
-			String formatBalance = df.format(balance);
-			String formatMaxBalance = df.format(maxBalance);
-			
-			String balanceType = file.getParentFile().getName();
-			
-			if(targetUUID.equals(uuid))
-			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.balance.self", balanceType, formatBalance + "/" + formatMaxBalance));
-			}
-			else
-			{
-				File commonsPlayerFile = CommonsConfig.getFile(CommonsConfig.Type.PLAYER, false, targetUUID);
-				YamlConfiguration commonsPlayerConfig = YamlConfiguration.loadConfiguration(commonsPlayerFile);
-				
-				String username = commonsPlayerConfig.getString("name");
-				
-				sender.sendMessage(Message.getMessage(locale, "cmd.balance.other", balanceType, username, formatBalance + "/" + formatMaxBalance));
-			}
-		}	
+			sender.sendMessage(Message.getMessage(locale, "cmd.balance.other", balanceType, username, formatBalance + "/" + formatMaxBalance));
+		}
 		
 		return false;
 	}

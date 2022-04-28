@@ -1,5 +1,6 @@
 br\com\acenetwork\survival\executor\Sell$SellType.class
 br\com\acenetwork\survival\listener\PlayerQuit.class
+br\com\acenetwork\survival\executor\Reset.class
 br\com\acenetwork\survival\listener\BlockBreak$1.class
 br\com\acenetwork\survival\listener\PlayerRespawn.class
 br\com\acenetwork\survival\manager\Config$Type.class

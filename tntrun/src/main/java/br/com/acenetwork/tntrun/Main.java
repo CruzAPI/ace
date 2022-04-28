@@ -358,44 +358,44 @@ public class Main extends JavaPlugin implements Listener
 			{
 				Competitor c = ELIMINATED.get(i);
 				
-				Balance.Type balanceType = Balance.Type.MINIGAME;
-				double oldBalance = c.getBalance(balanceType);
-				double maxBalance = c.getMaxBalance(balanceType);
-				
-				if(oldBalance >= maxBalance)
-				{
-					c.sendMessage("minigame.limit-reached");
-					continue;
-				}
-				
-				final double prize;
-				
-				switch(i)
-				{
-				case 0:
-					prize = config.getDouble("first-prize");
-					break;
-				case 1:
-					prize = config.getDouble("second-prize");
-					break;
-				default:
-					prize = config.getDouble("third-prize");
-					break;
-				}
-				
-				double newBalance = Math.min(oldBalance + prize, maxBalance);
-				double gain = newBalance - oldBalance;
-				
-				try
-				{
-					c.setBalance(balanceType, newBalance);
-					c.sendMessage("minigame.you-won-shards", gain);
-				}
-				catch(IOException e)
-				{
-					e.printStackTrace();
-					c.sendMessage("commons.unexpected-error");
-				}
+//				Balance.Type balanceType = Balance.Type.MINIGAME;
+//				double oldBalance = c.getBalance(balanceType);
+//				double maxBalance = c.getMaxBalance(balanceType);
+//				
+//				if(oldBalance >= maxBalance)
+//				{
+//					c.sendMessage("minigame.limit-reached");
+//					continue;
+//				}
+//				
+//				final double prize;
+//				
+//				switch(i)
+//				{
+//				case 0:
+//					prize = config.getDouble("first-prize");
+//					break;
+//				case 1:
+//					prize = config.getDouble("second-prize");
+//					break;
+//				default:
+//					prize = config.getDouble("third-prize");
+//					break;
+//				}
+//				
+//				double newBalance = Math.min(oldBalance + prize, maxBalance);
+//				double gain = newBalance - oldBalance;
+//				
+//				try
+//				{
+//					c.setBalance(balanceType, newBalance);
+//					c.sendMessage("minigame.you-won-shards", gain);
+//				}
+//				catch(IOException e)
+//				{
+//					e.printStackTrace();
+//					c.sendMessage("commons.unexpected-error");
+//				}
 			}
 		}
 		

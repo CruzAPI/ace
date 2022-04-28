@@ -459,44 +459,6 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	}
 	
 	@Override
-	public double getBalance(Balance.Type balanceType)
-	{
-		File file = CommonsConfig.getFile(balanceType.getFileType(), true, p.getUniqueId());
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-		
-		return config.getDouble("balance");
-	}
-	
-	@Override
-	public double getMaxBalance(Balance.Type balanceType)
-	{
-		File file = CommonsConfig.getFile(balanceType.getFileType(), true, p.getUniqueId());
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-		
-		return config.getDouble("max-balance");
-	}
-	
-	@Override
-	public void setBalance(Balance.Type balanceType, double balance) throws IOException
-	{
-		File file = CommonsConfig.getFile(balanceType.getFileType(), true, p.getUniqueId());
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-		
-		config.set("balance", balance);
-		config.save(file);
-	}
-	
-	@Override
-	public void setMaxBalance(Balance.Type balanceType, double balance) throws IOException
-	{
-		File file = CommonsConfig.getFile(balanceType.getFileType(), true, p.getUniqueId());
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-		
-		config.set("max-balance", balance);
-		config.save(file);
-	}
-	
-	@Override
 	public String getClan()
 	{
 		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, p.getUniqueId());

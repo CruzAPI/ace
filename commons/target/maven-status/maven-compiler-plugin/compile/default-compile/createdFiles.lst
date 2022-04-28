@@ -19,7 +19,6 @@ br\com\acenetwork\commons\event\PlayerModeEvent.class
 br\com\acenetwork\commons\player\CommonAdmin.class
 br\com\acenetwork\commons\executor\Reply.class
 br\com\acenetwork\commons\manager\CommonsConfig$Type.class
-br\com\acenetwork\commons\executor\Balance$Type.class
 br\com\acenetwork\commons\executor\BanCMD.class
 br\com\acenetwork\commons\inventory\Timer$Type.class
 br\com\acenetwork\commons\executor\Tell.class
@@ -45,6 +44,7 @@ br\com\acenetwork\commons\listener\PlayerChat.class
 br\com\acenetwork\commons\constants\Language.class
 br\com\acenetwork\commons\executor\ChatCMD.class
 br\com\acenetwork\commons\inventory\Mute.class
+br\com\acenetwork\commons\manager\Database.class
 br\com\acenetwork\commons\executor\Balance.class
 br\com\acenetwork\commons\executor\Invis.class
 br\com\acenetwork\commons\CommonsUtil.class
