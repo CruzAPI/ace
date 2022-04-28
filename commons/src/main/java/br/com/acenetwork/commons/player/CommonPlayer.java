@@ -1,6 +1,7 @@
 package br.com.acenetwork.commons.player;
 
 import java.io.IOException;
+import java.util.Locale;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -45,4 +46,5 @@ public interface CommonPlayer extends Listener
 	Player getLastPlayerDamage();
 	Player getPlayer();
 	void reset();
+	Locale getLocale();
 }

@@ -1,6 +1,7 @@
 package br.com.acenetwork.commons;
 
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -132,5 +133,19 @@ public class CommonsUtil
 	public static boolean groupSyntaxIsValid(String group)
 	{
 		return group.matches("[a-z]{0,16}");
+	}
+	
+	public static String[] split(MessageFormat mf)
+	{
+		Object[] argss = new Object[mf.getFormatsByArgumentIndex().length];
+		
+		String regex = "?+-+?";
+		
+		for(int i = 0; i < argss.length; i++)
+		{
+			argss[i] = regex;
+		}
+		
+		return mf.format(argss).split(regex);
 	}
 }

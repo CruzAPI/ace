@@ -2,6 +2,7 @@ package br.com.acenetwork.commons.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -9,13 +10,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.event.PlayerModeEvent;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonAdmin;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonAdmin;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class AdminCMD implements TabExecutor
 {
@@ -28,39 +30,66 @@ public class AdminCMD implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.cant-perform-command"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
 		Player p = (Player) sender;
 		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
+		bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
 		if(!cp.hasPermission("cmd.admin"))
 		{
-			cp.sendMessage("cmd.permission");
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 		
 		if(args.length == 0)
 		{
+			final TextComponent text1;
+			TextComponent[] extra = new TextComponent[2];
+			
 			if(cp instanceof CommonAdmin)
 			{
+				text1 = new TextComponent(bundle.getString("commons.cmd.invis.invisible-to-all"));
+				
+				extra[0] = new TextComponent(bundle.getString("commons.cmds.mode.administrator"));
+				extra[0].setColor(ChatColor.RED);
+				
 				Bukkit.getPluginManager().callEvent(new PlayerModeEvent(p.getPlayer()));
-				cp.sendMessage("cmd.admin.player-mode");
-				cp.sendMessage("cmd.invis.visible-to-all");
 			}
 			else
 			{
+				text1 = new TextComponent(bundle.getString("commons.cmd.invis.visible-to-all"));
+				
+				extra[0] = new TextComponent(bundle.getString("commons.cmds.mode.player"));
+				extra[0].setColor(ChatColor.YELLOW);
+				
 				cp = new CraftCommonAdmin(p);
-				cp.sendMessage("cmd.admin.admin-mode");
-				cp.sendMessage("cmd.invis.invisible-to-all");
 			}
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.player-mode-change"), extra);
+			text.setColor(ChatColor.GREEN);
+			
+			text1.setColor(ChatColor.GREEN);
+			
+			sender.spigot().sendMessage(text);
+			sender.spigot().sendMessage(text1);
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases);
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), new TextComponent("/" + aliases));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 
 		return false;

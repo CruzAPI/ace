@@ -2,21 +2,26 @@ package br.com.acenetwork.commons.executor;
 
 import java.io.File;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
+import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Balance implements TabExecutor
 {
@@ -67,51 +72,57 @@ public class Balance implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		String locale = Language.ENGLISH.toString();
-		UUID uuid = null;
 		Player p = null;
+		Locale locale = Locale.getDefault();
 		
 		if(sender instanceof Player)
 		{
 			p = (Player) sender;
-			locale = p.getLocale();
-			uuid = p.getUniqueId();
+			locale = CraftCommonPlayer.get(p).getLocale();
 		}
 		
-		DecimalFormat df = getDecimalFormat();
+		final ResourceBundle bundle = ResourceBundle.getBundle("message", locale);
 		
-		UUID targetUUID;
-
-		if(args.length == 0)
+		final OfflinePlayer op;
+		
+		if(args.length == 0 && p != null)
 		{
-			if(p == null)
-			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + aliases + " <player>"));
-				return true;
-			}
-			
-			targetUUID = uuid;
+			op = p;
 		}
 		else if(args.length == 1)
 		{
-			targetUUID = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
-				x.getName().equalsIgnoreCase(args[0])).map(x -> x.getUniqueId()).findAny().orElse(null);
+			op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+				x.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
 		}
 		else
 		{
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/");
+			extra[0].addExtra(aliases);
+			
+			String player = bundle.getString("commons.cmds.args.player");
+			
 			if(p == null)
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + aliases + " <player>"));
-				return true;
+				extra[0].addExtra(" <" + player + ">");
+			}
+			else
+			{
+				extra[0].addExtra(" [" + player + "]");
 			}
 			
-			sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + aliases));
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
-		if(targetUUID == null)
+		if(op == null)
 		{
-			sender.sendMessage(Message.getMessage(locale, "cmd.user-not-found"));
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.user-not-found"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 		
@@ -123,29 +134,48 @@ public class Balance implements TabExecutor
 				continue;
 			}
 			
-			File file = CommonsConfig.getFile(type.getFileType(), true, targetUUID);
+			File file = CommonsConfig.getFile(type.getFileType(), true, op.getUniqueId());
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 			
 			double balance = config.getDouble("balance");
 			double maxBalance = config.getDouble("max-balance");
 			
-			String formatBalance = df.format(balance);
-			String formatMaxBalance = df.format(maxBalance);
+			DecimalFormat df = new DecimalFormat("#,###.##", new DecimalFormatSymbols(bundle.getLocale()));
 			
-			String balanceType = file.getParentFile().getName();
-			
-			if(targetUUID.equals(uuid))
+			if(p != null && op.getUniqueId().equals(p.getUniqueId()))
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.balance.self", balanceType, formatBalance + "/" + formatMaxBalance));
+				TextComponent[] extra = new TextComponent[1];
+				
+				extra[0] = new TextComponent();
+				extra[0].addExtra(df.format(balance));
+				extra[0].addExtra("/");
+				extra[0].addExtra(df.format(maxBalance));
+				extra[0].setColor(ChatColor.YELLOW);
+				
+				TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.balance.self"), extra);
+				
+				text.setColor(ChatColor.GREEN);
+				
+				sender.spigot().sendMessage(text);
 			}
 			else
 			{
-				File commonsPlayerFile = CommonsConfig.getFile(CommonsConfig.Type.PLAYER, false, targetUUID);
-				YamlConfiguration commonsPlayerConfig = YamlConfiguration.loadConfiguration(commonsPlayerFile);
+				TextComponent[] extra = new TextComponent[2];
 				
-				String username = commonsPlayerConfig.getString("name");
+				extra[0] = new TextComponent(op.getName());
+				extra[0].setColor(ChatColor.YELLOW);
 				
-				sender.sendMessage(Message.getMessage(locale, "cmd.balance.other", balanceType, username, formatBalance + "/" + formatMaxBalance));
+				extra[1] = new TextComponent();
+				extra[1].addExtra(df.format(balance));
+				extra[1].addExtra("/");
+				extra[1].addExtra(df.format(maxBalance));
+				extra[1].setColor(ChatColor.YELLOW);
+				
+				TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.balance.other"), extra);
+				
+				text.setColor(ChatColor.GREEN);
+				
+				sender.spigot().sendMessage(text);
 			}
 		}	
 		

@@ -3,6 +3,7 @@ package br.com.acenetwork.commons.player.craft;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -535,5 +536,13 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 
 		setCombat(false);
 		setPlayerCombat(false);
+	}
+	
+	@Override
+	public Locale getLocale()
+	{
+		String[] split = p.getLocale().split("_");
+		
+		return new Locale(split[0], split[1].toUpperCase());
 	}
 }

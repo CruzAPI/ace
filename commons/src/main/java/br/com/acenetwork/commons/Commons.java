@@ -65,6 +65,8 @@ public class Commons
 	{
 		Commons.plugin = plugin;
 		
+		Locale.setDefault(new Locale("en", "US"));
+		
 		try
 		{
 			ResourceBundle bundle = ResourceBundle.getBundle("message", new Locale("en", "US"));
