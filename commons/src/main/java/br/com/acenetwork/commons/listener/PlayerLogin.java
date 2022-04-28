@@ -1,6 +1,8 @@
 package br.com.acenetwork.commons.listener;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.UUID;
 
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -11,7 +13,6 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 import br.com.acenetwork.commons.Commons;
-import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.executor.BanCMD;
 import br.com.acenetwork.commons.manager.CommonsConfig;
@@ -19,14 +20,40 @@ import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 
 public class PlayerLogin implements Listener
 {
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void aaa(PlayerLoginEvent e)
+	{
+		Player p = e.getPlayer();
+		
+		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, p.getUniqueId());
+		
+		try
+		{
+			playerFile.getParentFile().mkdirs();
+			
+			boolean newFile = playerFile.createNewFile();
+			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+
+			if(newFile)
+			{
+				//TODO
+			}
+
+			playerConfig.set("name", p.getName());
+			playerConfig.save(playerFile);
+		}
+		catch(IOException ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void on(PlayerLoginEvent e)
 	{
 		Player p = e.getPlayer();
 		
-		String uuid0 = CommonsUtil.getUUIDByName(p.getName());
-
-		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid0);
+		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, p.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		
 		String ip = playerConfig.getString("ip");
@@ -34,14 +61,14 @@ public class PlayerLogin implements Listener
 		File bannedIpsFile = CommonsConfig.getFile(Type.BANNED_IPS, false, ip);
 		YamlConfiguration bannedIpsConfig = YamlConfiguration.loadConfiguration(bannedIpsFile);
 
-		String uuid1 = bannedIpsConfig.getString("uuid");
+		UUID targetUUID = bannedIpsConfig.contains("uuid") ? UUID.fromString(bannedIpsConfig.getString("uuid")) : null;
 
-		String[] uuids = new String[2];
+		UUID[] uuids = new UUID[2];
 
-		uuids[0] = uuid0;
-		uuids[1] = uuid0.equals(uuid1) ? null : uuid1;
+		uuids[0] = p.getUniqueId();
+		uuids[1] = p.getUniqueId().equals(targetUUID) ? null : targetUUID;
 		
-		for(String uuid : uuids)
+		for(UUID uuid : uuids)
 		{
 			if(uuid == null)
 			{

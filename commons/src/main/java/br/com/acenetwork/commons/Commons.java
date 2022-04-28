@@ -3,12 +3,9 @@ package br.com.acenetwork.commons;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 import java.util.ResourceBundle;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -68,8 +65,16 @@ public class Commons
 	{
 		Commons.plugin = plugin;
 		
-		ResourceBundle bundle = ResourceBundle.getBundle("message");
-		System.out.println(bundle.getString("test.hello"));
+		try
+		{
+			ResourceBundle bundle = ResourceBundle.getBundle("message", new Locale("en", "US"));
+			System.out.println(bundle.getString("test.hello"));
+		}
+		catch(Exception ex)
+		{
+			ex.printStackTrace();
+		}
+		
 		if(TEST)
 		{
 			Bukkit.getConsoleSender().sendMessage("§dServer is in test mode!");
@@ -182,12 +187,14 @@ public class Commons
 	
 	public static File getDataFolder()
 	{
-		if(TEST)
-		{
-			return new File(System.getProperty("user.home") +  "/.aceconfigtest");
-		}
+		return plugin.getDataFolder();
 		
-		return new File(System.getProperty("user.home") +  "/.aceconfig");
+//		if(TEST)
+//		{
+//			return new File(System.getProperty("user.home") +  "/.aceconfigtest");
+//		}
+//		
+//		return new File(System.getProperty("user.home") +  "/.aceconfig");
 	}
 
 	public static void setRestarting(boolean value)

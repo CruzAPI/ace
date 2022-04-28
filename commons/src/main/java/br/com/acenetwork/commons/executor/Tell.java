@@ -12,7 +12,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
@@ -69,7 +68,7 @@ public class Tell implements TabExecutor
 				msg += args[i] + " ";
 			}
 
-			tell(cp, args[0], msg);
+			tell(cp, Bukkit.getPlayer(args[0]), msg);
 		}
 		else
 		{
@@ -79,10 +78,9 @@ public class Tell implements TabExecutor
 		return true;
 	}
 
-	public static void tell(CommonPlayer cp, String targetName, String msg)
+	public static void tell(CommonPlayer cp, Player t, String msg)
 	{
 		Player p = cp.getPlayer();
-		Player t = Bukkit.getPlayer(targetName);
 
 		if(t == null || !p.canSee(t))
 		{
@@ -96,24 +94,20 @@ public class Tell implements TabExecutor
 			return;
 		}
 
-		String targetUUID = CommonsUtil.getUUIDByName(t.getName());
-
-		File targetFile = CommonsConfig.getFile(Type.PLAYER, false, targetUUID);
+		File targetFile = CommonsConfig.getFile(Type.PLAYER, false, t.getUniqueId());
 		YamlConfiguration targetConfig = YamlConfiguration.loadConfiguration(targetFile);
 		
-		if(targetConfig.getStringList("ignored-players").contains(cp.getUniqueID().toString()))
+		if(targetConfig.getStringList("ignored-players").contains(p.getUniqueId().toString()))
 		{
 			cp.sendMessage("cmd.tell.cannot-send-message");
 			return;
 		}
 
-		String playerUUID = cp.getUniqueID().toString();
-
-		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, playerUUID);
+		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, p.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
-		targetConfig.set("last-reply", playerUUID);
-		playerConfig.set("last-reply", targetUUID);
+		targetConfig.set("last-reply", p.getUniqueId().toString());
+		playerConfig.set("last-reply", p.getUniqueId().toString());
 
 		try
 		{

@@ -1,9 +1,7 @@
 package br.com.acenetwork.commons.event;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.player.PlayerEvent;
 
 import br.com.acenetwork.commons.player.CommonPlayer;
 

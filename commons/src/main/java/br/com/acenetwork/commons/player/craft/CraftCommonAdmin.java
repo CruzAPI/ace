@@ -147,6 +147,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 		e.setCancelled(!build);
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerInteract(PlayerInteractEvent e)
 	{		

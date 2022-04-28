@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -19,7 +18,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.util.Vector;
 
 import br.com.acenetwork.commons.Commons;
@@ -219,12 +217,6 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	}
 	
 	@Override
-	public void sendMessage(String path, String key, Object... args)
-	{
-		p.sendMessage(Message.getMessage(p.getLocale(), path, key, args));
-	}
-	
-	@Override
 	public void sendMessage(String key, Object... args)
 	{
 		p.sendMessage(Message.getMessage(p.getLocale(), key, args));
@@ -313,7 +305,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	@Override
 	public boolean hasPermission(String perm)
 	{
-		return CommonsUtil.hasPermission(getUUID(), perm);
+		return CommonsUtil.hasPermission(p.getUniqueId(), perm);
 //		perm = perm.replace('.', ':');
 //
 //		File userFile = CommonsConfig.getFile(Type.USER, true, getUniqueID());
@@ -385,25 +377,6 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 		}
 		
 		return Tag.DEFAULT;
-	}
-	
-	@Override
-	public String getUUID()
-	{
-		return CommonsUtil.getUUIDByName(p.getName());
-	}
-	
-	@Override
-	public UUID getUniqueID()
-	{
-		try
-		{
-			return UUID.fromString(CommonsUtil.getUUIDByName(p.getName()));
-		}
-		catch(Exception e)
-		{
-			return null;
-		}
 	}
 	
 	@Override
@@ -488,7 +461,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	@Override
 	public double getBalance(Balance.Type balanceType)
 	{
-		File file = CommonsConfig.getFile(balanceType.getFileType(), true, getUUID());
+		File file = CommonsConfig.getFile(balanceType.getFileType(), true, p.getUniqueId());
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
 		return config.getDouble("balance");
@@ -497,7 +470,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	@Override
 	public double getMaxBalance(Balance.Type balanceType)
 	{
-		File file = CommonsConfig.getFile(balanceType.getFileType(), true, getUUID());
+		File file = CommonsConfig.getFile(balanceType.getFileType(), true, p.getUniqueId());
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
 		return config.getDouble("max-balance");
@@ -506,7 +479,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	@Override
 	public void setBalance(Balance.Type balanceType, double balance) throws IOException
 	{
-		File file = CommonsConfig.getFile(balanceType.getFileType(), true, getUUID());
+		File file = CommonsConfig.getFile(balanceType.getFileType(), true, p.getUniqueId());
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
 		config.set("balance", balance);
@@ -516,7 +489,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	@Override
 	public void setMaxBalance(Balance.Type balanceType, double balance) throws IOException
 	{
-		File file = CommonsConfig.getFile(balanceType.getFileType(), true, getUUID());
+		File file = CommonsConfig.getFile(balanceType.getFileType(), true, p.getUniqueId());
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
 		config.set("max-balance", balance);
@@ -526,12 +499,13 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	@Override
 	public String getClan()
 	{
-		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, getUUID());
+		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, p.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		
 		return playerConfig.getString("clan");
 	}
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	public void reset()
 	{

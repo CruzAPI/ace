@@ -3,22 +3,23 @@ package br.com.acenetwork.commons.executor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.inventory.Mute;
 import br.com.acenetwork.commons.manager.CommonsConfig;
-import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
+import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 
@@ -112,20 +113,21 @@ public class MuteCMD implements TabExecutor
 
 	public static void mute(CommandSender sender, String locale, String user, long time, Tag tag, String reason)
 	{
-		String uuid = CommonsUtil.getUUIDByName(user);
-
-		if(uuid == null)
+		OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+			x.getName().equalsIgnoreCase(user)).findAny().orElse(null);
+		
+		if(op == null)
 		{
 			sender.sendMessage(Message.getMessage(locale, "cmd.user-not-found"));
 			return;
 		}
 
-		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid);
+		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, op.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
 		String nickname = playerConfig.getString("name");
 
-		File mutedPlayersFile = CommonsConfig.getFile(Type.MUTED_PLAYERS, true, uuid);
+		File mutedPlayersFile = CommonsConfig.getFile(Type.MUTED_PLAYERS, true, op.getUniqueId());
 		YamlConfiguration mutedPlayersConfig = YamlConfiguration.loadConfiguration(mutedPlayersFile);
 
 		mutedPlayersConfig.set("name", nickname);

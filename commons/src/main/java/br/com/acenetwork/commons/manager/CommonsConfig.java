@@ -12,7 +12,9 @@ public class CommonsConfig
 	public enum Type
 	{
 		BALANCE_FOLDER, BALANCE_RAID_PLAYER, BALANCE_RAID_FOLDER, BALANCE_MINIGAME_PLAYER, 
-		CLANS_JSON, MESSAGE, GROUP, USER, NAMES, PLAYER, BANNED_PLAYERS, BANNED_IPS, MUTED_PLAYERS;
+		CLANS_JSON, MESSAGE, GROUP, USER, 
+		PLAYER, 
+		BANNED_PLAYERS, BANNED_IPS, MUTED_PLAYERS;
 	}
 
 	public static File getFile(Type type, boolean createNewFile, Object... args)
@@ -31,7 +33,7 @@ public class CommonsConfig
 		case BALANCE_RAID_PLAYER:
 			file = new File(Commons.getDataFolder() + "/balance/raid", args[0] + ".yml");
 			config = YamlConfiguration.loadConfiguration(file);
-			config.set("max-balance", 800.0D);
+			config.set("max-balance", 1500.0D);
 			break;
 		case BALANCE_MINIGAME_PLAYER:
 			file = new File(Commons.getDataFolder() + "/balance/minigame", args[0] + ".yml");
@@ -42,7 +44,7 @@ public class CommonsConfig
 			file = new File(Commons.getDataFolder(), "ace_clans.json");
 			break;
 		case MESSAGE:
-			file = new File(Commons.getDataFolder() + "/messages/" + args[0], args[1] + ".yml");
+			file = new File(Commons.getDataFolder() + "/messages", args[0] + ".yml");
 			break;
 		case MUTED_PLAYERS:
 			file = new File(Commons.getDataFolder() + "/muted-players", args[0] + ".yml");
@@ -58,9 +60,6 @@ public class CommonsConfig
 			break;
 		case USER:
 			file = new File(Commons.getDataFolder() + "/permissions/users", args[0] + ".yml");
-			break;
-		case NAMES:
-			file = new File(Commons.getDataFolder() + "/names", args[0] + ".yml");
 			break;
 		case PLAYER:
 			file = new File(Commons.getDataFolder() + "/players", args[0] + ".yml");

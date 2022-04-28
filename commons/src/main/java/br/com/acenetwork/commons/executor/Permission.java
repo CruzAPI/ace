@@ -3,9 +3,12 @@ package br.com.acenetwork.commons.executor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -153,10 +156,11 @@ public class Permission implements TabExecutor
 			{
 				final String group = args[1].toLowerCase();
 				final String user = args[4].toLowerCase();
-
-				String uuid = CommonsUtil.getUUIDByName(user);
-
-				if(uuid == null)
+				
+				OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+					x.getName().equalsIgnoreCase(user)).findAny().orElse(null);				
+				
+				if(op == null)
 				{
 					cp.sendMessage("cmd.user-not-found");
 					return true;	
@@ -171,16 +175,16 @@ public class Permission implements TabExecutor
 				File groupFile = CommonsConfig.getFile(Type.GROUP, true, group);
 				YamlConfiguration groupConfig = YamlConfiguration.loadConfiguration(groupFile);
 
-				groupConfig.set("user." + uuid, 0L);
+				groupConfig.set("user." + op.getUniqueId(), 0L);
 				groupConfig.save(groupFile);
 
-				File userFile = CommonsConfig.getFile(Type.USER, true, uuid);
+				File userFile = CommonsConfig.getFile(Type.USER, true, op.getUniqueId());
 				YamlConfiguration userConfig = YamlConfiguration.loadConfiguration(userFile);
 
 				userConfig.set("group." + group, 0L);
 				userConfig.save(userFile);
 
-				File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid);
+				File playerFile = CommonsConfig.getFile(Type.PLAYER, false, op.getUniqueId());
 				YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
 				String username = playerConfig.contains("name") ? playerConfig.getString("name") : args[4];
@@ -194,9 +198,10 @@ public class Permission implements TabExecutor
 				final String group = args[1].toLowerCase();
 				final String user = args[4].toLowerCase();
 
-				String uuid = CommonsUtil.getUUIDByName(user);
+				OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+					x.getName().equalsIgnoreCase(user)).findAny().orElse(null);
 
-				if(uuid == null)
+				if(op == null)
 				{
 					cp.sendMessage("cmd.user-not-found");
 					return true;	
@@ -211,17 +216,17 @@ public class Permission implements TabExecutor
 					return true;
 				}
 
-				File userFile = CommonsConfig.getFile(Type.USER, true, uuid);
+				File userFile = CommonsConfig.getFile(Type.USER, true, op.getUniqueId());
 				YamlConfiguration userConfig = YamlConfiguration.loadConfiguration(userFile);
 				
-				if(groupConfig.contains("user." + uuid) || userConfig.contains("group." + group))
+				if(groupConfig.contains("user." + op.getUniqueId()) || userConfig.contains("group." + group))
 				{
-					groupConfig.set("user." + uuid, null);
+					groupConfig.set("user." + op.getUniqueId(), null);
 					groupConfig.save(groupFile);
 					userConfig.set("group." + group, null);
 					userConfig.save(userFile);
 					
-					File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid);
+					File playerFile = CommonsConfig.getFile(Type.PLAYER, false, op.getUniqueId());
 					YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 	
 					String username = playerConfig.contains("name") ? playerConfig.getString("name") : args[4];
@@ -240,9 +245,10 @@ public class Permission implements TabExecutor
 				final String permission = args[3].toLowerCase();
 				final String configPermission = permission.replace('.', ':');
 
-				String uuid = CommonsUtil.getUUIDByName(user);
-
-				if(uuid == null)
+				OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+					x.getName().equalsIgnoreCase(user)).findAny().orElse(null);
+				
+				if(op == null)
 				{
 					cp.sendMessage("cmd.user-not-found");
 					return true;	
@@ -254,13 +260,13 @@ public class Permission implements TabExecutor
 					return true;
 				}
 
-				File userFile = CommonsConfig.getFile(Type.USER, true, uuid);
+				File userFile = CommonsConfig.getFile(Type.USER, true, op.getUniqueId());
 				YamlConfiguration userConfig = YamlConfiguration.loadConfiguration(userFile);
 				
 				userConfig.set("permission." + configPermission, 0L);
 				userConfig.save(userFile);
 
-				File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid);
+				File playerFile = CommonsConfig.getFile(Type.PLAYER, false, op.getUniqueId());
 				YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
 				String username = playerConfig.contains("name") ? playerConfig.getString("name") : args[1];
@@ -274,15 +280,16 @@ public class Permission implements TabExecutor
 				final String permission = args[3].toLowerCase();
 				final String configPermission = permission.replace('.', ':');
 
-				String uuid = CommonsUtil.getUUIDByName(user);
-
-				if(uuid == null)
+				OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+					x.getName().equalsIgnoreCase(user)).findAny().orElse(null);
+				
+				if(op == null)
 				{
 					cp.sendMessage("cmd.user-not-found");
 					return true;	
 				}
 
-				File userFile = CommonsConfig.getFile(Type.USER, true, uuid);
+				File userFile = CommonsConfig.getFile(Type.USER, true, op.getUniqueId());
 				YamlConfiguration userConfig = YamlConfiguration.loadConfiguration(userFile);
 				
 				int n = 0;
@@ -313,7 +320,7 @@ public class Permission implements TabExecutor
 
 				if(n > 0)
 				{
-					File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid);
+					File playerFile = CommonsConfig.getFile(Type.PLAYER, false, op.getUniqueId());
 					YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 	
 					String username = playerConfig.contains("name") ? playerConfig.getString("name") : args[1];
@@ -329,16 +336,17 @@ public class Permission implements TabExecutor
 				(args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("g")) && 
 				 args[2].equalsIgnoreCase("list"))
 			{
-				String page = args.length == 4 ? args[3] : "1";
-				printList(cp, Key.GROUP, args[1].toLowerCase(), Key.PERMISSION, page);
+//				String page = args.length == 4 ? args[3] : "1";
+//				TODO
+//				printList(cp, Key.GROUP, args[1].toLowerCase(), Key.PERMISSION, page);
 			}
 			else if((args.length == 4 || args.length == 5) && 
 				(args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("g")) &&
 				(args[2].equalsIgnoreCase("user") || args[2].equalsIgnoreCase("u")) &&
 				 args[3].equalsIgnoreCase("list"))
 			{
-				String page = args.length == 5 ? args[4] : "1";
-				printList(cp, Key.GROUP, args[1].toLowerCase(), Key.USER, page);
+//				String page = args.length == 5 ? args[4] : "1";
+//				printList(cp, Key.GROUP, args[1].toLowerCase(), Key.USER, page);
 			}
 			else if((args.length == 3 || args.length == 4) &&
 				(args[0].equalsIgnoreCase("user") || args[0].equalsIgnoreCase("u")) && 
@@ -347,15 +355,16 @@ public class Permission implements TabExecutor
 				String page = args.length == 4 ? args[3] : "1";
 				String user = args[1].toLowerCase();
 
-				String uuid = CommonsUtil.getUUIDByName(user);
-
-				if(uuid == null)
+				OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+					x.getName().equalsIgnoreCase(user)).findAny().orElse(null);
+				
+				if(op == null)
 				{
 					cp.sendMessage("cmd.user-not-found");
 					return true;	
 				}
 
-				printList(cp, Key.USER, uuid, Key.PERMISSION, page);
+				printList(cp, Key.USER, op, Key.PERMISSION, page);
 			}
 			else if((args.length == 4 || args.length == 5) && 
 				(args[0].equalsIgnoreCase("user") || args[0].equalsIgnoreCase("u")) &&
@@ -365,15 +374,16 @@ public class Permission implements TabExecutor
 				String page = args.length == 5 ? args[4] : "1";
 				String user = args[1].toLowerCase();
 
-				String uuid = CommonsUtil.getUUIDByName(user);
-
-				if(uuid == null)
+				OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+					x.getName().equalsIgnoreCase(user)).findAny().orElse(null);
+				
+				if(op == null)
 				{
 					cp.sendMessage("cmd.user-not-found");
 					return true;	
 				}
 
-				printList(cp, Key.USER, uuid, Key.GROUP, page);
+				printList(cp, Key.USER, op, Key.GROUP, page);
 			}
 			else
 			{
@@ -389,7 +399,7 @@ public class Permission implements TabExecutor
 		return false;
 	}
 
-	private void printList(CommonPlayer cp, Key key, String value, Key listOf, String pageArgs) throws IOException
+	private void printList(CommonPlayer cp, Key key, OfflinePlayer op, Key listOf, String pageArgs) throws IOException
 	{
 		int page;
 
@@ -403,7 +413,7 @@ public class Permission implements TabExecutor
 			return;
 		}
 
-		File file = CommonsConfig.getFile(key.type, false, value);
+		File file = CommonsConfig.getFile(key.type, false, op.getUniqueId());
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
 		if(!file.exists())
@@ -470,20 +480,7 @@ public class Permission implements TabExecutor
 		}
 		else
 		{
-			String beautyValue = value;
-			
-			if(key == Key.USER)
-			{
-				File playerFile = CommonsConfig.getFile(Type.PLAYER, false, value);
-				YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-				
-				if(playerConfig.contains("name"))
-				{
-					beautyValue = playerConfig.getString("name");
-				}
-			}
-			
-			cp.sendMessage("cmd.p." + key + "-" + listOf + "-list", beautyValue, "[" + page + "/" + maxPages + "]");
+			cp.sendMessage("cmd.p." + key + "-" + listOf + "-list", op.getName(), "[" + page + "/" + maxPages + "]");
 
 			for(String line : list)
 			{

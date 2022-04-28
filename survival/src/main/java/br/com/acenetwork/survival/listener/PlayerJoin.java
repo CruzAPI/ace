@@ -18,23 +18,21 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.util.NumberConversions;
 import org.bukkit.util.Vector;
 
-import br.com.acenetwork.commons.player.CommonPlayer;
-import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Main;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
 
 public class PlayerJoin implements Listener
 {
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void on(PlayerJoinEvent e)
 	{
 		Player p = e.getPlayer();
-		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
 		p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 		
-		File combatlogFile = Config.getFile(Type.COMBATLOG, false, cp.getUUID());
+		File combatlogFile = Config.getFile(Type.COMBATLOG, false, p.getUniqueId());
 		
 		if(!combatlogFile.exists())
 		{

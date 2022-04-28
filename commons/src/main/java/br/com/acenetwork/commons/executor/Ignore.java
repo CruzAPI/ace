@@ -3,20 +3,21 @@ package br.com.acenetwork.commons.executor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.CommonsConfig;
-import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
+import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 
@@ -62,35 +63,36 @@ public class Ignore implements TabExecutor
 		
 		if(args.length == 1)
 		{
-			String uuid = CommonsUtil.getUUIDByName(args[0]);
-
+			OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+				x.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
+			
 			if(p.getName().equalsIgnoreCase(args[0]))
 			{
 				cp.sendMessage("cmd.ignore.cannot-ignore-yourself");
 				return true;
 			}
 
-			if(uuid == null)
+			if(op == null)
 			{
 				cp.sendMessage("cmd.user-not-found", args[0]);
 				return true;
 			}
 
-			File playerFile = CommonsConfig.getFile(Type.PLAYER, false, cp.getUniqueID());
+			File playerFile = CommonsConfig.getFile(Type.PLAYER, false, p.getUniqueId());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
 			List<String> ignoredPlayers = playerConfig.getStringList("ignored-players");
 			
 			String messageKey;
 
-			if(ignoredPlayers.contains(uuid))
+			if(ignoredPlayers.contains(op.getUniqueId().toString()))
 			{
-				ignoredPlayers.remove(uuid);
+				ignoredPlayers.remove(op.getUniqueId().toString());
 				messageKey = "cmd.ignore.removed-from-list";
 			}
 			else
 			{
-				ignoredPlayers.add(uuid);
+				ignoredPlayers.add(op.getUniqueId().toString());
 				messageKey = "cmd.ignore.added-to-list";
 			}
 
@@ -99,7 +101,7 @@ public class Ignore implements TabExecutor
 			try
 			{
 				playerConfig.save(playerFile);
-				cp.sendMessage(messageKey, CommonsUtil.getNameByUUID(uuid));
+				cp.sendMessage(messageKey, op.getName());
 			}
 			catch(IOException ex)
 			{

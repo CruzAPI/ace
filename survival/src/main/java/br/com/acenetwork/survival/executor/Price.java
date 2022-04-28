@@ -65,7 +65,7 @@ public class Price implements TabExecutor
 		File priceFile = Config.getFile(Type.PRICE, false);
 		YamlConfiguration priceConfig = YamlConfiguration.loadConfiguration(priceFile);
 
-		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, cp.getUUID());
+		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		
 		Material type;

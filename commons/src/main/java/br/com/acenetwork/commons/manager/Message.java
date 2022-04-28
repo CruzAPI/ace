@@ -21,11 +21,6 @@ public class Message
 	
 	public static String getMessage(String locale, String key, Object... args)
 	{
-		return getMessage(locale, "", key, args);
-	}
-	
-	public static String getMessage(String locale, String path, String key, Object... args)
-	{
 		try
 		{
 			switch(locale)
@@ -37,7 +32,7 @@ public class Message
 					break;
 			}
 			
-			File file = CommonsConfig.getFile(Type.MESSAGE, true, path, locale);
+			File file = CommonsConfig.getFile(Type.MESSAGE, true, locale);
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 			
 			String value = config.getString(key.replace('.', ':'));

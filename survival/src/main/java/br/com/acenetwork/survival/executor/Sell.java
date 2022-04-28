@@ -2,12 +2,19 @@ package br.com.acenetwork.survival.executor;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.executor.Balance;
@@ -18,15 +25,6 @@ import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.manager.AmountPrice;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 public class Sell implements TabExecutor
 {
@@ -72,7 +70,7 @@ public class Sell implements TabExecutor
 		File priceFile = Config.getFile(Type.PRICE, false);
 		YamlConfiguration priceConfig = YamlConfiguration.loadConfiguration(priceFile);
 
-		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, cp.getUUID());
+		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		
 		double balance = playerConfig.getDouble("balance");

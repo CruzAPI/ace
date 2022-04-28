@@ -3,14 +3,9 @@ package br.com.acenetwork.commons.executor;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import br.com.acenetwork.commons.CommonsUtil;
-import br.com.acenetwork.commons.constants.Language;
-import br.com.acenetwork.commons.manager.CommonsConfig;
-import br.com.acenetwork.commons.manager.Message;
-import br.com.acenetwork.commons.player.CommonPlayer;
-import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -18,6 +13,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import br.com.acenetwork.commons.constants.Language;
+import br.com.acenetwork.commons.manager.CommonsConfig;
+import br.com.acenetwork.commons.manager.Message;
 
 public class Balance implements TabExecutor
 {
@@ -69,20 +68,19 @@ public class Balance implements TabExecutor
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
 		String locale = Language.ENGLISH.toString();
-		String uuid = null;
+		UUID uuid = null;
 		Player p = null;
 		
 		if(sender instanceof Player)
 		{
 			p = (Player) sender;
-			CommonPlayer cp = CraftCommonPlayer.get(p);
 			locale = p.getLocale();
-			uuid = cp.getUUID();
+			uuid = p.getUniqueId();
 		}
 		
 		DecimalFormat df = getDecimalFormat();
 		
-		String targetUUID;
+		UUID targetUUID;
 
 		if(args.length == 0)
 		{
@@ -96,7 +94,8 @@ public class Balance implements TabExecutor
 		}
 		else if(args.length == 1)
 		{
-			targetUUID = CommonsUtil.getUUIDByName(args[0]);
+			targetUUID = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+				x.getName().equalsIgnoreCase(args[0])).map(x -> x.getUniqueId()).findAny().orElse(null);
 		}
 		else
 		{
@@ -119,6 +118,11 @@ public class Balance implements TabExecutor
 		
 		for(Type type : Type.values())
 		{
+			if(type == Type.MINIGAME)
+			{
+				continue;
+			}
+			
 			File file = CommonsConfig.getFile(type.getFileType(), true, targetUUID);
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 			
@@ -132,7 +136,7 @@ public class Balance implements TabExecutor
 			
 			if(targetUUID.equals(uuid))
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.balance." + balanceType + ".self", formatBalance + "/" + formatMaxBalance));
+				sender.sendMessage(Message.getMessage(locale, "cmd.balance.self", balanceType, formatBalance + "/" + formatMaxBalance));
 			}
 			else
 			{
@@ -141,7 +145,7 @@ public class Balance implements TabExecutor
 				
 				String username = commonsPlayerConfig.getString("name");
 				
-				sender.sendMessage(Message.getMessage(locale, "cmd.balance." + balanceType + ".other", username, formatBalance + "/" + formatMaxBalance));
+				sender.sendMessage(Message.getMessage(locale, "cmd.balance.other", balanceType, username, formatBalance + "/" + formatMaxBalance));
 			}
 		}	
 		

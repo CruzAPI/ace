@@ -1,7 +1,7 @@
 package br.com.acenetwork.commons;
 
 import java.io.File;
-import java.io.FileReader;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -10,16 +10,13 @@ import org.bukkit.inventory.ItemStack;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 
 public class CommonsUtil
 {
-	public static boolean hasPermission(String uuid, String perm)
+	public static boolean hasPermission(UUID uuid, String perm)
 	{
 		perm = perm.replace('.', ':');
 
@@ -80,58 +77,6 @@ public class CommonsUtil
 		return false;
 	}
 	
-	public static void test()
-	{
-		JsonParser parser = new JsonParser();
-		
-		try
-		{			
-			JsonArray array = (JsonArray) parser.parse(new FileReader(CommonsConfig.getFile(Type.CLANS_JSON, false)));
-			
-			for(Object o : array)
-			{
-				JsonObject json = (JsonObject) o;
-				
-				String username = json.get("Username").getAsString();
-				String clan = json.get("Clan").getAsString();
-				
-				String uuid = CommonsUtil.getUUIDByName(username);
-				
-				File file = CommonsConfig.getFile(Type.PLAYER, false, uuid);
-				YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-				
-				if(file.exists())
-				{
-					config.set("clan", clan);
-					config.save(file);
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-		}
-//		Gson gson = new Gson();
-//		
-//		File file = CommonsConfig.getFile(Type.CLANS, false);
-//		
-//		try
-//		{
-//			FileReader reader = new FileReader(file);
-//			JsonReader jr = gson. newJsonReader(reader);
-//			jr.
-//			while(jr.hasNext())
-//			{
-//				jr.
-//				Bukkit.broadcastMessage("" + jr.getPath());
-//			}
-//		}
-//		catch(IOException e)
-//		{
-//			e.printStackTrace();
-//		}
-	}
-	
 	public static boolean permissionSyntaxIsValid(String perm)
 	{
 		if(!perm.matches("[a-z.*]{0,30}") || perm.startsWith(".") || perm.endsWith("."))
@@ -184,22 +129,6 @@ public class CommonsUtil
 		Bukkit.getServer().sendPluginMessage(Commons.getPlugin(), "commons:commons", out.toByteArray());
 	}
 	
-	public static String getUUIDByName(String name)
-	{
-		File namesFile = CommonsConfig.getFile(Type.NAMES, false, name.toLowerCase());
-		YamlConfiguration namesConfig = YamlConfiguration.loadConfiguration(namesFile);
-
-		return namesConfig.getString("uuid");
-	}
-
-	public static String getNameByUUID(String uuid)
-	{
-		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid);
-		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-
-		return playerConfig.getString("name");
-	}
-
 	public static boolean groupSyntaxIsValid(String group)
 	{
 		return group.matches("[a-z]{0,16}");

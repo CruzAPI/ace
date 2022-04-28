@@ -17,6 +17,7 @@ import net.md_5.bungee.event.EventHandler;
 
 public class PostLogin implements Listener
 {
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void on(PostLoginEvent e)
 	{
@@ -26,18 +27,10 @@ public class PostLogin implements Listener
 		
 		ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
 		
-		String uuid0 = p.getUniqueId().toString();
-
-		File namesFile = Config.getFile(Type.NAMES, true, p.getName().toLowerCase());
-		File playerFile = Config.getFile(Type.PLAYER, false, uuid0);
+		File playerFile = Config.getFile(Type.PLAYER, false, p.getUniqueId());
 
 		try
 		{
-			Configuration namesConfig = provider.load(namesFile);
-			
-			namesConfig.set("uuid", p.getUniqueId().toString());
-			provider.save(namesConfig, namesFile);
-
 			playerFile.getParentFile().mkdirs();
 			
 			boolean newFile = playerFile.createNewFile();

@@ -1,9 +1,12 @@
 package br.com.acenetwork.commons.listener;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,6 +17,8 @@ import org.bukkit.event.player.PlayerLocaleChangeEvent;
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.event.PlayerModeEvent;
+import br.com.acenetwork.commons.manager.CommonsConfig;
+import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonAdmin;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
@@ -27,13 +32,26 @@ public class PlayerJoin implements Listener
 	public void on(PlayerJoinEvent e)
 	{
 		Player p = e.getPlayer();
-		String uuid = CommonsUtil.getUUIDByName(p.getName());
+			
+		File playerFile = CommonsConfig.getFile(Type.PLAYER, true, p.getUniqueId());
+		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		
-		if(CommonsUtil.hasPermission(uuid, "cmd.admin"))
+		playerConfig.set("ip", p.getAddress().getAddress().toString());
+		
+		try
+		{
+			playerConfig.save(playerFile);
+		}
+		catch(IOException ex)
+		{
+			ex.printStackTrace();
+		}
+		
+		if(CommonsUtil.hasPermission(p.getUniqueId(), "cmd.admin"))
 		{
 			new CraftCommonAdmin(p);
 		}
-		else if(CommonsUtil.hasPermission(uuid, "cmd.watch"))
+		else if(CommonsUtil.hasPermission(p.getUniqueId(), "cmd.watch"))
 		{
 			new CraftCommonWatcher(p);
 		}

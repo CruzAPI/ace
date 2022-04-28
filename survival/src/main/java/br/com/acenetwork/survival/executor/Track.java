@@ -16,7 +16,6 @@ import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
-import br.com.acenetwork.survival.Main;
 import br.com.acenetwork.survival.Util;
 
 public class Track implements TabExecutor
@@ -55,8 +54,6 @@ public class Track implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		Main.getInstance().getRunnable().run();
-		
 		if(!(sender instanceof Player))
 		{
 			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));

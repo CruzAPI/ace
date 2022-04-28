@@ -3,9 +3,11 @@ package br.com.acenetwork.commons.executor;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -18,8 +20,8 @@ import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.inventory.Banishment;
 import br.com.acenetwork.commons.manager.CommonsConfig;
-import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
+import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 
@@ -112,21 +114,22 @@ public class BanCMD implements TabExecutor
 
 	public static void ban(CommandSender sender, String locale, String user, long time, Tag tag, String reason)
 	{
-		String uuid = CommonsUtil.getUUIDByName(user);
+		OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+			x.getName().equalsIgnoreCase(user)).findAny().orElse(null);
 
-		if(uuid == null)
+		if(op == null)
 		{
 			sender.sendMessage(Message.getMessage(locale, "cmd.user-not-found"));
 			return;
 		}
 
-		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid);
+		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, op.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
 		String nickname = playerConfig.getString("name");
 		String ip = playerConfig.getString("ip");
 
-		File bannedPlayersFile = CommonsConfig.getFile(Type.BANNED_PLAYERS, true, uuid);
+		File bannedPlayersFile = CommonsConfig.getFile(Type.BANNED_PLAYERS, true, op.getUniqueId());
 		YamlConfiguration bannedPlayersConfig = YamlConfiguration.loadConfiguration(bannedPlayersFile);
 
 		bannedPlayersConfig.set("name", nickname);
@@ -139,7 +142,7 @@ public class BanCMD implements TabExecutor
 		File bannedIpsFile = CommonsConfig.getFile(Type.BANNED_IPS, true, ip);
 		YamlConfiguration bannedIpsConfig = YamlConfiguration.loadConfiguration(bannedIpsFile);
 
-		bannedIpsConfig.set("uuid", uuid);
+		bannedIpsConfig.set("uuid", op.getUniqueId().toString());
 
 		try
 		{

@@ -1,14 +1,11 @@
 package br.com.acenetwork.commons.listener;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntitySpawnEvent;
-
-import br.com.acenetwork.commons.Commons;
 
 public class EntitySpawn implements Listener
 {

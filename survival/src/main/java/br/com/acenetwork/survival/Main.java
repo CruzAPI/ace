@@ -2,6 +2,7 @@ package br.com.acenetwork.survival;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -15,9 +16,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.Commons;
+import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.executor.Balance;
-import br.com.acenetwork.commons.manager.CommonsConfig;
-import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import br.com.acenetwork.commons.manager.Broadcast;
+import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.survival.executor.Price;
 import br.com.acenetwork.survival.executor.Sell;
 import br.com.acenetwork.survival.executor.Sellall;
@@ -33,13 +35,14 @@ import br.com.acenetwork.survival.listener.PlayerRespawn;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
 import net.citizensnpcs.api.CitizensAPI;
-import net.md_5.bungee.api.ChatColor;
 
 public class Main extends JavaPlugin
 {
 	private static Main instance;
 	private static final Random RANDOM = new Random();
+	private static final List<Broadcast> BROADCASTS = new ArrayList<>();
 	private boolean firstRun = true;
+
 	
 	@Override
 	public void onEnable()
@@ -58,6 +61,17 @@ public class Main extends JavaPlugin
 		Commons.registerBroadcast("raid.broadcast6");
 		Commons.registerBroadcast("raid.broadcast7");
 		Commons.init(this);
+		
+		BROADCASTS.add(new Broadcast("broadcast.item1"));
+		BROADCASTS.add(new Broadcast("broadcast.item2"));
+		BROADCASTS.add(new Broadcast("broadcast.item3"));
+		BROADCASTS.add(new Broadcast("broadcast.item4"));
+		BROADCASTS.add(new Broadcast("broadcast.item5"));
+		BROADCASTS.add(new Broadcast("broadcast.item6"));
+		BROADCASTS.add(new Broadcast("broadcast.item7"));
+		BROADCASTS.add(new Broadcast("broadcast.item8"));
+		BROADCASTS.add(new Broadcast("broadcast.item9"));
+		BROADCASTS.add(new Broadcast("broadcast.item10"));
 		
 		Bukkit.getPluginManager().registerEvents(new BlockBreak(), this);
 		Bukkit.getPluginManager().registerEvents(new EntityTarget(), this);
@@ -94,7 +108,7 @@ public class Main extends JavaPlugin
 		}
 	}
 	
-	public Runnable getRunnable()
+	private Runnable getRunnable()
 	{
 		return new Runnable()
 		{
@@ -109,17 +123,26 @@ public class Main extends JavaPlugin
 				
 				ConfigurationSection section = config.getConfigurationSection("");
 				
-				if(section == null)
-				{
-					return;
-				}
-				
 				final int minPercent = botConfig.getInt("min-percent");
 				final int maxPercent = botConfig.getInt("max-percent");
 				final int minDelay = botConfig.getInt("min-delay");
 				final int maxDelay = botConfig.getInt("max-delay");
 				
+				Bukkit.getScheduler().scheduleSyncDelayedTask(instance, getRunnable(), minDelay + RANDOM.nextInt(maxDelay - minDelay + 1));
+				
+				if(section == null)
+				{
+					return;
+				}
+				
+				
 				List<String> list = new ArrayList<>(section.getKeys(false));
+				
+				if(list.size() <= 0)
+				{
+					return;
+				}
+				
 				String key = list.get(RANDOM.nextInt(list.size()));
 				
 				int marketCap = config.getInt(key + ".market-cap");
@@ -135,7 +158,6 @@ public class Main extends JavaPlugin
 				
 				if(oldPrice >= max)
 				{
-					Bukkit.broadcastMessage(key + " max valued !!! ");
 					return;
 				}
 				
@@ -152,21 +174,29 @@ public class Main extends JavaPlugin
 					try
 					{
 						config.save(file);
-						Bukkit.broadcastMessage("oi " + ChatColor.of("#012345").toString().replace('§', '&') + " oi");
-						Bukkit.broadcastMessage("§aUm Sheikh Árabe comprou §e" + key + " x" + amount + " §b" + oldPrice + " -> " 
-								+ price + " §a" + Balance.getDecimalFormat().format(priceChangePercent) + "%");
-						Bukkit.broadcastMessage("§aPreço subiu em §e" + Balance.getDecimalFormat().format(priceChangePercent) + "%");
-						Bukkit.broadcastMessage("§aLua!");
 						
-						CraftCommonPlayer.SET.forEach(x -> x.sendMessage("raid/broadcast/bot", key, null));
+						Object[] args = new Object[]
+						{
+							"§e" + amount + " " + key + "§6"
+						};
+						
+						String bc = BROADCASTS.get(RANDOM.nextInt(BROADCASTS.size())).key;
+						
+						DecimalFormat dc = Balance.getDecimalFormat();
+						
+						for(Player all : Bukkit.getOnlinePlayers())
+						{
+							all.sendMessage("§6" + Message.getMessage(all.getLocale(), bc, args));
+							all.sendMessage("§e" + dc.format(oldPrice) + "§7 » §e" + dc.format(price) + " §a(+" + dc.format(priceChangePercent) + "%)");
+						}
+						
+						Bukkit.getConsoleSender().sendMessage(Message.getMessage(Language.ENGLISH.toString(), bc, args));
 					}
 					catch(IOException ex)
 					{
 						ex.printStackTrace();
 					}
 				}
-				
-				Bukkit.getScheduler().scheduleSyncDelayedTask(instance, getRunnable(), minDelay + RANDOM.nextInt(maxDelay - minDelay + 1));
 			}
 		};
 	}

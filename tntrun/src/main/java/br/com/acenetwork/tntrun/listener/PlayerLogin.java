@@ -18,9 +18,8 @@ public class PlayerLogin implements Listener
 	public void on(PlayerLoginEvent e)
 	{
 		Player p = e.getPlayer();
-		String uuid = CommonsUtil.getUUIDByName(p.getName());
 		
-		if(CommonsUtil.hasPermission(uuid, "cmd.admin") || CommonsUtil.hasPermission(uuid, "cmd.watch"))
+		if(CommonsUtil.hasPermission(p.getUniqueId(), "cmd.admin") || CommonsUtil.hasPermission(p.getUniqueId(), "cmd.watch"))
 		{
 			return;
 		}

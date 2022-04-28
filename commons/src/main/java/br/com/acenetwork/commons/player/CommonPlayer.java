@@ -1,7 +1,6 @@
 package br.com.acenetwork.commons.player;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -22,8 +21,6 @@ public interface CommonPlayer extends Listener
 	double getMaxBalance(Balance.Type balanceType);
 	void setMaxBalance(Balance.Type balanceType, double balance) throws IOException;
 	void setCommonsHotbar(CommonsHotbar commonsHotbar);
-	UUID getUniqueID();
-	String getUUID();
 	Tag getTag();
 	boolean setTag(Tag tag);
 	boolean setInvis(boolean value);
@@ -40,7 +37,6 @@ public interface CommonPlayer extends Listener
 	void setIgnoreInvisAndSpecs(boolean value);
 	boolean getIgnoreInvisAndSpecs();
 	void sendMessage(String key, Object... args);
-	void sendMessage(String path, String key, Object... args);
 	boolean hasPermission(String perm);
 	void setGUI(GUI gui);
 	GUI getGUI();

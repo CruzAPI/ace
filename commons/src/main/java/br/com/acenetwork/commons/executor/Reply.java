@@ -3,18 +3,19 @@ package br.com.acenetwork.commons.executor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.CommonsConfig;
-import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
+import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 
@@ -47,10 +48,10 @@ public class Reply implements TabExecutor
 				msg += args[i] + " ";
 			}
 
-			File playerFile = CommonsConfig.getFile(Type.PLAYER, false, cp.getUniqueID());
+			File playerFile = CommonsConfig.getFile(Type.PLAYER, false, p.getUniqueId());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 
-			String targetUUID = playerConfig.getString("last-reply");
+			UUID targetUUID = playerConfig.contains("last-reply") ? UUID.fromString(playerConfig.getString("last-reply")) : null;
 
 			if(targetUUID == null)
 			{
@@ -58,7 +59,7 @@ public class Reply implements TabExecutor
 			}
 			else
 			{
-				Tell.tell(cp, CommonsUtil.getNameByUUID(targetUUID), msg);
+				Tell.tell(cp, Bukkit.getPlayer(targetUUID), msg);
 			}
 		}
 		else

@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLocaleChangeEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
 
 import br.com.acenetwork.commons.player.CommonPlayer;

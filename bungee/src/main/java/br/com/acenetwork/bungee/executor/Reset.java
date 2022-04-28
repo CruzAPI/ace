@@ -13,6 +13,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import br.com.acenetwork.bungee.Main;
@@ -138,8 +139,8 @@ public class Reset extends Command
 			PreparedStatement ps1 = database.connection.prepareStatement("truncate table `" + table + "`;");
 			
 			ps1.execute();
-
-			Map<String, Double> map = new HashMap<>();
+			
+			Map<UUID, Double> map = new HashMap<>();
 			
 			File[] balanceFolders = new File[]
 			{
@@ -157,28 +158,25 @@ public class Reset extends Command
 				{
 					Configuration config = provider.load(file);
 					
-					String uuid = file.getName().substring(0, 36);
+					UUID uuid = UUID.fromString(file.getName().substring(0, 36));
 					double balance = config.getDouble("balance");
 					
-					if(map.containsKey(uuid))
-					{
-						map.put(uuid, map.get(uuid) + balance);
-					}
-					else
-					{
-						map.put(uuid, balance);
-					}
+					double oldBalance = map.containsKey(uuid) ? map.get(uuid) : 0.0D;
+					map.put(uuid, oldBalance + balance);
 				}
 			}
 			
 			String sql = "insert into `" + table + "` values ";
 			
-			for(Entry<String, Double> entry : map.entrySet())
+			for(Entry<UUID, Double> entry : map.entrySet())
 			{
-				String uuid = entry.getKey();
+				UUID uuid = entry.getKey();
 				double balance = entry.getValue();
 				
-				String name = Util.getNameByUUID(uuid);
+				File playerFile = Config.getFile(Type.PLAYER, false, uuid);
+				Configuration playerConfig = provider.load(playerFile);
+				String name = playerConfig.getString("name");
+				
 				sql += "(default, '" + uuid + "', '" + name + "', " + balance + "), ";
 			}
 			

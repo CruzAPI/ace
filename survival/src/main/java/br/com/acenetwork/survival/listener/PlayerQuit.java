@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,7 +14,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
@@ -30,8 +30,9 @@ import net.citizensnpcs.api.trait.trait.Inventory;
 public class PlayerQuit implements Listener
 {
 	public static final Map<Integer, Integer> TASK_MAP = new HashMap<>();
-	public static final Map<Integer, String> UUID_MAP = new HashMap<>();
+	public static final Map<Integer, UUID> UUID_MAP = new HashMap<>();
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void on(PlayerQuitEvent e)
 	{
@@ -102,15 +103,16 @@ public class PlayerQuit implements Listener
 				}, 0L, 20L);
 				
 				
-				UUID_MAP.put(npc.getId(), cp.getUUID());
+				UUID_MAP.put(npc.getId(), p.getUniqueId());
 				TASK_MAP.put(npc.getId(), id);
 			}
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static void removeCombatLogger(NPC npc)
 	{
-		String npcUUID = UUID_MAP.remove(npc.getId());
+		UUID npcUUID = UUID_MAP.remove(npc.getId());
 		Integer id = TASK_MAP.remove(npc.getId());
 		
 		if(id != 0)

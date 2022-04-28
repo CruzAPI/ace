@@ -1,15 +1,18 @@
 package br.com.acenetwork.commons.executor;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
@@ -23,7 +26,7 @@ public class Unmute implements TabExecutor
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
 		//TODO
-		return null;
+		return new ArrayList<>();
 	}
 
 	@Override
@@ -48,22 +51,21 @@ public class Unmute implements TabExecutor
 		
 		if(args.length == 1)
 		{
-			String user = args[0];
+			OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
+				x.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
 
-			String uuid = CommonsUtil.getUUIDByName(user);
-
-			if(uuid == null)
+			if(op == null)
 			{
 				sender.sendMessage(Message.getMessage(locale, "cmd.user-not-found"));
 				return true;
 			}
 
-			File playerFile = CommonsConfig.getFile(Type.PLAYER, false, uuid);
+			File playerFile = CommonsConfig.getFile(Type.PLAYER, false, op.getUniqueId());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 			
 			String nickname = playerConfig.getString("name");
 			
-			File mutedPlayersFile = CommonsConfig.getFile(Type.MUTED_PLAYERS, false, uuid);
+			File mutedPlayersFile = CommonsConfig.getFile(Type.MUTED_PLAYERS, false, op.getUniqueId());
 			
 			if(mutedPlayersFile.delete())
 			{

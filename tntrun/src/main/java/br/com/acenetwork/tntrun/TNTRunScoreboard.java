@@ -1,6 +1,5 @@
 package br.com.acenetwork.tntrun;
 
-import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerLocaleChangeEvent;
 

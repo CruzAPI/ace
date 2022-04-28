@@ -16,6 +16,7 @@ import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 
+@SuppressWarnings("deprecation")
 public class PlayerChat implements Listener
 {
 	@EventHandler
@@ -24,21 +25,10 @@ public class PlayerChat implements Listener
 		e.setCancelled(true);
 
 		Player p = e.getPlayer();
-		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
-		File playerFile = CommonsConfig.getFile(Type.PLAYER, false, cp.getUUID());
-		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+		String msg = p.getDisplayName() + ":§l §f" + e.getMessage();
 		
-		String clan = "";
-		
-		if(playerConfig.contains("clan"))
-		{
-			clan = "§8[§b" + playerConfig.getString("clan") + "§8] ";
-		}
-		
-		String msg = clan + p.getDisplayName() + ":§l §f" + e.getMessage();
-		
-		File mutedPlayersFile = CommonsConfig.getFile(Type.MUTED_PLAYERS, false, cp.getUniqueID());
+		File mutedPlayersFile = CommonsConfig.getFile(Type.MUTED_PLAYERS, false, p.getUniqueId());
 		YamlConfiguration mutedPlayersConfig = YamlConfiguration.loadConfiguration(mutedPlayersFile);
 
 		if(mutedPlayersFile.exists())
@@ -58,13 +48,13 @@ public class PlayerChat implements Listener
 			}
 		}
 
-		String playerUUID = cp.getUUID();
+		String playerUUID = p.getUniqueId().toString();
 
 		for(CommonPlayer cpall : CraftCommonPlayer.SET)
 		{
 			Player all = cpall.getPlayer();
 
-			File allPlayerFile = CommonsConfig.getFile(Type.PLAYER, false, cpall.getUUID());
+			File allPlayerFile = CommonsConfig.getFile(Type.PLAYER, false, all.getUniqueId());
 			YamlConfiguration allPlayerConfig = YamlConfiguration.loadConfiguration(allPlayerFile);
 			
 			if(allPlayerConfig.getStringList("ignored-players").contains(playerUUID))

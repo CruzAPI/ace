@@ -13,7 +13,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
@@ -25,22 +24,19 @@ import net.citizensnpcs.api.trait.trait.Inventory;
 
 public class PlayerDeath implements Listener
 {
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void on(PlayerDeathEvent e)
 	{
 		Player p = e.getEntity();		
 		Player killer = p.getKiller();
 		
-		String playerUUID = CommonsUtil.getUUIDByName(p.getName());
-		
 		if(killer != null && killer != p)
 		{			
-			String killerUUID = CommonsUtil.getUUIDByName(killer.getName());
-			
-			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, playerUUID);
+			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 	
-			File killerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, killerUUID);
+			File killerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, killer.getUniqueId());
 			YamlConfiguration killerConfig = YamlConfiguration.loadConfiguration(killerFile);
 			
 			double playerBalance = playerConfig.getDouble("balance");
@@ -129,9 +125,7 @@ public class PlayerDeath implements Listener
 	{
 		Player p = e.getEntity();
 		
-		String playerUUID = CommonsUtil.getUUIDByName(p.getName());
-		
-		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, playerUUID);
+		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		
 		double playerBalance = playerConfig.getDouble("balance");
