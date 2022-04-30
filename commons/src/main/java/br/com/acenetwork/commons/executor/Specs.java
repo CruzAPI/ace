@@ -2,6 +2,7 @@ package br.com.acenetwork.commons.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -12,6 +13,8 @@ import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Specs implements TabExecutor
 {
@@ -24,18 +27,26 @@ public class Specs implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmd.cant-perform-command"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
 		Player p = (Player) sender;
 		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
+		bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
 		if(!cp.hasPermission("cmd.specs"))
 		{
-			cp.sendMessage("cmd.permission");
+			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 

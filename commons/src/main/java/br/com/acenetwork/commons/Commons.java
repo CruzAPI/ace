@@ -56,11 +56,6 @@ public class Commons
 	private static boolean restarting;
 	public static final boolean TEST = !new File(System.getProperty("user.dir")).getParentFile().getName().equals("acenetwork");
 	
-	public static void registerBroadcast(String key, Object... args)
-	{
-		BroadcastCMD.BROADCASTS.add(new Broadcast(key, args));
-	}
-	
 	public static void init(JavaPlugin plugin)
 	{
 		Commons.plugin = plugin;
@@ -121,14 +116,6 @@ public class Commons
 		registerCommand(new Tp(), "teleport", "tp");
 		registerCommand(new Unmute(), "unmute");
 		registerCommand(new WatchCMD(), "watch");
-		
-		Commons.registerBroadcast("commons.broadcast1");
-		Commons.registerBroadcast("commons.broadcast2");
-		Commons.registerBroadcast("commons.broadcast3");
-		Commons.registerBroadcast("commons.broadcast4");
-		Commons.registerBroadcast("commons.broadcast5");
-		Commons.registerBroadcast("commons.broadcast6");
-		BroadcastCMD.suffle();
 		
 		for(Player all : Bukkit.getOnlinePlayers())
 		{

@@ -17,6 +17,7 @@ br\com\acenetwork\survival\player\craft\CraftSurvivalPlayer.class
 br\com\acenetwork\survival\manager\GlobalScoreboard.class
 br\com\acenetwork\survival\executor\Track.class
 br\com\acenetwork\survival\listener\PlayerJoin.class
+br\com\acenetwork\survival\listener\PlayerRespawn$1.class
 br\com\acenetwork\survival\manager\AmountPrice.class
 br\com\acenetwork\survival\listener\PlayerLogin.class
 br\com\acenetwork\survival\executor\Price.class

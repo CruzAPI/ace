@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
@@ -23,6 +24,8 @@ import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Permission implements TabExecutor
 {
@@ -55,18 +58,23 @@ public class Permission implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		if(!(sender instanceof Player))
-		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
-			return true;
-		}
-
-		Player p = (Player) sender;
-		CommonPlayer cp = CraftCommonPlayer.get(p);
+		CommonPlayer cp = null;
+		boolean hasPermission = true;
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
 		
-		if(!p.isOp())
+		if(sender instanceof Player)
 		{
-			cp.sendMessage("cmd.permission");
+			Player p = (Player) sender;
+			cp = CraftCommonPlayer.get(p);
+			hasPermission = cp.hasPermission("cmd.permission");
+			bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		}
+		
+		if(!hasPermission)
+		{
+			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 		

@@ -31,7 +31,6 @@ import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.inventory.GUI;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
-import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 
 public abstract class CraftCommonPlayer implements CommonPlayer
@@ -217,12 +216,6 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 		combat = value ? System.currentTimeMillis() : 0L;
 	}
 	
-	@Override
-	public void sendMessage(String key, Object... args)
-	{
-		p.sendMessage(Message.getMessage(p.getLocale(), key, args));
-	}
-
 	@Override
 	public Player getPlayer()
 	{

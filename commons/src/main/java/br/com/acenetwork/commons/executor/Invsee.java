@@ -2,6 +2,7 @@ package br.com.acenetwork.commons.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -9,10 +10,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Invsee implements TabExecutor
 {
@@ -51,18 +53,26 @@ public class Invsee implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command arg1, String aliases, String[] args)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmd.cant-perform-command"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
 		Player p = (Player) sender;
 		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
-		if(!cp.hasPermission("cmd.invsee"))
+		bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
+		if(!cp.hasPermission("cmd.admin"))
 		{
-			cp.sendMessage("cmd.permission");
+			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 

@@ -53,13 +53,6 @@ public class Main extends JavaPlugin
 		
 		Bukkit.getPluginManager().registerEvents(new PlayerMode(), this);
 		
-		Commons.registerBroadcast("raid.broadcast1");
-		Commons.registerBroadcast("raid.broadcast2");
-		Commons.registerBroadcast("raid.broadcast3");
-		Commons.registerBroadcast("raid.broadcast4");
-		Commons.registerBroadcast("raid.broadcast5");
-		Commons.registerBroadcast("raid.broadcast6");
-		Commons.registerBroadcast("raid.broadcast7");
 		Commons.init(this);
 		
 		BROADCASTS.add(new Broadcast("broadcast.item1"));

@@ -2,6 +2,7 @@ package br.com.acenetwork.commons.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -16,6 +17,8 @@ import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.CommonWatcher;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonWatcher;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class WatchCMD implements TabExecutor
 {
@@ -28,18 +31,26 @@ public class WatchCMD implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmd.cant-perform-command"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
 		Player p = (Player) sender;
 		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
+		bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
 		if(!cp.hasPermission("cmd.watch"))
 		{
-			cp.sendMessage("cmd.permission");
+			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 		
@@ -47,16 +58,9 @@ public class WatchCMD implements TabExecutor
 		{
 			if(cp instanceof CommonWatcher)
 			{
-				try
-				{					
-					Bukkit.getPluginManager().callEvent(new PlayerModeEvent(p.getPlayer()));
-					cp.sendMessage("cmd.admin.player-mode");
-					cp.sendMessage("cmd.invis.visible-to-all");
-				}
-				catch(Exception e)
-				{
-					cp.sendMessage("commons.unexpected-error");
-				}
+				Bukkit.getPluginManager().callEvent(new PlayerModeEvent(p.getPlayer()));
+				cp.sendMessage("cmd.admin.player-mode");
+				cp.sendMessage("cmd.invis.visible-to-all");
 			}
 			else
 			{
@@ -67,9 +71,15 @@ public class WatchCMD implements TabExecutor
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases);
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
-
+		
 		return false;
 	}
 }

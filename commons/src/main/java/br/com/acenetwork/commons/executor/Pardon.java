@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -19,6 +20,8 @@ import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Pardon implements TabExecutor
 {
@@ -31,21 +34,24 @@ public class Pardon implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		String locale = Language.ENGLISH.toString();
 		CommonPlayer cp = null;
-
+		boolean hasPermission = true;
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(sender instanceof Player)
 		{
 			Player p = (Player) sender;
 			cp = CraftCommonPlayer.get(p);
-
-			if(!cp.hasPermission("cmd.pardon"))
-			{
-				cp.sendMessage("cmd.permission");
-				return true;
-			}
-
-			locale = p.getLocale();
+			hasPermission = cp.hasPermission("cmd.pardon");
+			bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		}
+		
+		if(!hasPermission)
+		{
+			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
+			return true;
 		}
 		
 		if(args.length == 1)
@@ -82,7 +88,14 @@ public class Pardon implements TabExecutor
 		}
 		else
 		{
-			sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + aliases + " <player>"));
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			extra[0].addExtra(" <" + bundle.getString("commons.words.player") + ">");
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 		
 		return false;

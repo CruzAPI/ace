@@ -37,7 +37,6 @@ public interface CommonPlayer extends Listener
 	boolean isPlayerCombat(long ms);
 	void setIgnoreInvisAndSpecs(boolean value);
 	boolean getIgnoreInvisAndSpecs();
-	void sendMessage(String key, Object... args);
 	boolean hasPermission(String perm);
 	void setGUI(GUI gui);
 	GUI getGUI();

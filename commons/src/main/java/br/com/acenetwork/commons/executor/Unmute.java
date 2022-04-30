@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -13,12 +14,13 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Unmute implements TabExecutor
 {
@@ -32,31 +34,36 @@ public class Unmute implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		String locale = Language.ENGLISH.toString();
 		CommonPlayer cp = null;
-
+		boolean hasPermission = true;
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(sender instanceof Player)
 		{
 			Player p = (Player) sender;
 			cp = CraftCommonPlayer.get(p);
-
-			if(!cp.hasPermission("cmd.unmute"))
-			{
-				cp.sendMessage("cmd.permission");
-				return true;
-			}
-
-			locale = p.getLocale();
+			hasPermission = cp.hasPermission("cmd.unmute");
+			bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		}
+		
+		if(!hasPermission)
+		{
+			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
+			return true;
 		}
 		
 		if(args.length == 1)
 		{
 			OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> 
-				x.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
-
+					x.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
+			
 			if(op == null)
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.user-not-found"));
+				TextComponent text = new TextComponent(bundle.getString("commons.cmds.user-not-found"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 				return true;
 			}
 
@@ -69,16 +76,35 @@ public class Unmute implements TabExecutor
 			
 			if(mutedPlayersFile.delete())
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.unmute.user-unmuted", nickname));
+				TextComponent[] extra = new TextComponent[1];
+				
+				extra[0] = new TextComponent(nickname);
+				extra[0].setColor(ChatColor.YELLOW);
+				
+				TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.unmute.user-unmuted"), extra);
+				text.setColor(ChatColor.GREEN);
+				sender.spigot().sendMessage(text);
 			}
 			else
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.unmute.user-is-not-muted", nickname));
+				TextComponent[] extra = new TextComponent[1];
+				
+				extra[0] = new TextComponent(nickname);
+				
+				TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.unmute.user-isnt-muted"), extra);
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 			}
 		}
 		else
 		{
-			sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + aliases + " <player>"));
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases + " <" + bundle.getString("commons.words.player") + ">");
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 		
 		return false;

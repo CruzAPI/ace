@@ -6,7 +6,6 @@ import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
@@ -73,15 +72,13 @@ public class Balance implements TabExecutor
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
 		Player p = null;
-		Locale locale = Locale.getDefault();
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
 		
 		if(sender instanceof Player)
 		{
 			p = (Player) sender;
-			locale = CraftCommonPlayer.get(p).getLocale();
+			bundle = ResourceBundle.getBundle("message", CraftCommonPlayer.get(p).getLocale());
 		}
-		
-		final ResourceBundle bundle = ResourceBundle.getBundle("message", locale);
 		
 		final OfflinePlayer op;
 		
@@ -101,7 +98,7 @@ public class Balance implements TabExecutor
 			extra[0] = new TextComponent("/");
 			extra[0].addExtra(aliases);
 			
-			String player = bundle.getString("commons.cmds.args.player");
+			String player = bundle.getString("commons.words.player");
 			
 			if(p == null)
 			{
@@ -120,7 +117,7 @@ public class Balance implements TabExecutor
 
 		if(op == null)
 		{
-			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.user-not-found"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.user-not-found"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;

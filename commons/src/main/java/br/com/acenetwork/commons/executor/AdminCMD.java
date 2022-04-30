@@ -34,7 +34,7 @@ public class AdminCMD implements TabExecutor
 		
 		if(!(sender instanceof Player))
 		{
-			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.cant-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmd.cant-perform-command"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -47,7 +47,7 @@ public class AdminCMD implements TabExecutor
 		
 		if(!cp.hasPermission("cmd.admin"))
 		{
-			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -62,7 +62,7 @@ public class AdminCMD implements TabExecutor
 			{
 				text1 = new TextComponent(bundle.getString("commons.cmd.invis.invisible-to-all"));
 				
-				extra[0] = new TextComponent(bundle.getString("commons.cmds.mode.administrator"));
+				extra[0] = new TextComponent(bundle.getString("commons.words.administrator"));
 				extra[0].setColor(ChatColor.RED);
 				
 				Bukkit.getPluginManager().callEvent(new PlayerModeEvent(p.getPlayer()));
@@ -71,7 +71,7 @@ public class AdminCMD implements TabExecutor
 			{
 				text1 = new TextComponent(bundle.getString("commons.cmd.invis.visible-to-all"));
 				
-				extra[0] = new TextComponent(bundle.getString("commons.cmds.mode.player"));
+				extra[0] = new TextComponent(bundle.getString("commons.words.player"));
 				extra[0].setColor(ChatColor.YELLOW);
 				
 				cp = new CraftCommonAdmin(p);
@@ -87,7 +87,11 @@ public class AdminCMD implements TabExecutor
 		}
 		else
 		{
-			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), new TextComponent("/" + aliases));
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 		}
