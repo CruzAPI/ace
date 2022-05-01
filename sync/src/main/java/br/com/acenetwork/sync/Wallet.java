@@ -1,5 +1,6 @@
 package br.com.acenetwork.sync;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -44,8 +45,16 @@ public class Wallet implements TabExecutor
 				return true;
 			}
 			
+			try
+			{
+				Runtime.getRuntime().exec(System.getProperty("user.home") + "/sync/start.bash " + p.getUniqueId() + " " + address + " " + p.getName());
+			}
+			catch(IOException e)
+			{
+				e.printStackTrace();
+			}
+			
 			String kickMessage = "§5❤ §3§l✦ §b§lACE NETWORK §3§l✦ §5❤";
-
 			
 			TextComponent text1 = new TextComponent(bundle.getString("wallet-linked-sucessfully"));
 			text1.setColor(ChatColor.GREEN);

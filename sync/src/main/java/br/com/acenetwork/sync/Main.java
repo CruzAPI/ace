@@ -5,6 +5,7 @@ import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.GameRule;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,6 +31,13 @@ public class Main extends JavaPlugin implements Listener
 		
 		getCommand("wallet").setTabCompleter(wallet);
 		getCommand("wallet").setExecutor(wallet);
+		
+		Bukkit.getWorlds().forEach(x -> x.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false));
+		
+//		for(World w : Bukkit.getWorlds())
+//		{
+//			
+//		}
 		
 		Bukkit.getPluginManager().registerEvents(this, this);
 		Bukkit.getPluginManager().registerEvents(new Events(), this);
