@@ -1,0 +1,6 @@
+name: Sync
+version: 0.0.1
+main: br.com.acenetwork.sync.Main
+author: CruzAPI
+commands:
+  wallet:

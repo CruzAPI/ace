@@ -10,6 +10,7 @@
   	<module>tntrun</module>
   	<module>bungee</module>
   	<module>lobby</module>
+  	<module>sync</module>
   </modules>
   <build>
     <defaultGoal>clean install</defaultGoal>
