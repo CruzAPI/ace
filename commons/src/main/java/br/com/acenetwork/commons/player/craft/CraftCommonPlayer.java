@@ -534,8 +534,6 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	@Override
 	public Locale getLocale()
 	{
-		String[] split = p.getLocale().split("_");
-		
-		return new Locale(split[0], split[1].toUpperCase());
+		return CommonsUtil.getLocaleFromMinecraft(p.getLocale());
 	}
 }

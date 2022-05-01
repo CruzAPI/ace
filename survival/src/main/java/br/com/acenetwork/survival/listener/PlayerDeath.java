@@ -3,6 +3,8 @@ package br.com.acenetwork.survival.listener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.ResourceBundle;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
@@ -31,8 +34,12 @@ public class PlayerDeath implements Listener
 		Player p = e.getEntity();		
 		Player killer = p.getKiller();
 		
+		ResourceBundle playerBundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(p.getLocale()));
+		
 		if(killer != null && killer != p)
 		{			
+			ResourceBundle killedBundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(killer.getLocale()));
+			
 			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 	
@@ -65,7 +72,7 @@ public class PlayerDeath implements Listener
 				playerConfig.save(playerFile);
 				killerConfig.save(killerFile);
 
-				DecimalFormat df = new DecimalFormat("0.##");
+				DecimalFormat df = new DecimalFormat("0.##", new DecimalFormatSymbols());
 
 				p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.other-stole", 
 					df.format(balanceStole),

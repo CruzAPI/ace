@@ -19,6 +19,6 @@ public class Mute extends Timer
 	@Override
 	public void confirmed()
 	{
-		MuteCMD.mute(cp.getPlayer(), cp.getPlayer().getLocale(), user, currentTimeMillis(), cp.getTag(), reason);
+		MuteCMD.mute(cp.getPlayer(), user, currentTimeMillis(), cp.getTag(), reason);
 	}
 }

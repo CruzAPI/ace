@@ -3,23 +3,25 @@ package br.com.acenetwork.survival;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.Commons;
-import br.com.acenetwork.commons.constants.Language;
-import br.com.acenetwork.commons.executor.Balance;
-import br.com.acenetwork.commons.manager.Broadcast;
 import br.com.acenetwork.commons.manager.Message;
+import br.com.acenetwork.commons.player.CommonPlayer;
+import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.executor.Price;
 import br.com.acenetwork.survival.executor.Sell;
 import br.com.acenetwork.survival.executor.Sellall;
@@ -35,12 +37,14 @@ import br.com.acenetwork.survival.listener.PlayerRespawn;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
 import net.citizensnpcs.api.CitizensAPI;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Main extends JavaPlugin
 {
 	private static Main instance;
 	private static final Random RANDOM = new Random();
-	private static final List<Broadcast> BROADCASTS = new ArrayList<>();
+	private static final List<String> BROADCASTS = new ArrayList<>();
 	private boolean firstRun = true;
 
 	
@@ -55,16 +59,16 @@ public class Main extends JavaPlugin
 		
 		Commons.init(this);
 		
-		BROADCASTS.add(new Broadcast("broadcast.item1"));
-		BROADCASTS.add(new Broadcast("broadcast.item2"));
-		BROADCASTS.add(new Broadcast("broadcast.item3"));
-		BROADCASTS.add(new Broadcast("broadcast.item4"));
-		BROADCASTS.add(new Broadcast("broadcast.item5"));
-		BROADCASTS.add(new Broadcast("broadcast.item6"));
-		BROADCASTS.add(new Broadcast("broadcast.item7"));
-		BROADCASTS.add(new Broadcast("broadcast.item8"));
-		BROADCASTS.add(new Broadcast("broadcast.item9"));
-		BROADCASTS.add(new Broadcast("broadcast.item10"));
+		BROADCASTS.add("raid.broadcast.item.1");
+		BROADCASTS.add("raid.broadcast.item.2");
+		BROADCASTS.add("raid.broadcast.item.3");
+		BROADCASTS.add("raid.broadcast.item.4");
+		BROADCASTS.add("raid.broadcast.item.5");
+		BROADCASTS.add("raid.broadcast.item.6");
+		BROADCASTS.add("raid.broadcast.item.7");
+		BROADCASTS.add("raid.broadcast.item.8");
+		BROADCASTS.add("raid.broadcast.item.9");
+		BROADCASTS.add("raid.broadcast.item.10");
 		
 		Bukkit.getPluginManager().registerEvents(new BlockBreak(), this);
 		Bukkit.getPluginManager().registerEvents(new EntityTarget(), this);
@@ -168,22 +172,36 @@ public class Main extends JavaPlugin
 					{
 						config.save(file);
 						
-						Object[] args = new Object[]
+						List<CommandSender> senderList = new ArrayList<CommandSender>(Bukkit.getOnlinePlayers());
+						senderList.add(Bukkit.getConsoleSender());
+						
+						String bundleKey = BROADCASTS.get(RANDOM.nextInt(BROADCASTS.size()));
+						
+						for(CommandSender sender : senderList)
 						{
-							"§e" + amount + " " + key + "§6"
-						};
-						
-						String bc = BROADCASTS.get(RANDOM.nextInt(BROADCASTS.size())).key;
-						
-						DecimalFormat dc = Balance.getDecimalFormat();
-						
-						for(Player all : Bukkit.getOnlinePlayers())
-						{
-							all.sendMessage("§6" + Message.getMessage(all.getLocale(), bc, args));
-							all.sendMessage("§e" + dc.format(oldPrice) + "§7 » §e" + dc.format(price) + " §a(+" + dc.format(priceChangePercent) + "%)");
+							ResourceBundle bundle = ResourceBundle.getBundle("message", Locale.getDefault());
+							
+							if(sender instanceof Player)
+							{
+								Player p = (Player) sender;
+								CommonPlayer cp = CraftCommonPlayer.get(p);
+								bundle = ResourceBundle.getBundle("message", cp.getLocale());
+							}
+							
+							DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(bundle.getLocale()));
+							df.setGroupingSize(3);
+							df.setGroupingUsed(true);
+							
+							TextComponent[] extra = new TextComponent[1];
+							
+							extra[0] = new TextComponent(df.format(amount) + " " + key);
+							extra[0].setColor(ChatColor.YELLOW);
+							
+							TextComponent text = Message.getTextComponent(bundle.getString(bundleKey), extra);
+							
+							sender.spigot().sendMessage(text);
+							sender.sendMessage("§e" + df.format(oldPrice) + "§7 » §e" + df.format(price) + " §a(+" + df.format(priceChangePercent) + "%)");
 						}
-						
-						Bukkit.getConsoleSender().sendMessage(Message.getMessage(Language.ENGLISH.toString(), bc, args));
 					}
 					catch(IOException ex)
 					{

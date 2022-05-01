@@ -18,6 +18,20 @@ import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 
 public class CommonsUtil
 {
+	public static Locale getLocaleFromMinecraft(String locale)
+	{
+		String[] split = locale.split("_");
+		
+		if(split.length == 1)
+		{
+			return new Locale(split[0]);
+		}
+		else
+		{
+			return new Locale(split[0], split[1]);
+		}
+	}
+	
 	public static boolean hasPermission(UUID uuid, String perm)
 	{
 		perm = perm.replace('.', ':');
