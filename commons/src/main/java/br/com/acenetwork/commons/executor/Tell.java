@@ -97,16 +97,21 @@ public class Tell implements TabExecutor
 	public static void tell(CommonPlayer cp, Player t, String msg)
 	{
 		Player p = cp.getPlayer();
-
+		ResourceBundle bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
 		if(t == null || !p.canSee(t))
 		{
-			cp.sendMessage("cmd.player-not-found");
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.player-not-found"));
+			text.setColor(ChatColor.RED);
+			p.spigot().sendMessage(text);
 			return;
 		}
 
 		if(t == p)
 		{
-			cp.sendMessage("cmd.tell.cannot-tell-yourself");
+			TextComponent text = new TextComponent(bundle.getString("commons.cmd.tell.cant-tell-yourself"));
+			text.setColor(ChatColor.RED);
+			p.spigot().sendMessage(text);
 			return;
 		}
 
@@ -115,7 +120,9 @@ public class Tell implements TabExecutor
 		
 		if(targetConfig.getStringList("ignored-players").contains(p.getUniqueId().toString()))
 		{
-			cp.sendMessage("cmd.tell.cannot-send-message");
+			TextComponent text = new TextComponent(bundle.getString("commons.cmd.tell.cant-send-message"));
+			text.setColor(ChatColor.RED);
+			p.spigot().sendMessage(text);
 			return;
 		}
 

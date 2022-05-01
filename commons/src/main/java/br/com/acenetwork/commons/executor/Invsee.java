@@ -70,7 +70,7 @@ public class Invsee implements TabExecutor
 		
 		if(!cp.hasPermission("cmd.admin"))
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -82,7 +82,9 @@ public class Invsee implements TabExecutor
 			
 			if(t == null)
 			{
-				cp.sendMessage("cmd.player-not-found");
+				TextComponent text = new TextComponent(bundle.getString("commons.cmds.player-not-found"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 				return true;
 			}
 			
@@ -90,7 +92,14 @@ public class Invsee implements TabExecutor
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases + " <player>");
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			extra[0].addExtra(" <" + bundle.getString("commons.words.player") + ">");
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 
 		return true;

@@ -44,7 +44,7 @@ public class Invis implements TabExecutor
 		
 		if(!cp.hasPermission("cmd.invis"))
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -93,7 +93,13 @@ public class Invis implements TabExecutor
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases);
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 
 		return true;

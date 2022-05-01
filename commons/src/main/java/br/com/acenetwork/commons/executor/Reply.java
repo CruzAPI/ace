@@ -63,7 +63,9 @@ public class Reply implements TabExecutor
 
 			if(targetUUID == null)
 			{
-				cp.sendMessage("cmd.reply.no-player-to-reply");
+				TextComponent text = new TextComponent(bundle.getString("commons.cmd.reply.no-player-to-reply"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 			}
 			else
 			{

@@ -71,16 +71,23 @@ public class TagCMD implements TabExecutor
 			{
 				if(cp.hasPermission(tag.getPermission()))
 				{
-					tags += tag.getName() + "§e, ";
+					tags += tag.getName() + "§a, ";
 				}
 			}
 
 			if(tags.length() > 2)
 			{
-				tags = tags.substring(0, tags.length() - 2) + "§e.";
+				tags = tags.substring(0, tags.length() - 2) + "§a.";
 			}
-
-			cp.sendMessage("cmd.tag.your-tags", tags);
+			
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent();
+			extra[0].addExtra(tags);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.tag.your-tags"), extra);
+			text.setColor(ChatColor.GREEN);
+			sender.spigot().sendMessage(text);
 		}
 		else if(args.length == 1)
 		{
@@ -91,21 +98,40 @@ public class TagCMD implements TabExecutor
 				if(cp.hasPermission(tag.getPermission()))
 				{
 					cp.setTag(tag);
-					cp.sendMessage("cmd.tag.tag-selected", tag.getName());
+					
+					TextComponent[] extra = new TextComponent[1];
+					
+					extra[0] = new TextComponent();
+					extra[0].addExtra(tag.getName());
+					
+					TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.tag.tag-selected"), extra);
+					text.setColor(ChatColor.GREEN);
+					sender.spigot().sendMessage(text);
 				}
 				else
 				{
-					cp.sendMessage("cmd.permission");
+					TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
+					text.setColor(ChatColor.RED);
+					sender.spigot().sendMessage(text);
 				}
 			}
 			catch(IllegalArgumentException e)
 			{
-				cp.sendMessage("cmd.tag.tag-not-found");
+				TextComponent text = new TextComponent(bundle.getString("commons.cmd.tag.tag-not-found"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 			}
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases + " [tag]");
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			extra[0].addExtra(" [" + bundle.getString("commons.words.tag") + "]");
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 
 		return true;

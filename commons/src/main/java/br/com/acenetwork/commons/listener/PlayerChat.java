@@ -25,6 +25,7 @@ public class PlayerChat implements Listener
 		e.setCancelled(true);
 
 		Player p = e.getPlayer();
+		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
 		String msg = p.getDisplayName() + ":§l §f" + e.getMessage();
 		
@@ -42,7 +43,7 @@ public class PlayerChat implements Listener
 				Tag tag = Tag.valueOf(mutedPlayersConfig.getString("tag"));
 				String reason = mutedPlayersConfig.getString("reason");	
 				
-				String warnMessage = MuteCMD.getWarnMessage(p.getLocale(), by, tag, time, reason);
+				String warnMessage = MuteCMD.getWarnMessage(cp.getLocale(), by, tag, time, reason);
 				p.sendMessage(warnMessage);
 				return;
 			}

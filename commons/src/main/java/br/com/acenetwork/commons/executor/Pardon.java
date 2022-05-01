@@ -14,7 +14,6 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.manager.Message;
@@ -48,7 +47,7 @@ public class Pardon implements TabExecutor
 		
 		if(!hasPermission)
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -61,14 +60,15 @@ public class Pardon implements TabExecutor
 			
 			if(op == null)
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.user-not-found"));
+				TextComponent text = new TextComponent(bundle.getString("commons.cmds.user-not-found"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 				return true;
 			}
 
 			File playerFile = CommonsConfig.getFile(Type.PLAYER, false, op.getUniqueId());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 			
-			String nickname = playerConfig.getString("name");
 			String ip = playerConfig.getString("ip");
 			
 			File bannedPlayersFile = CommonsConfig.getFile(Type.BANNED_PLAYERS, false, op.getUniqueId());
@@ -76,14 +76,24 @@ public class Pardon implements TabExecutor
 			
 			boolean deletePlayer = bannedPlayersFile.delete();
 			boolean deleteIp = bannedIpsFile.delete();
-
+			
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent(op.getName());
+			
 			if(deletePlayer || deleteIp)
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.pardon.user-pardoned", nickname));
+				extra[0].setColor(ChatColor.YELLOW);
+				
+				TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.pardon.user-pardoned"), extra);
+				text.setColor(ChatColor.GREEN);
+				sender.spigot().sendMessage(text);;
 			}
 			else
 			{
-				sender.sendMessage(Message.getMessage(locale, "cmd.pardon.user-is-not-banned", nickname));
+				TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.pardon.user-isnt-banned"), extra);
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);;
 			}
 		}
 		else

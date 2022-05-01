@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.event.PlayerModeEvent;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
@@ -48,7 +47,7 @@ public class WatchCMD implements TabExecutor
 		
 		if(!cp.hasPermission("cmd.watch"))
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -56,18 +55,35 @@ public class WatchCMD implements TabExecutor
 		
 		if(args.length == 0)
 		{
+			final TextComponent text1;
+			TextComponent[] extra = new TextComponent[2];
+			
 			if(cp instanceof CommonWatcher)
 			{
+				text1 = new TextComponent(bundle.getString("commons.cmd.invis.invisible-to-all"));
+				
+				extra[0] = new TextComponent(bundle.getString("commons.words.watcher"));
+				extra[0].setColor(ChatColor.AQUA);
+				
 				Bukkit.getPluginManager().callEvent(new PlayerModeEvent(p.getPlayer()));
-				cp.sendMessage("cmd.admin.player-mode");
-				cp.sendMessage("cmd.invis.visible-to-all");
 			}
 			else
 			{
+				text1 = new TextComponent(bundle.getString("commons.cmd.invis.visible-to-all"));
+				
+				extra[0] = new TextComponent(bundle.getString("commons.words.player"));
+				extra[0].setColor(ChatColor.YELLOW);
+				
 				cp = new CraftCommonWatcher(p);
-				cp.sendMessage("cmd.admin.watcher-mode");
-				cp.sendMessage("cmd.invis.invisible-to-all");
 			}
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.player-mode-change"), extra);
+			text.setColor(ChatColor.GREEN);
+			
+			text1.setColor(ChatColor.GREEN);
+			
+			sender.spigot().sendMessage(text);
+			sender.spigot().sendMessage(text1);
 		}
 		else
 		{

@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.CommonsUtil;
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
@@ -44,7 +43,7 @@ public class Stop implements TabExecutor
 		
 		if(!hasPermission)
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -56,7 +55,13 @@ public class Stop implements TabExecutor
 		}
 		else
 		{
-		 	sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + aliases));
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 		
 		return false;

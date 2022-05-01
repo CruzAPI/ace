@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
@@ -44,7 +43,7 @@ public class Specs implements TabExecutor
 		
 		if(!cp.hasPermission("cmd.specs"))
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -55,17 +54,27 @@ public class Specs implements TabExecutor
 			if(cp.canSpecs())
 			{
 				cp.setSpecs(false);
-				cp.sendMessage("cmd.specs.disabled");
+				TextComponent text = new TextComponent(bundle.getString("commons.cmd.specs.disabled"));
+				text.setColor(ChatColor.GREEN);
+				sender.spigot().sendMessage(text);
 			}
 			else
 			{
 				cp.setSpecs(true);
-				cp.sendMessage("cmd.specs.enabled");
+				TextComponent text = new TextComponent(bundle.getString("commons.cmd.specs.enabled"));
+				text.setColor(ChatColor.GREEN);
+				sender.spigot().sendMessage(text);
 			}
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases);
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 
 		return true;

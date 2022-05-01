@@ -77,7 +77,7 @@ public class BanCMD implements TabExecutor
 		
 		if(!hasPermission)
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
@@ -118,7 +118,7 @@ public class BanCMD implements TabExecutor
 			
 			extra[0] = new TextComponent("/" + aliases);
 			extra[0].addExtra(" <" + bundle.getString("commons.cmds.args.player") + ">");
-			extra[0].addExtra(" [" + bundle.getString("commons.cmds.args.reason") + "]");
+			extra[0].addExtra(" [" + bundle.getString("commons.cmds.args.reason") + "...]");
 			
 			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra); 
 			text.setColor(ChatColor.RED);

@@ -44,7 +44,7 @@ public class Build implements TabExecutor
 		
 		if(!cp.hasPermission("cmd.build"))
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
