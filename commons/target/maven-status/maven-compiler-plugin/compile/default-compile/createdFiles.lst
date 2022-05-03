@@ -42,7 +42,6 @@ br\com\acenetwork\commons\executor\WatchCMD.class
 br\com\acenetwork\commons\executor\Tp.class
 br\com\acenetwork\commons\inventory\Timer$1.class
 br\com\acenetwork\commons\listener\PlayerChat.class
-br\com\acenetwork\commons\constants\Language.class
 br\com\acenetwork\commons\executor\ChatCMD.class
 br\com\acenetwork\commons\inventory\Mute.class
 br\com\acenetwork\commons\executor\Balance.class

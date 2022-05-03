@@ -1,5 +1,8 @@
 package br.com.acenetwork.commons.inventory;
 
+import java.util.ResourceBundle;
+
+import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 
@@ -17,5 +20,13 @@ public abstract class GUI implements Listener
 		
 		cp.getPlayer().openInventory(inv);
 		cp.setGUI(this);
+	}
+	
+	public GUI(CommonPlayer cp, String key, int size)
+	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
+		this.cp = cp;
+		this.inv = Bukkit.createInventory(cp.getPlayer(), size, bundle.getString(key));
 	}
 }
