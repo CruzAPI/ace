@@ -2,10 +2,13 @@ package br.com.acenetwork.survival.executor;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Map.Entry;
 
 import org.bukkit.Material;
@@ -16,7 +19,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
@@ -25,6 +27,8 @@ import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.manager.AmountPrice;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Sell implements TabExecutor
 {
@@ -42,14 +46,20 @@ public class Sell implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.cant-perform-command"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 		
-		Player p = (Player) sender;		
+		Player p = (Player) sender;
 		CommonPlayer cp = CraftCommonPlayer.get(p);
+		
+		bundle = ResourceBundle.getBundle("message", cp.getLocale());
 		
 		if(args.length == 0)
 		{
@@ -57,7 +67,13 @@ public class Sell implements TabExecutor
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases);
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 
 		return false;
@@ -65,6 +81,8 @@ public class Sell implements TabExecutor
 	
 	public static void sell(CommonPlayer cp, SellType sellType)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
 		Player p = cp.getPlayer();
 		
 		File priceFile = Config.getFile(Type.PRICE, false);
@@ -102,7 +120,9 @@ public class Sell implements TabExecutor
 			{
 				if(sellType == SellType.HAND)
 				{
-					cp.sendMessage("cmd.sell.need-holding-item");
+					TextComponent text = new TextComponent(bundle.getString("raid.cmd.sell.need-hoolding-item"));
+					text.setColor(ChatColor.RED);
+					p.spigot().sendMessage(text);
 					return;
 				}
 				
@@ -113,7 +133,9 @@ public class Sell implements TabExecutor
 			{
 				if(i == 0)
 				{
-					cp.sendMessage("cmd.sell.limit-reached");
+					TextComponent text = new TextComponent(bundle.getString("raid.cmd.sell.limit-reached"));
+					text.setColor(ChatColor.RED);
+					p.spigot().sendMessage(text);
 					return;
 				}
 				
@@ -126,7 +148,9 @@ public class Sell implements TabExecutor
 			{
 				if(sellType == SellType.HAND)
 				{
-					cp.sendMessage("cmd.sell.item-not-for-sale");
+					TextComponent text = new TextComponent(bundle.getString("raid.cmd.sell.item-not-for-sale"));
+					text.setColor(ChatColor.RED);
+					p.spigot().sendMessage(text);
 					return;
 				}
 				
@@ -140,7 +164,9 @@ public class Sell implements TabExecutor
 			{
 				if(sellType == SellType.HAND)
 				{
-					cp.sendMessage("cmd.sell.cannot-sell-anymore");
+					TextComponent text = new TextComponent(bundle.getString("raid.cmd.sell.cant-sell-anymore"));
+					text.setColor(ChatColor.RED);
+					p.spigot().sendMessage(text);
 					return;
 				}
 				
@@ -191,27 +217,54 @@ public class Sell implements TabExecutor
 			
 			if(map.isEmpty())
 			{
-				cp.sendMessage("cmd.sellall.no-items-to-sell");
+				TextComponent text = new TextComponent(bundle.getString("raid.cmd.sellall.no-items-to-sell"));
+				text.setColor(ChatColor.RED);
+				p.spigot().sendMessage(text);
 			}
 			else
 			{
+				DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(bundle.getLocale()));
+				
+				df.setGroupingSize(3);
+				df.setGroupingUsed(true);
+				
 				for(Entry<Material, AmountPrice> entry : map.entrySet())
 				{
 					Material type = entry.getKey();
 					AmountPrice ap = entry.getValue();
-					cp.sendMessage("cmd.sell.item-sold", ap.amount, type, Balance.getDecimalFormat().format(ap.price));
+					
+					TextComponent[] extra = new TextComponent[2];
+					
+					extra[0] = new TextComponent(ap.amount + " " + type);
+					extra[0].setColor(ChatColor.YELLOW);
+					
+					extra[1] = new TextComponent(df.format(ap.price));
+					extra[1].setColor(ChatColor.YELLOW);
+					
+					TextComponent text = Message.getTextComponent(bundle.getString("raid.cmd.sell.item-sold"), extra);
+					text.setColor(ChatColor.GREEN);
+					p.spigot().sendMessage(text);
 				}
 				
 				if(sellType == SellType.ALL)
 				{
-					cp.sendMessage("cmd.sellall.totalizing", Balance.getDecimalFormat().format(total));
+					TextComponent[] extra = new TextComponent[1];
+					
+					extra[0] = new TextComponent(df.format(total));
+					extra[0].setColor(ChatColor.YELLOW);
+					
+					TextComponent text = Message.getTextComponent(bundle.getString("raid.cmd.sell.item-sold"), extra);
+					text.setColor(ChatColor.GREEN);
+					p.spigot().sendMessage(text);
 				}
 			}
 		}
 		catch(IOException ex)
 		{
 			ex.printStackTrace();
-			cp.sendMessage("commons.unexpected-error");
+			TextComponent text = new TextComponent(bundle.getString("commons.unexpected-error"));
+			text.setColor(ChatColor.RED);
+			p.spigot().sendMessage(text);
 		}
 	}
 }

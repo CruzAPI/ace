@@ -34,7 +34,7 @@ public class WatchCMD implements TabExecutor
 		
 		if(!(sender instanceof Player))
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.cmd.cant-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.cant-perform-command"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;

@@ -3,8 +3,8 @@ package br.com.acenetwork.survival.executor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
@@ -12,6 +12,8 @@ import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -53,14 +55,20 @@ public class Price implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.cant-perform-command"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
-
+		
 		Player p = (Player) sender;
 		CommonPlayer cp = CraftCommonPlayer.get(p);
+		
+		bundle = ResourceBundle.getBundle("message", cp.getLocale());
 		
 		File priceFile = Config.getFile(Type.PRICE, false);
 		YamlConfiguration priceConfig = YamlConfiguration.loadConfiguration(priceFile);
@@ -77,7 +85,9 @@ public class Price implements TabExecutor
 
 			if(type == Material.AIR)
 			{
-				cp.sendMessage("cmd.sell.need-holding-item");
+				TextComponent text = new TextComponent(bundle.getString("raid.cmd.sell.need-hoolding-item"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 				return true;
 			}
 		}
@@ -89,13 +99,22 @@ public class Price implements TabExecutor
 			}
 			catch(IllegalArgumentException e)
 			{
-				cp.sendMessage("cmd.price.item-not-exists");
+				TextComponent text = new TextComponent(bundle.getString("raid.cmd.price.item-not-exist"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 				return true;
 			}
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases + " [item]");
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases
+					+ " [" + bundle.getString("commons.words.item-name").toUpperCase().replace(' ', '_') + "]");
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
@@ -114,7 +133,9 @@ public class Price implements TabExecutor
 		}
 		else
 		{
-			cp.sendMessage("cmd.sell.item-not-for-sale");
+			TextComponent text = new TextComponent(bundle.getString("raid.cmd.sell.item-not-for-sale"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 
 		return false;

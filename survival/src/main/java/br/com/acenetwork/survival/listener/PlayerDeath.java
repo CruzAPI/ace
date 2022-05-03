@@ -24,6 +24,8 @@ import br.com.acenetwork.survival.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Inventory;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerDeath implements Listener
 {
@@ -38,7 +40,7 @@ public class PlayerDeath implements Listener
 		
 		if(killer != null && killer != p)
 		{			
-			ResourceBundle killedBundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(killer.getLocale()));
+			ResourceBundle killerBundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(killer.getLocale()));
 			
 			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
@@ -72,20 +74,33 @@ public class PlayerDeath implements Listener
 				playerConfig.save(playerFile);
 				killerConfig.save(killerFile);
 
-				DecimalFormat df = new DecimalFormat("0.##", new DecimalFormatSymbols());
+				DecimalFormat df = new DecimalFormat("#.##");
+				
+				df.setGroupingSize(3);
+				df.setGroupingUsed(true);
+				
+				df.setDecimalFormatSymbols(new DecimalFormatSymbols(playerBundle.getLocale()));
+				
+				TextComponent[] extra = new TextComponent[2];
+				
+				extra[0] = new TextComponent(df.format(balanceStole) + "/" + df.format(maxBalanceStole));
+				extra[1] = new TextComponent(killer.getName());
+				
+				TextComponent text = Message.getTextComponent("raid.event.player-death.other-stole", extra);
+				text.setColor(ChatColor.RED);
+				p.spigot().sendMessage(text);
 
-				p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.other-stole", 
-					df.format(balanceStole),
-					df.format(maxBalanceStole),
-					killer.getName()));
+				df.setDecimalFormatSymbols(new DecimalFormatSymbols(killerBundle.getLocale()));
 				
-				CommonPlayer commonKiller = CraftCommonPlayer.get(killer);
+				extra[0] = new TextComponent(df.format(balanceStole) + "/" + df.format(maxBalanceStole));
+				extra[0].setColor(ChatColor.YELLOW);
 				
-				if(commonKiller != null)
-				{					
-					commonKiller.sendMessage("event.playerdeath.you-stole", 
-						df.format(balanceStole), df.format(maxBalanceStole), p.getName());
-				}
+				extra[1] = new TextComponent(p.getName());
+				extra[1].setColor(ChatColor.YELLOW);
+				
+				text = Message.getTextComponent("raid.event.player-death.you-stole", extra);
+				text.setColor(ChatColor.GREEN);
+				killer.spigot().sendMessage(text);
 			}
 			catch(IOException ex)
 			{
@@ -132,6 +147,8 @@ public class PlayerDeath implements Listener
 	{
 		Player p = e.getEntity();
 		
+		ResourceBundle bundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(p.getLocale()));
+		
 		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		
@@ -151,11 +168,18 @@ public class PlayerDeath implements Listener
 		{
 			playerConfig.save(playerFile);
 			
-			DecimalFormat df = new DecimalFormat("0.##");
-
-			p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.you-lost", 
-				df.format(balanceLost),
-				df.format(maxBalanceLost)));
+			DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(bundle.getLocale()));
+			
+			df.setGroupingSize(3);
+			df.setGroupingUsed(true);
+			
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent(df.format(balanceLost) + "/" + df.format(maxBalanceLost));
+			
+			TextComponent text = Message.getTextComponent("raid.event.player-death.you-lost", extra);
+			text.setColor(ChatColor.RED);
+			p.spigot().sendMessage(text);
 			
 		}
 		catch(IOException ex)
