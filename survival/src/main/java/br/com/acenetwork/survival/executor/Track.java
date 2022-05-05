@@ -2,6 +2,7 @@ package br.com.acenetwork.survival.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 import org.bukkit.Material;
@@ -12,11 +13,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Util;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Track implements TabExecutor
 {
@@ -54,14 +57,20 @@ public class Track implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.cant-perform-command"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 		
 		Player p = (Player) sender;
 		CommonPlayer cp = CraftCommonPlayer.get(p);
+		
+		bundle = ResourceBundle.getBundle("message", cp.getLocale());
 		
 		List<Player> targetList = new ArrayList<>(Util.getOnlinePlayersAndNPCs().stream().
 			filter(x -> p.canSee(x)).collect(Collectors.toList()));
@@ -72,13 +81,17 @@ public class Track implements TabExecutor
 			
 			if(p == t)
 			{
-				cp.sendMessage("cmd.track.cannot-track-yourself");
+				TextComponent text = new TextComponent(bundle.getString("raid.cmd.track.cant-track-yourself"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 				return true;
 			}
 
 			if(t == null || !p.canSee(t))
 			{
-				cp.sendMessage("cmd.player-not-found");
+				TextComponent text = new TextComponent(bundle.getString("commons.cmds.player-not-found"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 				return true;
 			}
 			
@@ -87,7 +100,14 @@ public class Track implements TabExecutor
 		}
 		else if(args.length > 1)
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases + " [player]");
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			extra[0].addExtra(" [" + bundle.getString("commons.words.player") + "]");
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
@@ -115,7 +135,9 @@ public class Track implements TabExecutor
 				selfDestroy = true;
 				break;
 			default: 
-				cp.sendMessage("cmd.track.not-valid");
+				TextComponent text = new TextComponent(bundle.getString("raid.cmd.track.not-valid"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 				p.sendMessage("§7https://www.brawl.com/wiki/tracking-raid/");
 				return true;
 		}
@@ -153,7 +175,9 @@ public class Track implements TabExecutor
 		
 		if(blockList.size() <= 1)
 		{
-			cp.sendMessage("cmd.track.not-valid");
+			TextComponent text = new TextComponent(bundle.getString("raid.cmd.track.not-valid"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			p.sendMessage("§7https://www.brawl.com/wiki/tracking-raid/");
 			return true;
 		}
@@ -225,21 +249,44 @@ public class Track implements TabExecutor
 
 		p.sendMessage(" ");
 		p.sendMessage("§a[TRACK]");
-		p.sendMessage(String.format("§f%s§7:§f %s§7,§f %s§7,§f %s", Message.getMessage(p.getLocale(), "cmd.track.location"),
-			middle.getX(), middle.getY(), middle.getZ()));
-		p.sendMessage(String.format("§f%s§7: %s§f %s§7, %s§f %s§7, %s§f %s§7, %s§f %s", 
-			Message.getMessage(p.getLocale(), "cmd.track.range"),
-			Message.getMessage(p.getLocale(), "cmd.track.north"),
-			range[0], 
-			Message.getMessage(p.getLocale(), "cmd.track.south"),
-			range[1], 
-			Message.getMessage(p.getLocale(), "cmd.track.east"),
-			range[2], 
-			Message.getMessage(p.getLocale(), "cmd.track.west"),
-			range[3]));
-		p.sendMessage("§f ---§e " + Message.getMessage(p.getLocale(), "cmd.track.results") + " §f---");
+		
+		TextComponent text = new TextComponent(bundle.getString("commons.words.location"));
+		
+		text.setColor(ChatColor.WHITE);
+		text.addExtra(new ComponentBuilder(":").color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(" " + middle.getX());
+		text.addExtra(new ComponentBuilder(",").color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(" " + middle.getY());
+		text.addExtra(new ComponentBuilder(",").color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(" " + middle.getZ());
+		
+		p.spigot().sendMessage(text);
+		
+		text = new TextComponent(bundle.getString("commons.words.range"));
+		
+		text.setColor(ChatColor.WHITE);
+		text.addExtra(new ComponentBuilder(": " + bundle.getString("commons.words.north")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(" " + range[0]);
+		text.addExtra(new ComponentBuilder(", " + bundle.getString("commons.words.south")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(" " + range[1]);
+		text.addExtra(new ComponentBuilder(", " + bundle.getString("commons.words.east")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(" " + range[2]);
+		text.addExtra(new ComponentBuilder(", " + bundle.getString("commons.words.west")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(" " + range[3]);
+		
+		p.spigot().sendMessage(text);
+		
+		text = new TextComponent();
+		
+		text.setColor(ChatColor.WHITE);
+		text.addExtra(" --- ");
+		text.addExtra(new ComponentBuilder(bundle.getString("commons.words.results")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(" --- ");
+		
+		p.spigot().sendMessage(text);
+		
 		p.sendMessage(result);
-			
+		
 		return false;
 	}
 

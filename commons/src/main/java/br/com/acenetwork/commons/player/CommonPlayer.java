@@ -1,5 +1,7 @@
 package br.com.acenetwork.commons.player;
 
+import java.util.Locale;
+
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -29,7 +31,6 @@ public interface CommonPlayer extends Listener
 	boolean isPlayerCombat(long ms);
 	void setIgnoreInvisAndSpecs(boolean value);
 	boolean getIgnoreInvisAndSpecs();
-	void sendMessage(String key, Object... args);
 	boolean hasPermission(String perm);
 	void setGUI(GUI gui);
 	GUI getGUI();
@@ -38,4 +39,6 @@ public interface CommonPlayer extends Listener
 	Player getLastPlayerDamage();
 	Player getPlayer();
 	void reset();
+	Locale getLocale();
+	void sendMessage(String string, Object... args);
 }

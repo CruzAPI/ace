@@ -10,7 +10,9 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -19,10 +21,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
+import br.com.acenetwork.commons.player.CommonPlayer;
+import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import br.com.acenetwork.commons.manager.Database;
 import br.com.acenetwork.commons.manager.Message;
 
@@ -37,11 +44,34 @@ public class Reset implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		String locale = "en_us";
+		boolean hasPermission = true;
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
+		if(sender instanceof Player)
+		{
+			Player p = (Player) sender;
+			CommonPlayer cp = CraftCommonPlayer.get(p);
+			hasPermission = cp.hasPermission("cmd.reset");
+			bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		}
+		
+		if(!hasPermission)
+		{
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
+			return true;
+		}
 		
 		if(args.length == 0)
 		{
-			sender.sendMessage(Message.getMessage(locale, "cmd.reset.confirm"));
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/reset confirm");
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("raid.cmd.reset.confirm"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 		else if(args.length == 1 && args[0].equalsIgnoreCase("confirm"))
 		{
@@ -52,12 +82,20 @@ public class Reset implements TabExecutor
 			catch(Exception e)
 			{
 				e.printStackTrace();
-				sender.sendMessage(Message.getMessage(locale, "commons.unexpected-error"));
+				TextComponent text = new TextComponent(bundle.getString("commons.unexpected-error"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
 			}
 		}
 		else
 		{
-			sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + aliases));
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 		
 		return false;
@@ -146,7 +184,25 @@ public class Reset implements TabExecutor
 			
 			deleteDir(balanceFolder);
 			
-			Bukkit.broadcastMessage("§cPoints have been reset!");
+			List<CommandSender> senderList = new ArrayList<CommandSender>(Bukkit.getOnlinePlayers());
+			senderList.add(Bukkit.getConsoleSender());
+			
+			for(CommandSender sender : senderList)
+			{
+				ResourceBundle bundle = ResourceBundle.getBundle("message", Locale.getDefault());
+				
+				if(sender instanceof Player)
+				{
+					Player p = (Player) sender;
+					CommonPlayer cp = CraftCommonPlayer.get(p);
+					
+					bundle = ResourceBundle.getBundle("message", cp.getLocale());
+				}
+				
+				TextComponent text = new TextComponent(bundle.getString("raid.cmd.reset.points-reset"));
+				text.setColor(ChatColor.RED);
+				sender.spigot().sendMessage(text);
+			}
 		
 			return true;
 		}

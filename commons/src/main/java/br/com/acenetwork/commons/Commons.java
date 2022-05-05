@@ -27,6 +27,7 @@ import br.com.acenetwork.commons.executor.Ignore;
 import br.com.acenetwork.commons.executor.Invis;
 import br.com.acenetwork.commons.executor.Invsee;
 import br.com.acenetwork.commons.executor.MuteCMD;
+import br.com.acenetwork.commons.executor.Mutebroadcast;
 import br.com.acenetwork.commons.executor.Pardon;
 import br.com.acenetwork.commons.executor.Permission;
 import br.com.acenetwork.commons.executor.Ping;
@@ -56,24 +57,11 @@ public class Commons
 	private static boolean restarting;
 	public static final boolean TEST = !new File(System.getProperty("user.dir")).getParentFile().getName().equals("acenetwork");
 	
-	public static void registerBroadcast(String key, Object... args)
-	{
-		BroadcastCMD.BROADCASTS.add(new Broadcast(key, args));
-	}
-	
 	public static void init(JavaPlugin plugin)
 	{
 		Commons.plugin = plugin;
 		
-		try
-		{
-			ResourceBundle bundle = ResourceBundle.getBundle("message", new Locale("en", "US"));
-			System.out.println(bundle.getString("test.hello"));
-		}
-		catch(Exception ex)
-		{
-			ex.printStackTrace();
-		}
+		Locale.setDefault(new Locale("en", "US"));
 		
 		if(TEST)
 		{
@@ -106,6 +94,7 @@ public class Commons
 		registerCommand(new Invis(), "invis", "v", "vanish");
 		registerCommand(new Invis(), "vis");
 		registerCommand(new Invsee(), "invsee");
+		registerCommand(new Mutebroadcast(), "mutebroadcast");
 		registerCommand(new MuteCMD(), "mute");
 		registerCommand(new Pardon(), "pardon");
 		registerCommand(new Permission(), "permission", "pex", "perm");
@@ -119,14 +108,6 @@ public class Commons
 		registerCommand(new Tp(), "teleport", "tp");
 		registerCommand(new Unmute(), "unmute");
 		registerCommand(new WatchCMD(), "watch");
-		
-		Commons.registerBroadcast("commons.broadcast1");
-		Commons.registerBroadcast("commons.broadcast2");
-		Commons.registerBroadcast("commons.broadcast3");
-		Commons.registerBroadcast("commons.broadcast4");
-		Commons.registerBroadcast("commons.broadcast5");
-		Commons.registerBroadcast("commons.broadcast6");
-		BroadcastCMD.suffle();
 		
 		for(Player all : Bukkit.getOnlinePlayers())
 		{

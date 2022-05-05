@@ -2,18 +2,18 @@ package br.com.acenetwork.commons.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.Message;
-import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Ping implements TabExecutor
 {
@@ -47,18 +47,18 @@ public class Ping implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		if(!(sender instanceof Player))
+		Player p = null;
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
+		if(sender instanceof Player)
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
-			return true;
+			p = (Player) sender;
+			bundle = ResourceBundle.getBundle("message", CraftCommonPlayer.get(p).getLocale());
 		}
-
-		Player p = (Player) sender;
-		CommonPlayer cp = CraftCommonPlayer.get(p);
 
 		Player t = null;
 		
-		if(args.length == 0)
+		if(p != null && args.length == 0)
 		{
 			t = p;
 		}
@@ -68,13 +68,32 @@ public class Ping implements TabExecutor
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases + " [player]");
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			String argsPlayer = bundle.getString("commons.words.player");
+			
+			if(p == null)
+			{
+				extra[0].addExtra(" <" + argsPlayer + ">");
+			}
+			else
+			{
+				extra[0].addExtra(" [" + argsPlayer + "]");
+			}
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
-		if(t == null || !p.canSee(t))
+		if(t == null || (p != null && !p.canSee(t)))
 		{
-			cp.sendMessage("cmd.player-not-found");
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.player-not-found"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
@@ -83,11 +102,28 @@ public class Ping implements TabExecutor
 
 		if(t == p)
 		{
-			cp.sendMessage("cmd.ping.self", color.toString() + ping);
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent(ping + "ms");
+			extra[0].setColor(color);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.ping.self"), extra);
+			text.setColor(ChatColor.GREEN);
+			sender.spigot().sendMessage(text);
 		}
 		else
 		{
-			cp.sendMessage("cmd.ping.other", t.getName(), color.toString() + ping);
+			TextComponent[] extra = new TextComponent[2];
+			
+			extra[0] = new TextComponent(t.getName());
+			extra[0].setColor(ChatColor.YELLOW);
+			
+			extra[1] = new TextComponent(ping + "ms");
+			extra[1].setColor(color);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.ping.other"), extra);
+			text.setColor(ChatColor.GREEN);
+			sender.spigot().sendMessage(text);
 		}
 
 		return true;
@@ -97,7 +133,7 @@ public class Ping implements TabExecutor
 	{
 		if(ping < 30)
 		{
-			return ChatColor.GREEN;
+			return ChatColor.DARK_GREEN;
 		}
 		else if(ping < 100)
 		{

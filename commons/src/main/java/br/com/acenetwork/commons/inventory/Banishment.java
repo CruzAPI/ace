@@ -19,6 +19,6 @@ public class Banishment extends Timer
 	@Override
 	public void confirmed()
 	{
-		BanCMD.ban(cp.getPlayer(), cp.getPlayer().getLocale(), user, currentTimeMillis(), cp.getTag(), reason);
+		BanCMD.ban(cp.getPlayer(), cp.getLocale(), user, currentTimeMillis(), cp.getTag(), reason);
 	}
 }

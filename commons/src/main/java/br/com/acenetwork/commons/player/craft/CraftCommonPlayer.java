@@ -3,6 +3,7 @@ package br.com.acenetwork.commons.player.craft;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,6 @@ import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.inventory.GUI;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
-import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 
 public abstract class CraftCommonPlayer implements CommonPlayer
@@ -216,12 +216,6 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 		combat = value ? System.currentTimeMillis() : 0L;
 	}
 	
-	@Override
-	public void sendMessage(String key, Object... args)
-	{
-		p.sendMessage(Message.getMessage(p.getLocale(), key, args));
-	}
-
 	@Override
 	public Player getPlayer()
 	{
@@ -497,5 +491,18 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 
 		setCombat(false);
 		setPlayerCombat(false);
+	}
+	
+	@Override
+	public void sendMessage(String string, Object... args) {
+		// TODO REMOVE
+		
+	}
+	
+	
+	@Override
+	public Locale getLocale()
+	{
+		return CommonsUtil.getLocaleFromMinecraft(p.getLocale());
 	}
 }

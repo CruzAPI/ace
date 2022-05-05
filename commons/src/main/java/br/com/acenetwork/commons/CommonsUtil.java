@@ -1,6 +1,8 @@
 package br.com.acenetwork.commons;
 
 import java.io.File;
+import java.text.MessageFormat;
+import java.util.Locale;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -16,6 +18,20 @@ import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 
 public class CommonsUtil
 {
+	public static Locale getLocaleFromMinecraft(String locale)
+	{
+		String[] split = locale.split("_");
+		
+		if(split.length == 1)
+		{
+			return new Locale(split[0]);
+		}
+		else
+		{
+			return new Locale(split[0], split[1]);
+		}
+	}
+	
 	public static boolean hasPermission(UUID uuid, String perm)
 	{
 		perm = perm.replace('.', ':');
@@ -132,5 +148,19 @@ public class CommonsUtil
 	public static boolean groupSyntaxIsValid(String group)
 	{
 		return group.matches("[a-z]{0,16}");
+	}
+	
+	public static String[] split(MessageFormat mf)
+	{
+		Object[] argss = new Object[mf.getFormatsByArgumentIndex().length];
+		
+		String regex = "?+-+?";
+		
+		for(int i = 0; i < argss.length; i++)
+		{
+			argss[i] = regex;
+		}
+		
+		return mf.format(argss).split(regex);
 	}
 }

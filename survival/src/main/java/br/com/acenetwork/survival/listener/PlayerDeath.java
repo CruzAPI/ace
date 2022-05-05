@@ -3,8 +3,13 @@ package br.com.acenetwork.survival.listener;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Arrays;
+import java.util.ResourceBundle;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,6 +18,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
+import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
@@ -21,6 +27,8 @@ import br.com.acenetwork.survival.Main;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 import net.citizensnpcs.api.trait.trait.Inventory;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PlayerDeath implements Listener
 {
@@ -31,9 +39,15 @@ public class PlayerDeath implements Listener
 		Player p = e.getEntity();		
 		Player killer = p.getKiller();
 		
+		ResourceBundle playerBundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(p.getLocale()));
+		
+		OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> x.getName().equals(p.getName())).findAny().orElseThrow();
+		
 		if(killer != null && killer != p)
 		{			
-			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
+			ResourceBundle killerBundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(killer.getLocale()));
+			
+			File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, op.getUniqueId());
 			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 	
 			File killerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, killer.getUniqueId());
@@ -65,20 +79,33 @@ public class PlayerDeath implements Listener
 				playerConfig.save(playerFile);
 				killerConfig.save(killerFile);
 
-				DecimalFormat df = new DecimalFormat("0.##");
+				DecimalFormat df = new DecimalFormat("#.##");
+				
+				df.setGroupingSize(3);
+				df.setGroupingUsed(true);
+				
+				df.setDecimalFormatSymbols(new DecimalFormatSymbols(playerBundle.getLocale()));
+				
+				TextComponent[] extra = new TextComponent[2];
+				
+				extra[0] = new TextComponent(df.format(balanceStole) + "/" + df.format(maxBalanceStole));
+				extra[1] = new TextComponent(killer.getName());
+				
+				TextComponent text = Message.getTextComponent(playerBundle.getString("raid.event.player-death.other-stole"), extra);
+				text.setColor(ChatColor.RED);
+				p.spigot().sendMessage(text);
 
-				p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.other-stole", 
-					df.format(balanceStole),
-					df.format(maxBalanceStole),
-					killer.getName()));
+				df.setDecimalFormatSymbols(new DecimalFormatSymbols(killerBundle.getLocale()));
 				
-				CommonPlayer commonKiller = CraftCommonPlayer.get(killer);
+				extra[0] = new TextComponent(df.format(balanceStole) + "/" + df.format(maxBalanceStole));
+				extra[0].setColor(ChatColor.YELLOW);
 				
-				if(commonKiller != null)
-				{					
-					commonKiller.sendMessage("event.playerdeath.you-stole", 
-						df.format(balanceStole), df.format(maxBalanceStole), p.getName());
-				}
+				extra[1] = new TextComponent(p.getName());
+				extra[1].setColor(ChatColor.YELLOW);
+				
+				text = Message.getTextComponent(killerBundle.getString("raid.event.player-death.you-stole"), extra);
+				text.setColor(ChatColor.GREEN);
+				killer.spigot().sendMessage(text);
 			}
 			catch(IOException ex)
 			{
@@ -107,12 +134,6 @@ public class PlayerDeath implements Listener
 		
 		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
-		if(p.hasMetadata("hide death message"))
-		{
-			p.removeMetadata("hide death message", Main.getInstance());
-			e.setDeathMessage(null);
-		}
-		
 		if(cp != null)
 		{			
 			cp.setCombat(false);
@@ -125,7 +146,18 @@ public class PlayerDeath implements Listener
 	{
 		Player p = e.getEntity();
 		
-		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, p.getUniqueId());
+		if(p.hasMetadata("hide death message"))
+		{
+			p.removeMetadata("hide death message", Main.getInstance());
+			e.setDeathMessage(null);
+			return;
+		}
+		
+		ResourceBundle bundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(p.getLocale()));
+		
+		OfflinePlayer op = Arrays.stream(Bukkit.getOfflinePlayers()).filter(x -> x.getName().equals(p.getName())).findAny().orElseThrow();
+		
+		File playerFile = CommonsConfig.getFile(CommonsConfig.Type.BALANCE_RAID_PLAYER, true, op.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
 		
 		double playerBalance = playerConfig.getDouble("balance");
@@ -144,11 +176,18 @@ public class PlayerDeath implements Listener
 		{
 			playerConfig.save(playerFile);
 			
-			DecimalFormat df = new DecimalFormat("0.##");
-
-			p.sendMessage(Message.getMessage(p.getLocale(), "event.playerdeath.you-lost", 
-				df.format(balanceLost),
-				df.format(maxBalanceLost)));
+			DecimalFormat df = new DecimalFormat("#.##", new DecimalFormatSymbols(bundle.getLocale()));
+			
+			df.setGroupingSize(3);
+			df.setGroupingUsed(true);
+			
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent(df.format(balanceLost) + "/" + df.format(maxBalanceLost));
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("raid.event.player-death.you-lost"), extra);
+			text.setColor(ChatColor.RED);
+			p.spigot().sendMessage(text);
 			
 		}
 		catch(IOException ex)

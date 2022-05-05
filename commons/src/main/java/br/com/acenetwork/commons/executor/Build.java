@@ -2,17 +2,19 @@ package br.com.acenetwork.commons.executor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.constants.Language;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonAdmin;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Build implements TabExecutor
 {
@@ -25,24 +27,34 @@ public class Build implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
+		
 		if(!(sender instanceof Player))
 		{
-			sender.sendMessage(Message.getMessage(Language.ENGLISH.toString(), "cmd.cannot-perform-command"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.cant-perform-command"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
 		Player p = (Player) sender;
 		CommonPlayer cp = CraftCommonPlayer.get(p);
 		
+		bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
 		if(!cp.hasPermission("cmd.build"))
 		{
-			cp.sendMessage("cmd.permission");
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
 		if(!(cp instanceof CommonAdmin))
 		{
-			cp.sendMessage("cmd.need-admin");
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.need-admin"));
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 			return true;
 		}
 
@@ -53,17 +65,27 @@ public class Build implements TabExecutor
 			if(admin.canBuild())
 			{
 				admin.setBuild(false);
-				admin.sendMessage("cmd.build.disabled");
+				TextComponent text = new TextComponent(bundle.getString("commons.cmd.build.disabled"));
+				text.setColor(ChatColor.GREEN);
+				sender.spigot().sendMessage(text);
 			}
 			else
 			{
 				admin.setBuild(true);
-				admin.sendMessage("cmd.build.enabled");
+				TextComponent text = new TextComponent(bundle.getString("commons.cmd.build.enabled"));
+				text.setColor(ChatColor.GREEN);
+				sender.spigot().sendMessage(text);
 			}
 		}
 		else
 		{
-			cp.sendMessage("cmd.wrong-syntax-try", "/" + aliases);
+TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + aliases);
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.spigot().sendMessage(text);
 		}
 
 		return true;

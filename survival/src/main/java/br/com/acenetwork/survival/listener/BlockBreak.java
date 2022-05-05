@@ -2,6 +2,7 @@ package br.com.acenetwork.survival.listener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,6 +16,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -78,14 +80,23 @@ public class BlockBreak implements Listener
 				{
 					Player all = cpall.getPlayer();
 					
-					TextComponent component = new TextComponent(
-						Message.getMessage(all.getLocale(), "alert.orefound", p.getName(), n + "x " + type.toString()));
+					ResourceBundle bundle = ResourceBundle.getBundle("message", cpall.getLocale());
+					
+					TextComponent[] extra = new TextComponent[3];
+					
+					extra[0] = new TextComponent();
+					extra[0].addExtra(p.getDisplayName());
 
-					TextComponent extra = new TextComponent(" §e" + Message.getMessage(all.getLocale(), "commons.teleport"));
-					extra.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + p.getName()));
-					component.addExtra(extra);
-
-					all.spigot().sendMessage(component);
+					extra[1] = new TextComponent("[" + bundle.getString("commons.verbs.teleport").toUpperCase() + "]");
+					extra[1].setColor(ChatColor.YELLOW);
+					
+					extra[2] = new TextComponent(n + " " + type.toString());
+					extra[2].setColor(ChatColor.YELLOW);
+					extra[2].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + p.getName()));
+					
+					TextComponent text = Message.getTextComponent("raid.event.block-break.alert-ore-found", extra);
+					text.setColor(ChatColor.GREEN);
+					all.spigot().sendMessage(text);
 				}
 			}
 		}
