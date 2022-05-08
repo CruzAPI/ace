@@ -68,6 +68,12 @@ public class CommonsConfig
 		
 		if(createNewFile && !file.exists())
 		{
+			if(type.toString().contains("FOLDER"))
+			{
+				file.mkdirs();
+				return file;
+			}
+			
 			file.toPath().getParent().toFile().mkdirs();
 			
 			try

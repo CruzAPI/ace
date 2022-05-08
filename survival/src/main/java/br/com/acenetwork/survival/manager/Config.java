@@ -11,7 +11,7 @@ public class Config
 {
 	public enum Type
 	{
-		BOT, COMBATLOG, PRICE;
+		QUESTS, PLAYER_QUESTS, PLAYER_QUESTS_FOLDER, BOT, COMBATLOG, PRICE;
 	}
 
 	public static File getFile(Type type, boolean createNewFile, Object... args)
@@ -21,21 +21,36 @@ public class Config
 
 		switch(type)
 		{
-			case BOT:
-				file = new File(Main.getInstance().getDataFolder(), "bot.yml");
-				break;
-			case COMBATLOG:
-				file = new File(Main.getInstance().getDataFolder() + "/combatlog", args[0] + ".yml");
-				break;
-			case PRICE:
-				file = new File(Main.getInstance().getDataFolder(), "price.yml");
-				break;
-			default:
-				return null;
+		case PLAYER_QUESTS:
+			file = new File(Main.getInstance().getDataFolder() + "/player_quests", args[0] + ".yml");
+			break;
+		case PLAYER_QUESTS_FOLDER:
+			file = new File(Main.getInstance().getDataFolder() + "/player_quests");
+			break;
+		case QUESTS:
+			file = new File(Main.getInstance().getDataFolder(), "quests.yml");
+			break;
+		case BOT:
+			file = new File(Main.getInstance().getDataFolder(), "bot.yml");
+			break;
+		case COMBATLOG:
+			file = new File(Main.getInstance().getDataFolder() + "/combatlog", args[0] + ".yml");
+			break;
+		case PRICE:
+			file = new File(Main.getInstance().getDataFolder(), "price.yml");
+			break;
+		default:
+			return null;
 		}
 
 		if(createNewFile && !file.exists())
 		{
+			if(type.toString().contains("FOLDER"))
+			{
+				file.mkdirs();
+				return file;
+			}
+			
 			file.toPath().getParent().toFile().mkdirs();
 			
 			try
