@@ -1,4 +1,4 @@
-package br.com.acenetwork.survival.executor;
+package br.com.acenetwork.survival.event;
 
 import java.util.List;
 
@@ -9,6 +9,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.player.PlayerEvent;
 
+import br.com.acenetwork.survival.executor.Track;
 import br.com.acenetwork.survival.executor.Track.TrackType;
 
 public class TrackEvent extends PlayerEvent implements Cancellable

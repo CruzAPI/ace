@@ -26,8 +26,8 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 
 import br.com.acenetwork.survival.Util;
+import br.com.acenetwork.survival.event.TrackEvent;
 import br.com.acenetwork.survival.executor.Track.TrackType;
-import br.com.acenetwork.survival.executor.TrackEvent;
 
 public class SpawnProtection implements Listener
 {
