@@ -12,6 +12,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.entity.Player;
 
 import br.com.acenetwork.commons.manager.Message;
@@ -270,7 +271,8 @@ public class Track implements TabExecutor
 		p.sendMessage(" ");
 		p.sendMessage("§a[TRACK]");
 		
-		TextComponent text = new TextComponent(bundle.getString("commons.words.location"));
+		
+		TextComponent text = new TextComponent(WordUtils.capitalize(bundle.getString("commons.words.location")));
 		
 		text.setColor(ChatColor.WHITE);
 		text.addExtra(new ComponentBuilder(":").color(ChatColor.GRAY).getCurrentComponent());
@@ -282,16 +284,20 @@ public class Track implements TabExecutor
 		
 		p.spigot().sendMessage(text);
 		
-		text = new TextComponent(bundle.getString("commons.words.range"));
+		text = new TextComponent(WordUtils.capitalize(bundle.getString("commons.words.range")));
 		
 		text.setColor(ChatColor.WHITE);
-		text.addExtra(new ComponentBuilder(": " + bundle.getString("commons.words.north")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(new ComponentBuilder(": " + WordUtils.capitalize(bundle.getString("commons.words.north")))
+				.color(ChatColor.GRAY).getCurrentComponent());
 		text.addExtra(" " + range[0]);
-		text.addExtra(new ComponentBuilder(", " + bundle.getString("commons.words.south")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(new ComponentBuilder(", " + WordUtils.capitalize(bundle.getString("commons.words.south")))
+				.color(ChatColor.GRAY).getCurrentComponent());
 		text.addExtra(" " + range[1]);
-		text.addExtra(new ComponentBuilder(", " + bundle.getString("commons.words.east")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(new ComponentBuilder(", " + WordUtils.capitalize(bundle.getString("commons.words.east")))
+				.color(ChatColor.GRAY).getCurrentComponent());
 		text.addExtra(" " + range[2]);
-		text.addExtra(new ComponentBuilder(", " + bundle.getString("commons.words.west")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(new ComponentBuilder(", " + WordUtils.capitalize(bundle.getString("commons.words.west")))
+				.color(ChatColor.GRAY).getCurrentComponent());
 		text.addExtra(" " + range[3]);
 		
 		p.spigot().sendMessage(text);
@@ -300,7 +306,8 @@ public class Track implements TabExecutor
 		
 		text.setColor(ChatColor.WHITE);
 		text.addExtra(" --- ");
-		text.addExtra(new ComponentBuilder(bundle.getString("commons.words.results")).color(ChatColor.GRAY).getCurrentComponent());
+		text.addExtra(new ComponentBuilder(bundle.getString("commons.words.results").toUpperCase())
+				.color(ChatColor.YELLOW).getCurrentComponent());
 		text.addExtra(" --- ");
 		
 		p.spigot().sendMessage(text);
