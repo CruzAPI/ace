@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -23,6 +24,11 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class Track implements TabExecutor
 {
+	public enum TrackType
+	{
+		COBBLESTONE, OBSIDIAN, IRON;
+	}
+	
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
@@ -117,22 +123,27 @@ public class Track implements TabExecutor
 		int trackDistance = 25;
 		boolean selfDestroy = false;
 		int[] range = new int[] {0, 0, 0, 0};
-
+		
+		final TrackType type;
+		
 		switch(middle.getType())
 		{
 			case DIAMOND_BLOCK:
 				arms = Material.OBSIDIAN;
 				end = Material.GOLD_BLOCK;
+				type = TrackType.OBSIDIAN;
 				break;
 			case EMERALD_BLOCK:	
 				arms = Material.IRON_BLOCK;
 				end = Material.GOLD_BLOCK;
 				trackDistance = 50;
+				type = TrackType.IRON;
 				break;
 			case OBSIDIAN:
 				arms = Material.COBBLESTONE;
 				end = Material.STONE;
 				selfDestroy = true;
+				type = TrackType.COBBLESTONE;
 				break;
 			default: 
 				TextComponent text = new TextComponent(bundle.getString("raid.cmd.track.not-valid"));
@@ -179,6 +190,14 @@ public class Track implements TabExecutor
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			p.sendMessage("§7https://www.brawl.com/wiki/tracking-raid/");
+			return true;
+		}
+		
+		TrackEvent e = new TrackEvent(p, type, middle, blockList);
+		Bukkit.getPluginManager().callEvent(e);
+		
+		if(e.isCancelled())
+		{
 			return true;
 		}
 		

@@ -20,7 +20,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class BlockBreak implements Listener
+public class AlertOreFound implements Listener
 {
 	List<Block> list = new ArrayList<>();
 
@@ -94,7 +94,7 @@ public class BlockBreak implements Listener
 					extra[2].setColor(ChatColor.YELLOW);
 					extra[2].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + p.getName()));
 					
-					TextComponent text = Message.getTextComponent("raid.event.block-break.alert-ore-found", extra);
+					TextComponent text = Message.getTextComponent(bundle.getString("raid.event.block-break.alert-ore-found"), extra);
 					text.setColor(ChatColor.GREEN);
 					all.spigot().sendMessage(text);
 				}

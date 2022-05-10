@@ -12,8 +12,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -23,15 +23,14 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
+import br.com.acenetwork.commons.manager.Database;
+import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import br.com.acenetwork.commons.manager.Database;
-import br.com.acenetwork.commons.manager.Message;
 
 public class Reset implements TabExecutor
 {

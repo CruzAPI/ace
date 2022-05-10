@@ -10,6 +10,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import net.citizensnpcs.api.CitizensAPI;
@@ -52,5 +54,15 @@ public class Util
 		}
 		
 		return list;
+	}
+	
+	public static boolean isSpawn(Block b)
+	{
+		return isSpawn(b.getLocation());
+	}
+	
+	public static boolean isSpawn(Location l)
+	{
+		return l.getWorld().getName().equals("world") && l.getBlockX() <= 60 && l.getBlockX() >= -60 && l.getBlockZ() <= 60 && l.getBlockZ() >= -60;
 	}
 }

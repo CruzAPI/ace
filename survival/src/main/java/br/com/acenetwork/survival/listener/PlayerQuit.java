@@ -2,8 +2,6 @@ package br.com.acenetwork.survival.listener;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -29,9 +27,6 @@ import net.citizensnpcs.api.trait.trait.Inventory;
 
 public class PlayerQuit implements Listener
 {
-	public static final Map<Integer, Integer> TASK_MAP = new HashMap<>();
-	public static final Map<Integer, UUID> UUID_MAP = new HashMap<>();
-	
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void on(PlayerQuitEvent e)
@@ -46,6 +41,13 @@ public class PlayerQuit implements Listener
 
 		if(cp instanceof SurvivalPlayer)
 		{
+			SurvivalPlayer sp = (SurvivalPlayer) cp;
+			
+			if(sp.hasSpawnProtection())
+			{
+				return;
+			}
+			
 			NPC npc = CitizensAPI.getNPCRegistry().createNPC(EntityType.PLAYER, p.getName());
 			
 			if(npc.spawn(p.getLocation(), SpawnReason.PLUGIN))
@@ -78,10 +80,10 @@ public class PlayerQuit implements Listener
 				player.setRemainingAir(p.getRemainingAir());
 				player.setFreezeTicks(p.getFreezeTicks());
 				player.setArrowsInBody(p.getArrowsInBody());
-				player.setSaturation(p.getSaturation());
-				player.setSaturatedRegenRate(p.getSaturatedRegenRate());
-				player.setUnsaturatedRegenRate(p.getUnsaturatedRegenRate());
-				player.setStarvationRate(p.getStarvationRate());
+//				player.setSaturation(p.getSaturation());
+//				player.setSaturatedRegenRate(p.getSaturatedRegenRate());
+//				player.setUnsaturatedRegenRate(p.getUnsaturatedRegenRate());
+//				player.setStarvationRate(p.getStarvationRate());
 				player.setVelocity(p.getVelocity());
 				
 				npc.setProtected(false);
@@ -102,9 +104,8 @@ public class PlayerQuit implements Listener
 					}
 				}, 0L, 20L);
 				
-				
-				UUID_MAP.put(npc.getId(), p.getUniqueId());
-				TASK_MAP.put(npc.getId(), id);
+				npc.data().set("uuid", p.getUniqueId());
+				npc.data().set("task", id);
 			}
 		}
 	}
@@ -112,8 +113,13 @@ public class PlayerQuit implements Listener
 	@SuppressWarnings("deprecation")
 	public static void removeCombatLogger(NPC npc)
 	{
-		UUID npcUUID = UUID_MAP.remove(npc.getId());
-		Integer id = TASK_MAP.remove(npc.getId());
+		if(!npc.data().has("task"))
+		{
+			return;
+		}
+		
+		UUID npcUUID = npc.data().get("uuid");
+		int id = npc.data().get("task");
 		
 		if(id != 0)
 		{
@@ -143,9 +149,9 @@ public class PlayerQuit implements Listener
 			config.set("remaining-air", p.getRemainingAir());
 			config.set("freeze-ticks", p.getFreezeTicks());
 			config.set("arrows-in-body", p.getArrowsInBody());
-			config.set("saturation", p.getSaturation());
-			config.set("saturated-regen-rate", p.getSaturatedRegenRate());
-			config.set("unsaturated-regen-rate", p.getUnsaturatedRegenRate());
+//			config.set("saturation", p.getSaturation());
+//			config.set("saturated-regen-rate", p.getSaturatedRegenRate());
+//			config.set("unsaturated-regen-rate", p.getUnsaturatedRegenRate());
 			config.set("velocity", p.getVelocity());
 		}
 		else

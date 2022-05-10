@@ -11,7 +11,7 @@ public class Config
 {
 	public enum Type
 	{
-		BOT, COMBATLOG, PRICE;
+		BOT, COMBATLOG, PRICE, PLAYER_INFO;
 	}
 
 	public static File getFile(Type type, boolean createNewFile, Object... args)
@@ -21,17 +21,20 @@ public class Config
 
 		switch(type)
 		{
-			case BOT:
-				file = new File(Main.getInstance().getDataFolder(), "bot.yml");
-				break;
-			case COMBATLOG:
-				file = new File(Main.getInstance().getDataFolder() + "/combatlog", args[0] + ".yml");
-				break;
-			case PRICE:
-				file = new File(Main.getInstance().getDataFolder(), "price.yml");
-				break;
-			default:
-				return null;
+		case PLAYER_INFO:
+			file = new File(Main.getInstance().getDataFolder() + "/player_info", args[0] + ".yml");
+			break;
+		case BOT:
+			file = new File(Main.getInstance().getDataFolder(), "bot.yml");
+			break;
+		case COMBATLOG:
+			file = new File(Main.getInstance().getDataFolder() + "/combatlog", args[0] + ".yml");
+			break;
+		case PRICE:
+			file = new File(Main.getInstance().getDataFolder(), "price.yml");
+			break;
+		default:
+			return null;
 		}
 
 		if(createNewFile && !file.exists())

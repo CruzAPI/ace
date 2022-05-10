@@ -1,8 +1,6 @@
 package br.com.acenetwork.survival.listener;
 
-import java.util.HashSet;
-import java.util.Map.Entry;
-import java.util.UUID;
+import java.util.Iterator;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +10,7 @@ import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 
 import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.npc.NPC;
 
 public class PlayerLogin implements Listener
 {
@@ -22,11 +21,15 @@ public class PlayerLogin implements Listener
 		
 		if(e.getResult() == Result.ALLOWED)
 		{
-			for(Entry<Integer, UUID> entry : new HashSet<>(PlayerQuit.UUID_MAP.entrySet()))
+			Iterator<NPC> iterator = CitizensAPI.getNPCRegistry().iterator();
+			while(iterator.hasNext())
 			{
-				if(p.getUniqueId().equals(entry.getValue()))
+				NPC npc = iterator.next();
+				
+				if(p.getUniqueId().equals(npc.data().get("uuid")))
 				{
-					PlayerQuit.removeCombatLogger(CitizensAPI.getNPCRegistry().getById(entry.getKey()));
+					iterator.remove();
+					PlayerQuit.removeCombatLogger(npc);
 				}
 			}
 		}

@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -19,7 +19,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;

@@ -183,7 +183,7 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 		}
 	}
 
-	@EventHandler
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent e)
 	{	
 		if(e.getPlayer() != p)
