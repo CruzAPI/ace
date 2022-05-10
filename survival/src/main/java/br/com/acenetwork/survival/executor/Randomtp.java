@@ -29,7 +29,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class Randomtp implements TabExecutor
 {
 	private static final Random RANDOM = new Random();
-	private static final long COOLDOWN_MS = 5L * 60L * 1000L;
+	private static final long COOLDOWN_MS = 0L;
+//			5L * 60L * 1000L;
 	
 	@Override
 	public List<String> onTabComplete(CommandSender arg0, Command arg1, String arg2, String[] arg3)
