@@ -122,16 +122,16 @@ public class Tp implements TabExecutor
 			
 			try
 			{
-				double x = Double.parseDouble(args[0]);
-				double y = Double.parseDouble(args[1]);
-				double z = Double.parseDouble(args[2]);
+				double x = Double.parseDouble(args[args.length - 3]);
+				double y = Double.parseDouble(args[args.length - 2]);
+				double z = Double.parseDouble(args[args.length - 1]);
 				
-				p.teleport(new Location(p.getWorld(), x, y, z));
+				t.teleport(new Location(t.getWorld(), x, y, z));
 				
 				TextComponent[] extra = new TextComponent[4];
 				
 				extra[0] = new TextComponent();
-				extra[0].addExtra(p.getDisplayName());
+				extra[0].addExtra(t.getDisplayName());
 				extra[0].setColor(ChatColor.YELLOW);
 				
 				extra[1] = new TextComponent(df.format(x));
