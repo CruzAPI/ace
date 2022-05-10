@@ -10,6 +10,7 @@ import java.util.ResourceBundle;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -156,12 +157,28 @@ public class Randomtp implements TabExecutor
 		{
 			int x = (RANDOM.nextInt(800) + 200) * (RANDOM.nextBoolean() ? 1 : -1);
 			int z = (RANDOM.nextInt(800) + 200) * (RANDOM.nextBoolean() ? 1 : -1);
-			int y = w.getHighestBlockYAt(x, z);
+			int y = w.getHighestBlockYAt(x, z) + 2;
 			
 			if(i == 999)
 			{
 				p.teleport(new Location(w, x, y, z));
 				break;
+			}
+			
+			Block highest = w.getHighestBlockAt(x, z);
+			
+			switch(highest.getType())
+			{
+			case WATER:
+			case LAVA:
+				continue;
+			default:
+				break;
+			}
+			
+			if(y < 57)
+			{
+				continue;
 			}
 			
 			if(w.getBiome(x, y, z).toString().contains("OCEAN"))
