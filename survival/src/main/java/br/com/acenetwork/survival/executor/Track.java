@@ -80,7 +80,7 @@ public class Track implements TabExecutor
 		bundle = ResourceBundle.getBundle("message", cp.getLocale());
 		
 		List<Player> targetList = new ArrayList<>(Util.getOnlinePlayersAndNPCs().stream().
-			filter(x -> p.canSee(x)).collect(Collectors.toList()));
+				filter(x -> p.canSee(x)).collect(Collectors.toList()));
 		
 		if(args.length == 1 && !args[0].equalsIgnoreCase("all"))
 		{

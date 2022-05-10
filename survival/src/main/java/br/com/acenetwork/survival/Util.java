@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+import br.com.acenetwork.survival.npc.CustomNPC;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
 
@@ -44,7 +45,7 @@ public class Util
 		{
 			NPC npc = iterator.next();
 			
-			if(!npc.isSpawned())
+			if(CustomNPC.get(npc) != null || !npc.isSpawned())
 			{
 				continue;
 			}
