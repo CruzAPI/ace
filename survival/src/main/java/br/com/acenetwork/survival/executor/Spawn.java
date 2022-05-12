@@ -18,14 +18,14 @@ import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Main;
 import br.com.acenetwork.survival.Util;
+import br.com.acenetwork.survival.manager.ChannelCommand;
 import br.com.acenetwork.survival.player.SurvivalPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class Spawn implements TabExecutor
+public class Spawn implements TabExecutor, ChannelCommand
 {
 	public static final Location SPAWN_LOCATION = new Location(Bukkit.getWorld("world"), 0.5D, 66.0D, 0.5D, 0.0F, 0.0F);
-	public static final Map<Player, Integer> TASK_MAP = new HashMap<>();
 	
 	public static final long CHANNELING_TICKS = 10L * 20L;
 	public static final long LONG_CHANNELING_TICKS = 60L * 20L;
@@ -84,7 +84,7 @@ public class Spawn implements TabExecutor
 					return true;
 				}
 				
-				sp.channelSpawn();
+				sp.channel(this, SPAWN_LOCATION);
 			}
 			else
 			{
@@ -103,5 +103,16 @@ public class Spawn implements TabExecutor
 		}
 		
 		return false;
+	}
+	
+	@Override
+	public void run(CommonPlayer cp, Location destiny, Object... args)
+	{
+		ChannelCommand.super.run(cp, destiny);
+		
+		if(cp instanceof SurvivalPlayer)
+		{
+			((SurvivalPlayer) cp).setSpawnProtection(true);
+		}
 	}
 }

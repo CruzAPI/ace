@@ -24,11 +24,14 @@ import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import br.com.acenetwork.survival.executor.Delhome;
+import br.com.acenetwork.survival.executor.Home;
 import br.com.acenetwork.survival.executor.Price;
 import br.com.acenetwork.survival.executor.Randomtp;
 import br.com.acenetwork.survival.executor.Reset;
 import br.com.acenetwork.survival.executor.Sell;
 import br.com.acenetwork.survival.executor.Sellall;
+import br.com.acenetwork.survival.executor.Sethome;
 import br.com.acenetwork.survival.executor.Spawn;
 import br.com.acenetwork.survival.executor.Track;
 import br.com.acenetwork.survival.listener.AlertOreFound;
@@ -89,11 +92,14 @@ public class Main extends JavaPlugin
 		Bukkit.getPluginManager().registerEvents(new PlayerRespawn(), this);
 		Bukkit.getPluginManager().registerEvents(new SpawnProtection(), this);
 		
+		Commons.registerCommand(new Delhome(), "delhome");
+		Commons.registerCommand(new Home(), "home");
 		Commons.registerCommand(new Price(), "price");
 		Commons.registerCommand(new Randomtp(), "randomtp");		
 		Commons.registerCommand(new Reset(), "reset");		
 		Commons.registerCommand(new Sell(), "sell");
 		Commons.registerCommand(new Sellall(), "sellall");
+		Commons.registerCommand(new Sethome(), "sethome");
 		Commons.registerCommand(new Spawn(), "spawn");
 		Commons.registerCommand(new Track(), "track");
 		

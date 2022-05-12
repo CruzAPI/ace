@@ -20,6 +20,7 @@ import org.bukkit.event.entity.EntityPoseChangeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -33,6 +34,7 @@ import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Main;
 import br.com.acenetwork.survival.executor.Spawn;
+import br.com.acenetwork.survival.manager.ChannelCommand;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
 import br.com.acenetwork.survival.player.SurvivalPlayer;
@@ -47,9 +49,9 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 	private boolean spawnProtection;
 	
 	
-	private int spawnTaskId;
-	private long spawnTaskTicks;
-	private long spawnTaskTotalTicks;
+	private int channelTaskId;
+	private long channelTaskTicks;
+	private long channelTaskTotalTicks;
 	
 	public CraftSurvivalPlayer(Player p)
 	{
@@ -57,40 +59,9 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 	}
 	
 	@Override
-	public void reset()
+	public void channel(final ChannelCommand channel,  Location destiny, Object... args)
 	{
-		setInvis(false);
-		
-		p.setCollidable(true);
-		p.setGameMode(GameMode.SURVIVAL);
-	}
-	
-	@Override
-	public boolean cancelChannelSpawn(boolean force)
-	{
-		if(spawnTaskId == 0 || (!force && spawnTaskTotalTicks - spawnTaskTicks <= 35L))
-		{
-			return false;
-		}
-		
-		Bukkit.getScheduler().cancelTask(spawnTaskId);
-		spawnTaskId = 0;
-		
-		ResourceBundle bundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(p.getLocale()));
-		
-		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent());
-		
-		TextComponent text = new TextComponent(bundle.getString("raid.cmd.spawn.teleport-cancelled"));
-		text.setColor(ChatColor.RED);
-		p.spigot().sendMessage(text);
-		
-		return true;
-	}
-	
-	@Override
-	public void channelSpawn()
-	{
-		if(spawnTaskId != 0)
+		if(channelTaskId != 0)
 		{
 			return;
 		}
@@ -126,14 +97,14 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 		extra[0].setColor(ChatColor.YELLOW);
 		extra[0].addExtra(new ComponentBuilder(bundle.getString("commons.words.seconds")).color(textColor).getCurrentComponent());
 		
-		TextComponent text = Message.getTextComponent(bundle.getString("raid.cmd.spawn.channeling"), extra);
+		TextComponent text = Message.getTextComponent(bundle.getString("raid.cmds.channeling"), extra);
 		text.setColor(textColor);
 		p.spigot().sendMessage(text);
 		
-		spawnTaskTicks = channelingTicks;
-		spawnTaskTotalTicks = spawnTaskTicks;
+		channelTaskTicks = channelingTicks;
+		channelTaskTotalTicks = channelTaskTicks;
 		
-		spawnTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable()
+		channelTaskId = Bukkit.getScheduler().scheduleSyncRepeatingTask(Main.getInstance(), new Runnable()
 		{
 			final int tiles = 40;
 			Location location = p.getLocation().clone();
@@ -141,7 +112,7 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 			@Override
 			public void run()
 			{
-				float f = (float) spawnTaskTicks / (float) spawnTaskTotalTicks;
+				float f = (float) channelTaskTicks / (float) channelTaskTotalTicks;
 				int redTiles = (int) (f * tiles);
 				
 				TextComponent extra = new TextComponent(StringUtils.repeat('▍', redTiles));
@@ -153,10 +124,15 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 				
 				p.spigot().sendMessage(ChatMessageType.ACTION_BAR, text);
 				
+				if(p.isSneaking() && cancelChannel(false))
+				{
+					return;
+				}
+				
 				if(p.getWorld() != location.getWorld() || p.getLocation().getX() != location.getX() 
 						|| p.getLocation().getY() != location.getY() || p.getLocation().getZ() != location.getZ())
 				{
-					if(cancelChannelSpawn(false))
+					if(cancelChannel(false))
 					{
 						return;
 					}
@@ -164,20 +140,50 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 					location = p.getLocation().clone();
 				}
 				
-				if(spawnTaskTicks <= 0 && spawnTaskId != 0)
+				if(channelTaskTicks <= 0 && channelTaskId != 0)
 				{
-					Bukkit.getScheduler().cancelTask(spawnTaskId);
-					spawnTaskId = 0;
+					Bukkit.getScheduler().cancelTask(channelTaskId);
+					channelTaskId = 0;
 					
 					p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent());
-					p.teleport(Spawn.SPAWN_LOCATION);
-					setSpawnProtection(true);
+					channel.run(CraftSurvivalPlayer.this, destiny, args);
 					return;
 				}
 				
-				spawnTaskTicks--;
+				channelTaskTicks--;
 			}
 		}, 0L, 1L);
+	}
+	
+	@Override
+	public void reset()
+	{
+		setInvis(false);
+		
+		p.setCollidable(true);
+		p.setGameMode(GameMode.SURVIVAL);
+	}
+	
+	@Override
+	public boolean cancelChannel(boolean force)
+	{
+		if(channelTaskId == 0 || (!force && channelTaskTotalTicks - channelTaskTicks <= 35L))
+		{
+			return false;
+		}
+		
+		Bukkit.getScheduler().cancelTask(channelTaskId);
+		channelTaskId = 0;
+		
+		ResourceBundle bundle = ResourceBundle.getBundle("message", CommonsUtil.getLocaleFromMinecraft(p.getLocale()));
+		
+		p.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent());
+		
+		TextComponent text = new TextComponent(bundle.getString("raid.cmds.teleport-cancelled"));
+		text.setColor(ChatColor.RED);
+		p.spigot().sendMessage(text);
+		
+		return true;
 	}
 	
 	@Override
@@ -361,7 +367,27 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 			return;
 		}
 		
-		cancelChannelSpawn(false);
+		cancelChannel(false);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void aaa(PlayerCommandPreprocessEvent e)
+	{
+		if(e.getPlayer() != p)
+		{
+			return;
+		}
+		
+		if(channelTaskId != 0)
+		{
+			e.setCancelled(true);
+			
+			ResourceBundle bundle = ResourceBundle.getBundle("message", getLocale());
+			
+			TextComponent text = new TextComponent(bundle.getString("raid.event.player-command-preprocess.cant-perform-cmd-while-channeling"));
+			text.setColor(ChatColor.RED);
+			p.spigot().sendMessage(text);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -372,7 +398,7 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 			return;
 		}
 		
-		cancelChannelSpawn(false);
+		cancelChannel(false);
 	}
 	
 	@EventHandler
@@ -383,7 +409,7 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 			return;
 		}
 		
-		cancelChannelSpawn(true);
+		cancelChannel(true);
 	}
 	
 	@EventHandler
@@ -394,7 +420,7 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 			return;
 		}
 		
-		cancelChannelSpawn(true);
+		cancelChannel(true);
 		
 		File playerFile = Config.getFile(Type.PLAYER_INFO, true, p.getUniqueId());
 		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
