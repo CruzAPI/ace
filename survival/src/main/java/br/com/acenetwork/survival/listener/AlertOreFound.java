@@ -87,12 +87,12 @@ public class AlertOreFound implements Listener
 					extra[0] = new TextComponent();
 					extra[0].addExtra(p.getDisplayName());
 
-					extra[1] = new TextComponent("[" + bundle.getString("commons.verbs.teleport").toUpperCase() + "]");
+					extra[1] = new TextComponent(n + " " + type.toString());
 					extra[1].setColor(ChatColor.YELLOW);
+					extra[1].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + p.getName()));
 					
-					extra[2] = new TextComponent(n + " " + type.toString());
+					extra[2] = new TextComponent("[" + bundle.getString("commons.verbs.teleport").toUpperCase() + "]");
 					extra[2].setColor(ChatColor.YELLOW);
-					extra[2].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/tp " + p.getName()));
 					
 					TextComponent text = Message.getTextComponent(bundle.getString("raid.event.block-break.alert-ore-found"), extra);
 					text.setColor(ChatColor.GREEN);
