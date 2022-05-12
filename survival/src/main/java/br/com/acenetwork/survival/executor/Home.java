@@ -124,7 +124,7 @@ public class Home implements TabExecutor, ChannelCommand
 			
 			try
 			{
-				homes = homes.substring(homes.length() - comma.length());
+				homes = homes.substring(0, homes.length() - comma.length());
 				
 				TextComponent[] extra = new TextComponent[1];
 				
