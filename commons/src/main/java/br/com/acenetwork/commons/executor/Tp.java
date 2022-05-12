@@ -166,7 +166,7 @@ public class Tp implements TabExecutor
 				extra[0].addExtra(" <" + bundle.getString("commons.words.player") + ">");
 				extra[0].addExtra("\n/" + aliases);
 				extra[0].addExtra(" <" + bundle.getString("commons.words.player") + ">");
-				extra[0].addExtra(" <" + bundle.getString("commons.words.player") + " <x> <y> <z>");
+				extra[0].addExtra(" <x> <y> <z>");
 			}
 			else
 			{
@@ -174,7 +174,7 @@ public class Tp implements TabExecutor
 				extra[0].addExtra(" <" + bundle.getString("commons.words.player") + ">");
 				extra[0].addExtra("\n/" + aliases);
 				extra[0].addExtra(" [" + bundle.getString("commons.words.player") + "]");
-				extra[0].addExtra(" <" + bundle.getString("commons.words.player") + " <x> <y> <z>");
+				extra[0].addExtra(" <x> <y> <z>");
 			}
 			
 			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
