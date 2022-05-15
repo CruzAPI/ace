@@ -3,6 +3,7 @@ package br.com.acenetwork.survival.listener;
 import java.util.Iterator;
 import java.util.stream.Collectors;
 
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -24,6 +25,8 @@ import org.bukkit.event.block.LeavesDecayEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
 import br.com.acenetwork.survival.Util;
 import br.com.acenetwork.survival.event.TrackEvent;
@@ -168,4 +171,32 @@ public class SpawnProtection implements Listener
 			}
 		}
 	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void a(PlayerBucketFillEvent e)
+	{
+		Block b = e.getBlock();
+		e.setCancelled(Util.isSpawn(b));
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void a(PlayerInteractEvent e)
+	{
+		Block b = e.getClickedBlock();
+		
+		if(b == null)
+		{
+			return;
+		}
+		
+		if(Util.isSpawn(b))
+		{
+			if(b.getType() == Material.CHEST)
+			{
+				return;
+			}
+			
+			e.setCancelled(true);
+		}
+	}	
 }
