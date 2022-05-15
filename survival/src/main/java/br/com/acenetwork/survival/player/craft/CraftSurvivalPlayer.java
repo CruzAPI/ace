@@ -205,6 +205,20 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 				text.setColor(ChatColor.GREEN);
 				p.spigot().sendMessage(text);
 			}
+			
+			File playerFile = Config.getFile(Type.PLAYER_INFO, true, p.getUniqueId());
+			YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
+			
+			playerConfig.set("spawn-protection", spawnProtection);
+			
+			try
+			{
+				playerConfig.save(playerFile);
+			}
+			catch(IOException e1)
+			{
+				e1.printStackTrace();
+			}
 		}
 	}
 	
@@ -421,19 +435,5 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 		}
 		
 		cancelChannel(true);
-		
-		File playerFile = Config.getFile(Type.PLAYER_INFO, true, p.getUniqueId());
-		YamlConfiguration playerConfig = YamlConfiguration.loadConfiguration(playerFile);
-		
-		playerConfig.set("spawn-protection", spawnProtection);
-		
-		try
-		{
-			playerConfig.save(playerFile);
-		}
-		catch(IOException e1)
-		{
-			e1.printStackTrace();
-		}
 	}
 }

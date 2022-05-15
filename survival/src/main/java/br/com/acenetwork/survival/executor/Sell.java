@@ -111,6 +111,8 @@ public class Sell implements TabExecutor
 		
 		double total = 0.0D;
 		
+		boolean bypass = cp.hasPermission("cmd.sell.bypass");
+		
 		for(int i = 0; i < itemsToSell.size(); i++)
 		{
 			ItemStack item = itemsToSell.get(i);
@@ -128,7 +130,7 @@ public class Sell implements TabExecutor
 				continue;
 			}
 			
-			if(balance >= maxBalance)
+			if(!bypass && balance >= maxBalance)
 			{
 				if(i == 0)
 				{
@@ -157,7 +159,7 @@ public class Sell implements TabExecutor
 			}
 			
 			int amountSold = playerConfig.getInt(type.toString());
-			int limit = priceConfig.getInt(type + ".limit");
+			int limit = bypass ? Integer.MAX_VALUE : priceConfig.getInt(type + ".limit");
 			
 			if(amountSold >= limit)
 			{
@@ -173,13 +175,13 @@ public class Sell implements TabExecutor
 			}
 			
 			int marketCap = priceConfig.getInt(type + ".market-cap");
-			double aceShards = priceConfig.getDouble(type + ".ace-shards");
+			double aceShards = priceConfig.getDouble(type + ".liquidity");
 			
 			final double a = aceShards;
 			final double b = marketCap;
 			final double c = maxBalance - balance;
 			
-			final int x = c >= a ? Integer.MAX_VALUE : (int) Math.ceil(((b * c) / (a - c)));
+			final int x = c >= a || bypass ? Integer.MAX_VALUE : (int) Math.ceil(((b * c) / (a - c)));
 			final int amountToSell = Math.max(0, Math.min(Math.min(item.getAmount(), limit - amountSold), x));
 			
 			item.setAmount(item.getAmount() - amountToSell);
@@ -188,16 +190,17 @@ public class Sell implements TabExecutor
 			double oldPrice = aceShards / marketCap;
 			double newPrice = (aceShards - oldPrice * amountToSell) / (marketCap + amountToSell);
 			
-			final double finalPrice = (oldPrice + newPrice) / 2.0D;
+			final double price = (oldPrice + newPrice) / 2.0D;
 			
-			double shards = finalPrice * amountToSell;
+			double shards = price * amountToSell;
 			
 			aceShards -= shards;
 			marketCap += amountToSell;
 			
 			priceConfig.set(type + ".market-cap", marketCap);
-			priceConfig.set(type + ".ace-shards", aceShards);
-			playerConfig.set("balance", Math.min(balance += shards, maxBalance));
+			priceConfig.set(type + ".liquidity", aceShards);
+			playerConfig.set("balance", bypass ?
+					balance += shards : Math.min(balance += shards, maxBalance));
 			
 			total += shards;
 			
@@ -207,6 +210,12 @@ public class Sell implements TabExecutor
 			ap.price += shards;
 			
 			map.put(type, ap);
+			
+//			final double finalPrice = aceShards / marketCap;
+//			
+//			double priceChangePercent = (finalPrice / oldPrice - 1.0D) * 100.0D;
+//			DecimalFormat df = new DecimalFormat("#.#####", new DecimalFormatSymbols(bundle.getLocale()));
+//			p.sendMessage("§e" + df.format(oldPrice) + "§7 » §e" + df.format(finalPrice) + " §c(-" + df.format(priceChangePercent) + "%)");
 		}
 		
 		try

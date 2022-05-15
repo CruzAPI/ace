@@ -123,7 +123,7 @@ public class Price implements TabExecutor
 		if(priceConfig.contains(key))
 		{
 			int amountSold = playerConfig.getInt(key);
-			double aceShards = priceConfig.getDouble(key + ".ace-shards");
+			double aceShards = priceConfig.getDouble(key + ".liquidity");
 			int marketCap = priceConfig.getInt(key + ".market-cap");
 			int limit = priceConfig.getInt(key + ".limit");
 			
