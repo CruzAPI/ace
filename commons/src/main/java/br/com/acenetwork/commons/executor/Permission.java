@@ -69,7 +69,7 @@ public class Permission implements TabExecutor
 		
 		if(!hasPermission)
 		{
-			TextComponent text = new TextComponent(bundle.getString("commons.dont-have-permission"));
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.dont-have-permission"));
 			text.setColor(ChatColor.RED);
 			sender.spigot().sendMessage(text);
 			return true;
