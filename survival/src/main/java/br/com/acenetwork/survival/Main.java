@@ -61,7 +61,7 @@ public class Main extends JavaPlugin
 		Bukkit.getPluginManager().registerEvents(new PlayerRespawn(), this);
 		Bukkit.getPluginManager().registerEvents(new SpawnProtection(), this);
 		
-		Commons.registerCommand(new Temp(), "temp");
+//		Commons.registerCommand(new Temp(), "temp");
 		
 		Commons.registerCommand(new Buy(), "buy");
 		Commons.registerCommand(new Delhome(), "delhome");

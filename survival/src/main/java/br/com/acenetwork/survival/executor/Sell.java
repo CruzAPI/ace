@@ -159,20 +159,20 @@ public class Sell implements TabExecutor
 			}
 			
 			int amountSold = playerConfig.getInt(type.toString());
-			int limit = bypass ? Integer.MAX_VALUE : priceConfig.getInt(type + ".limit");
-			
-			if(amountSold >= limit)
-			{
-				if(sellType == SellType.HAND)
-				{
-					TextComponent text = new TextComponent(bundle.getString("raid.cmd.sell.cant-sell-anymore"));
-					text.setColor(ChatColor.RED);
-					p.spigot().sendMessage(text);
-					return;
-				}
-				
-				continue;
-			}
+//			int limit = bypass ? Integer.MAX_VALUE : priceConfig.getInt(type + ".limit");
+//			
+//			if(amountSold >= limit)
+//			{
+//				if(sellType == SellType.HAND)
+//				{
+//					TextComponent text = new TextComponent(bundle.getString("raid.cmd.sell.cant-sell-anymore"));
+//					text.setColor(ChatColor.RED);
+//					p.spigot().sendMessage(text);
+//					return;
+//				}
+//				
+//				continue;
+//			}
 			
 			int marketCap = priceConfig.getInt(type + ".market-cap");
 			double aceShards = priceConfig.getDouble(type + ".liquidity");
@@ -182,7 +182,8 @@ public class Sell implements TabExecutor
 			final double c = maxBalance - balance;
 			
 			final int x = c >= a || bypass ? Integer.MAX_VALUE : (int) Math.ceil(((b * c) / (a - c)));
-			final int amountToSell = Math.max(0, Math.min(Math.min(item.getAmount(), limit - amountSold), x));
+			final int amountToSell = Math.max(0, Math.min(item.getAmount(), x));
+//			final int amountToSell = Math.max(0, Math.min(Math.min(item.getAmount(), limit - amountSold), x));
 			
 			item.setAmount(item.getAmount() - amountToSell);
 			playerConfig.set(type.toString(), amountSold + amountToSell);

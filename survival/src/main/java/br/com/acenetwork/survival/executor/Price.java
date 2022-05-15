@@ -129,7 +129,8 @@ public class Price implements TabExecutor
 			
 			String price = Balance.getDecimalFormat().format(aceShards / marketCap);
 			
-			p.sendMessage(String.format("§a%s: §e%s§a (%s/%s)", key, price, amountSold, limit));
+			p.sendMessage(String.format("§a%s: §e%s", key, price));
+//			p.sendMessage(String.format("§a%s: §e%s§a (%s/%s)", key, price, amountSold, limit));
 		}
 		else
 		{
