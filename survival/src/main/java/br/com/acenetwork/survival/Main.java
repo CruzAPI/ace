@@ -13,6 +13,7 @@ import br.com.acenetwork.survival.executor.Buy;
 import br.com.acenetwork.survival.executor.Delhome;
 import br.com.acenetwork.survival.executor.Home;
 import br.com.acenetwork.survival.executor.Price;
+import br.com.acenetwork.survival.executor.Pricechart;
 import br.com.acenetwork.survival.executor.Randomtp;
 import br.com.acenetwork.survival.executor.Reset;
 import br.com.acenetwork.survival.executor.Sell;
@@ -67,6 +68,7 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Delhome(), "delhome");
 		Commons.registerCommand(new Home(), "home");
 		Commons.registerCommand(new Price(), "price");
+		Commons.registerCommand(new Pricechart(), "pricechart");
 		Commons.registerCommand(new Randomtp(), "randomtp");		
 		Commons.registerCommand(new Reset(), "reset");		
 		Commons.registerCommand(new Sell(), "sell");

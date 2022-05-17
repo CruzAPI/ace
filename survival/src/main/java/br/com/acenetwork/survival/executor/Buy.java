@@ -23,6 +23,7 @@ import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Main;
+import br.com.acenetwork.survival.event.BuyItemEvent;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
 import net.md_5.bungee.api.ChatColor;
@@ -261,14 +262,16 @@ public class Buy implements TabExecutor
 					return;
 				}
 				
-				int marketCap = config.getInt(key + ".market-cap");
-				double aceShards = config.getDouble(key + ".liquidity");
+				final int oldMarketCap = config.getInt(key + ".market-cap");
+				int marketCap = oldMarketCap;
+				final double oldLiquidity = config.getDouble(key + ".liquidity");
+				double liquidity = oldLiquidity;
 				double max = config.getDouble(key + ".max");
 				
 				int amount = amountArg == 0 ? 1 : amountArg;
 				
-				double oldPrice = aceShards / marketCap;
-				double newPrice = (aceShards + oldPrice * amount) / (marketCap - amount);
+				double oldPrice = liquidity / marketCap;
+				double newPrice = (liquidity + oldPrice * amount) / (marketCap - amount);
 				final double price = (newPrice + oldPrice) / 2.0D;
 				
 				if(oldPrice >= max)
@@ -283,11 +286,11 @@ public class Buy implements TabExecutor
 					return;
 				}
 				
-				aceShards += price * amount;
+				liquidity += price * amount;
 				marketCap -= amount;
 				
 				config.set(key + ".market-cap", marketCap);
-				config.set(key + ".liquidity", aceShards);
+				config.set(key + ".liquidity", liquidity);
 				
 				if(marketCap <= 0)
 				{
@@ -297,13 +300,15 @@ public class Buy implements TabExecutor
 					return;
 				}
 				
-				final double finalPrice = aceShards / marketCap;
+				final double finalPrice = liquidity / marketCap;
 						
 				double priceChangePercent = (finalPrice / oldPrice - 1.0D) * 100.0D;
 				
 				try
 				{
 					config.save(file);
+					
+					Bukkit.getPluginManager().callEvent(new BuyItemEvent(sender, key, amount, oldLiquidity, liquidity, oldMarketCap, marketCap));
 					
 					List<CommandSender> senderList = new ArrayList<CommandSender>(Bukkit.getOnlinePlayers());
 					senderList.add(Bukkit.getConsoleSender());

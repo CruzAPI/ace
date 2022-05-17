@@ -24,6 +24,7 @@ import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ClickEvent.Action;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -45,6 +46,7 @@ public class BroadcastCMD implements TabExecutor
 		BROADCASTS.add("raid.broadcast.4");
 		BROADCASTS.add("raid.broadcast.5");
 		BROADCASTS.add("raid.broadcast.6");
+		BROADCASTS.add("raid.broadcast.7");
 		suffle();
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Commons.getPlugin(), new Runnable()
@@ -241,6 +243,19 @@ public class BroadcastCMD implements TabExecutor
 						extra[2] = new TextComponent("/sellall");
 						extra[2].setColor(ChatColor.GRAY);
 					}
+					else if(key.equals("raid.broadcast.7"))
+					{
+						text.setColor(ChatColor.YELLOW);
+						
+						extra = new TextComponent[1];
+						
+						extra[0] = new TextComponent("/pricechart");
+						extra[0].setColor(ChatColor.GOLD);
+						extra[0].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pricechart"));
+						extra[0].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(bundle
+								.getString("raid.cmd.pricechart.click-to-see")).color(ChatColor.GOLD).create()));
+					}
+					
 					text.addExtra(extra1);
 					text.addExtra(Message.getTextComponent(bundle.getString(key), extra));
 					text.addExtra(extra2);
@@ -249,7 +264,8 @@ public class BroadcastCMD implements TabExecutor
 				}
 				i++;
 			}
-		}, 5L * 60L * 20L, 5L * 60L * 20L);
+//		}, 5L * 60L * 20L, 5L * 60L * 20L);
+		}, 50L, 50L);
 	}
 	
 	public static void suffle()
