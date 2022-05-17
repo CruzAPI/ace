@@ -4,9 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.libs.org.apache.commons.lang3.text.WordUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -17,7 +16,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.player.CommonPlayer;
-import net.md_5.bungee.api.ChatColor;
 
 public abstract class Scroller extends GUI
 {
@@ -37,12 +35,12 @@ public abstract class Scroller extends GUI
 		
 		scrollUp = new ItemStack(Material.LIME_DYE);
 		meta = scrollUp.getItemMeta();
-		meta.setDisplayName("§a" + WordUtils.capitalize(bundle.getString("commons.words.scroll-up")));
+		meta.setDisplayName("§a" + StringUtils.capitalize(bundle.getString("commons.words.scroll-up")));
 		scrollUp.setItemMeta(meta);
 		
 		scrollDown = new ItemStack(Material.LIME_DYE);
 		meta = scrollDown.getItemMeta();
-		meta.setDisplayName("§a" + WordUtils.capitalize(bundle.getString("commons.words.scroll-down")));
+		meta.setDisplayName("§a" + StringUtils.capitalize(bundle.getString("commons.words.scroll-down")));
 		scrollDown.setItemMeta(meta);
 	}
 	
@@ -85,15 +83,31 @@ public abstract class Scroller extends GUI
 		ItemStack current = e.getCurrentItem();
 		ClickType click = e.getClick();
 		
-		if(CommonsUtil.compareDisplayName(current, scrollUp) && click == ClickType.LEFT)
+		if(CommonsUtil.compareDisplayName(current, scrollUp))
 		{
-			row--;
-			refresh();
+			if(click == ClickType.LEFT)
+			{
+				row--;
+				refresh();
+			}
+			else if(click == ClickType.SHIFT_LEFT)
+			{
+				row = 0;
+				refresh();
+			}
 		}
-		else if(CommonsUtil.compareDisplayName(current, scrollDown) && click == ClickType.LEFT)
+		else if(CommonsUtil.compareDisplayName(current, scrollDown))
 		{
-			row++;
-			refresh();
+			if(click == ClickType.LEFT)
+			{
+				row++;
+				refresh();
+			}
+			else if(click == ClickType.SHIFT_LEFT)
+			{
+				row = (int) Math.ceil((itemList.size() - 36) / 9.0D);
+				refresh();
+			}
 		}
 	}
 }

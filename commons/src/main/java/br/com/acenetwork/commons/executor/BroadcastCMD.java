@@ -264,8 +264,8 @@ public class BroadcastCMD implements TabExecutor
 				}
 				i++;
 			}
-//		}, 5L * 60L * 20L, 5L * 60L * 20L);
-		}, 50L, 50L);
+		}, 5L * 60L * 20L, 5L * 60L * 20L);
+//		}, 50L, 50L);
 	}
 	
 	public static void suffle()
