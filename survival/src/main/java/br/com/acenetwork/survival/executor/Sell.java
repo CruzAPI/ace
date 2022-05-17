@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,6 +24,8 @@ import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
+import br.com.acenetwork.survival.event.BuyItemEvent;
+import br.com.acenetwork.survival.event.SellItemEvent;
 import br.com.acenetwork.survival.manager.AmountPrice;
 import br.com.acenetwork.survival.manager.Config;
 import br.com.acenetwork.survival.manager.Config.Type;
@@ -113,6 +116,8 @@ public class Sell implements TabExecutor
 		
 		boolean bypass = cp.hasPermission("cmd.sell.bypass");
 		
+		List<SellItemEvent> events = new ArrayList<>();
+		
 		for(int i = 0; i < itemsToSell.size(); i++)
 		{
 			ItemStack item = itemsToSell.get(i);
@@ -174,10 +179,13 @@ public class Sell implements TabExecutor
 //				continue;
 //			}
 			
-			int marketCap = priceConfig.getInt(type + ".market-cap");
-			double aceShards = priceConfig.getDouble(type + ".liquidity");
 			
-			final double a = aceShards;
+			final int oldMarketCap = priceConfig.getInt(type + ".market-cap");
+			int marketCap = oldMarketCap;
+			final double oldLiquidity = priceConfig.getDouble(type + ".liquidity");
+			double liquidity = oldLiquidity;
+			
+			final double a = liquidity;
 			final double b = marketCap;
 			final double c = maxBalance - balance;
 			
@@ -188,18 +196,18 @@ public class Sell implements TabExecutor
 			item.setAmount(item.getAmount() - amountToSell);
 			playerConfig.set(type.toString(), amountSold + amountToSell);
 			
-			double oldPrice = aceShards / marketCap;
-			double newPrice = (aceShards - oldPrice * amountToSell) / (marketCap + amountToSell);
+			double oldPrice = liquidity / marketCap;
+			double newPrice = (liquidity - oldPrice * amountToSell) / (marketCap + amountToSell);
 			
 			final double price = (oldPrice + newPrice) / 2.0D;
 			
 			double shards = price * amountToSell;
 			
-			aceShards -= shards;
+			liquidity -= shards;
 			marketCap += amountToSell;
 			
 			priceConfig.set(type + ".market-cap", marketCap);
-			priceConfig.set(type + ".liquidity", aceShards);
+			priceConfig.set(type + ".liquidity", liquidity);
 			playerConfig.set("balance", bypass ?
 					balance += shards : Math.min(balance += shards, maxBalance));
 			
@@ -217,12 +225,15 @@ public class Sell implements TabExecutor
 //			double priceChangePercent = (finalPrice / oldPrice - 1.0D) * 100.0D;
 //			DecimalFormat df = new DecimalFormat("#.#####", new DecimalFormatSymbols(bundle.getLocale()));
 //			p.sendMessage("§e" + df.format(oldPrice) + "§7 » §e" + df.format(finalPrice) + " §c(-" + df.format(priceChangePercent) + "%)");
+			events.add(new SellItemEvent(p, type.toString(), amountToSell, oldLiquidity, liquidity, oldMarketCap, marketCap));
 		}
 		
 		try
 		{
 			playerConfig.save(playerFile);
 			priceConfig.save(priceFile);
+			
+			events.forEach(x -> Bukkit.getPluginManager().callEvent(x));
 			
 			if(map.isEmpty())
 			{
