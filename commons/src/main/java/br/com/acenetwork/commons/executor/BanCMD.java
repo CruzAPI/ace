@@ -117,8 +117,8 @@ public class BanCMD implements TabExecutor
 			TextComponent[] extra = new TextComponent[1];
 			
 			extra[0] = new TextComponent("/" + aliases);
-			extra[0].addExtra(" <" + bundle.getString("commons.cmds.words.player") + ">");
-			extra[0].addExtra(" [" + bundle.getString("commons.cmds.words.reason") + "...]");
+			extra[0].addExtra(" <" + bundle.getString("commons.words.player") + ">");
+			extra[0].addExtra(" [" + bundle.getString("commons.words.reason") + "...]");
 			
 			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra); 
 			text.setColor(ChatColor.RED);
