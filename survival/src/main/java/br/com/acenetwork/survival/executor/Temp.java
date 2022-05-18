@@ -14,6 +14,7 @@ import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Main;
 import br.com.acenetwork.survival.manager.Config;
+import br.com.acenetwork.survival.manager.Land;
 import br.com.acenetwork.survival.manager.PRICE;
 import br.com.acenetwork.survival.manager.Config.Type;
 import net.md_5.bungee.api.ChatColor;
@@ -21,6 +22,8 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.type.Switch.Face;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
@@ -28,8 +31,28 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import static br.com.acenetwork.survival.executor.Temp.Direction.*;
+
 public class Temp implements TabExecutor
 {
+	public enum Direction
+	{
+		EAST(1, 0),
+		NORTH(0, -1), 
+		WEST(-1, 0), 
+		SOUTH(0, 1),
+		;
+		
+		private final int x;
+		private final int z;
+		
+		Direction(int x, int z)
+		{
+			this.x = x;
+			this.z = z;
+		}
+	}
+	
 	private static final double HIGHEST = 200.0D;
 	private static final double HIGH = 100.0D;
 	private static final double NORMAL = 50.0D;
@@ -1075,10 +1098,49 @@ public class Temp implements TabExecutor
 	{
 		return new ArrayList<>();
 	}
-
+	
+	private static final int PATH_WIDTH = 5;
+	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		int x = -65, z = 65;
+		int k = 0;
+		
+		int n = 0;
+		
+		for(int j = 0; j < Land.Type.values().length; j++)
+		{
+			Land.Type type = Land.Type.values()[j];
+			final int size = type.getSize();
+			
+			z += PATH_WIDTH * SOUTH.z + size * SOUTH.z;
+			
+			k = (1 + k) * 2 + 1;
+			
+//			x += PATH_WIDTH * direction.x + size * direction.x; 
+//			z += PATH_WIDTH * direction.z + size * direction.z;
+//			
+			for(int i = 0; i < Direction.values().length; i++)
+			{
+				Direction direction = Direction.values()[i];
+				
+				for(int l = 0; l < k; l++)
+				{
+					if(l == 0 && i == 0)
+					{
+						new Land(x, z, type, n++);
+						continue;
+					}
+					
+					x += PATH_WIDTH * direction.x + size * direction.x; 
+					z += PATH_WIDTH * direction.z + size * direction.z;
+					
+					new Land(x, z, type, n++);
+				}
+			}
+		}
+		
 		if(true)
 		{
 			sender.sendMessage("Unknown command. Type \"/help\" for help.");

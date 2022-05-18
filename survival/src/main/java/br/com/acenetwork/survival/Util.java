@@ -64,6 +64,6 @@ public class Util
 	
 	public static boolean isSpawn(Location l)
 	{
-		return l.getWorld().getName().equals("world") && l.getBlockX() <= 60 && l.getBlockX() >= -60 && l.getBlockZ() <= 60 && l.getBlockZ() >= -60;
+		return l.getWorld().getName().equals("world") && Math.abs(l.getBlockX()) <= 189 && Math.abs(l.getBlockZ()) <= 189;
 	}
 }

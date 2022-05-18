@@ -37,98 +37,153 @@ public class SpawnProtection implements Listener
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(CreatureSpawnEvent e)
 	{
-		e.setCancelled(Util.isSpawn(e.getLocation()));
+		if(Util.isSpawn(e.getLocation()))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockPhysicsEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockBreakEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockPlaceEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(LeavesDecayEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockBurnEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockFadeEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockFormEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockFromToEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(EntityChangeBlockEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockSpreadEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockIgniteEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockGrowEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(EntityBlockFormEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -147,7 +202,11 @@ public class SpawnProtection implements Listener
 	public void a(BlockDamageEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -176,7 +235,11 @@ public class SpawnProtection implements Listener
 	public void a(PlayerBucketFillEvent e)
 	{
 		Block b = e.getBlock();
-		e.setCancelled(Util.isSpawn(b));
+		
+		if(Util.isSpawn(b))
+		{
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -191,11 +254,6 @@ public class SpawnProtection implements Listener
 		
 		if(Util.isSpawn(b))
 		{
-			if(b.getType() == Material.CHEST)
-			{
-				return;
-			}
-			
 			e.setCancelled(true);
 		}
 	}	
