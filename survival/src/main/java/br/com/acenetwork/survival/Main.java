@@ -31,6 +31,7 @@ import br.com.acenetwork.survival.listener.PlayerMode;
 import br.com.acenetwork.survival.listener.PlayerQuit;
 import br.com.acenetwork.survival.listener.PlayerRespawn;
 import br.com.acenetwork.survival.listener.SpawnProtection;
+import br.com.acenetwork.survival.manager.Land;
 import br.com.acenetwork.survival.npc.RandomTpNPC;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.event.SpawnReason;
@@ -76,6 +77,8 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Sethome(), "sethome");
 		Commons.registerCommand(new Spawn(), "spawn");
 		Commons.registerCommand(new Track(), "track");
+		
+		Land.loadLands();
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
 		{

@@ -52,7 +52,7 @@ public class Temp implements TabExecutor
 			this.z = z;
 		}
 	}
-	
+
 	private static final double HIGHEST = 200.0D;
 	private static final double HIGH = 100.0D;
 	private static final double NORMAL = 50.0D;
@@ -1104,42 +1104,7 @@ public class Temp implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		int x = -65, z = 65;
-		int k = 0;
-		
-		int n = 0;
-		
-		for(int j = 0; j < Land.Type.values().length; j++)
-		{
-			Land.Type type = Land.Type.values()[j];
-			final int size = type.getSize();
-			
-			z += PATH_WIDTH * SOUTH.z + size * SOUTH.z;
-			
-			k = (1 + k) * 2 + 1;
-			
-//			x += PATH_WIDTH * direction.x + size * direction.x; 
-//			z += PATH_WIDTH * direction.z + size * direction.z;
-//			
-			for(int i = 0; i < Direction.values().length; i++)
-			{
-				Direction direction = Direction.values()[i];
-				
-				for(int l = 0; l < k; l++)
-				{
-					if(l == 0 && i == 0)
-					{
-						new Land(x, z, type, n++);
-						continue;
-					}
-					
-					x += PATH_WIDTH * direction.x + size * direction.x; 
-					z += PATH_WIDTH * direction.z + size * direction.z;
-					
-					new Land(x, z, type, n++);
-				}
-			}
-		}
+		Land.loadLands();
 		
 		if(true)
 		{

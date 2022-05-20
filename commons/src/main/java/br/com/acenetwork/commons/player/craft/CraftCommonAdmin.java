@@ -17,6 +17,8 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -182,10 +184,32 @@ public class CraftCommonAdmin extends CraftCommonPlayer implements CommonAdmin
 			}
 		}
 	}
-
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void a(PlayerBucketFillEvent e)
+	{
+		if(e.getPlayer() != p)
+		{
+			return;
+		}
+		
+		e.setCancelled(!build);
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void a(PlayerBucketEmptyEvent e)
+	{
+		if(e.getPlayer() != p)
+		{
+			return;
+		}
+		
+		e.setCancelled(!build);
+	}
+	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerInteractEntity(PlayerInteractEntityEvent e)
-	{	
+	{
 		if(e.getPlayer() != p)
 		{
 			return;

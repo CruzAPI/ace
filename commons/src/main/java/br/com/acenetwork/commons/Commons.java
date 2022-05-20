@@ -40,6 +40,7 @@ import br.com.acenetwork.commons.executor.Test;
 import br.com.acenetwork.commons.executor.Tp;
 import br.com.acenetwork.commons.executor.Unmute;
 import br.com.acenetwork.commons.executor.WatchCMD;
+import br.com.acenetwork.commons.listener.CustomStructureGrow;
 import br.com.acenetwork.commons.listener.EntitySpawn;
 import br.com.acenetwork.commons.listener.InventoryClose;
 import br.com.acenetwork.commons.listener.PlayerChat;
@@ -75,6 +76,7 @@ public class Commons
 		Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "commons:commons", new PluginMessage());
 		Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "commons:commons");
 		
+		Bukkit.getPluginManager().registerEvents(new CustomStructureGrow(), plugin);
 		Bukkit.getPluginManager().registerEvents(new EntitySpawn(), plugin);
 		Bukkit.getPluginManager().registerEvents(new InventoryClose(), plugin);
 		Bukkit.getPluginManager().registerEvents(new PlayerChat(), plugin);
