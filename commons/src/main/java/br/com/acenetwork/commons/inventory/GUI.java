@@ -4,6 +4,7 @@ import java.util.ResourceBundle;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -31,6 +32,17 @@ public abstract class GUI implements Listener
 		{
 			this.itemStack = itemStack;
 		}
+	}
+	
+	public GUI(CommonPlayer cp, String key, InventoryType type)
+	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
+		this.cp = cp;
+		this.inv = Bukkit.createInventory(cp.getPlayer(), type, bundle.getString(key));
+		
+		cp.getPlayer().openInventory(inv);
+		cp.setGUI(this);
 	}
 	
 	public GUI(CommonPlayer cp, String key, int size)

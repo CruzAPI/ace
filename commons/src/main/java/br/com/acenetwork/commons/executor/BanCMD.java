@@ -18,6 +18,7 @@ import org.bukkit.command.TabExecutor;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.constants.Tag;
 import br.com.acenetwork.commons.inventory.Banishment;
 import br.com.acenetwork.commons.manager.CommonsConfig;
@@ -173,8 +174,9 @@ public class BanCMD implements TabExecutor
 			if(op.isOnline())
 			{
 				Player p = op.getPlayer();
-				displayName = op.getPlayer().getDisplayName();
-				p.kickPlayer(getKickMessage(sender.getName(), tag, time, reason));
+				displayName = p.getDisplayName();
+				
+				CommonsUtil.bungeeKickPlayer(p.getName(), getKickMessage(sender.getName(), tag, time, reason));
 			}
 			else
 			{

@@ -1,8 +1,8 @@
 package br.com.acenetwork.lobby.inventory;
 
 import java.util.Arrays;
+import java.util.ResourceBundle;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -16,21 +16,22 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.inventory.GUI;
-import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
+import net.md_5.bungee.api.ChatColor;
 
 public class ServerSelector extends GUI
 {
 	private ItemStack survival;
 	private ItemStack tntrun;
 	
+	@SuppressWarnings("deprecation")
 	public ServerSelector(CommonPlayer cp)
 	{
-		super(cp, Bukkit.createInventory(cp.getPlayer(), 9 * 3, 
-			Message.getMessage(cp.getPlayer().getLocale(), "lobby.inventory.server-selector.title")));
+		super(cp, "commons.words.server-selector", 9 * 3);
 		
 		Player p = cp.getPlayer();
-		String locale = p.getLocale();
+		
+		ResourceBundle bundle = ResourceBundle.getBundle("message", cp.getLocale());
 		
 		for(int i = 0; i < inv.getSize(); i++)
 		{
@@ -43,11 +44,11 @@ public class ServerSelector extends GUI
 		meta = survival.getItemMeta();
 		meta.addEnchant(Enchantment.DURABILITY, 3, true);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-		meta.setDisplayName(Message.getMessage(locale, "lobby.inventory.server-selector.survival.display-name"));
+		meta.setDisplayName(ChatColor.GREEN + bundle.getString("commons.words.survival"));
 		meta.setLore(Arrays.asList
 		(
-			Message.getMessage(locale, "lobby.inventory.server-selector.survival.lore1"),
-			Message.getMessage(locale, "lobby.inventory.server-selector.survival.lore2")
+				ChatColor.GRAY + bundle.getString("lobby.inv.server-selector.join-now"),
+				ChatColor.GREEN + bundle.getString("lobby.inv.server-selector.survival-world")
 		));
 		survival.setItemMeta(meta);
 		
@@ -56,11 +57,11 @@ public class ServerSelector extends GUI
 		meta.addEnchant(Enchantment.DURABILITY, 3, true);
 		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		meta.addEnchant(Enchantment.DURABILITY, 3, true);
-		meta.setDisplayName(Message.getMessage(locale, "lobby.inventory.server-selector.tntrun.display-name"));
+		meta.setDisplayName(ChatColor.RED + bundle.getString("commons.words.tnt-run"));
 		meta.setLore(Arrays.asList
 		(
-			Message.getMessage(locale, "lobby.inventory.server-selector.tntrun.lore1"),
-			Message.getMessage(locale, "lobby.inventory.server-selector.tntrun.lore2")
+				ChatColor.GRAY + bundle.getString("lobby.inv.server-selector.join-now"),
+				ChatColor.RED + bundle.getString("lobby.inv.server-selector.minigame-tnt-run")
 		));
 		tntrun.setItemMeta(meta);
 		
@@ -85,11 +86,13 @@ public class ServerSelector extends GUI
 		
 		if(CommonsUtil.compareDisplayName(item, survival) && click == ClickType.LEFT)
 		{
-			CommonsUtil.bungeeSendPlayer(p.getName(), "emerald");
+			CommonsUtil.bungeeSendPlayer(p.getName(), "raid");
+			p.closeInventory();
 		}
 		else if(CommonsUtil.compareDisplayName(item, tntrun) && click == ClickType.LEFT)
 		{
 			CommonsUtil.bungeeSendPlayer(p.getName(), "a1.tntrun");
+			p.closeInventory();
 		}
 	}
 }

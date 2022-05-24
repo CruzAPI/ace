@@ -168,14 +168,12 @@ public class Commons
 	
 	public static File getDataFolder()
 	{
-		return plugin.getDataFolder();
+		if(TEST)
+		{
+			return new File(System.getProperty("user.home") +  "/.aceconfigtest");
+		}
 		
-//		if(TEST)
-//		{
-//			return new File(System.getProperty("user.home") +  "/.aceconfigtest");
-//		}
-//		
-//		return new File(System.getProperty("user.home") +  "/.aceconfig");
+		return new File(System.getProperty("user.home") +  "/.aceconfig");
 	}
 
 	public static void setRestarting(boolean value)

@@ -56,6 +56,6 @@ public class PlayerJoin implements Listener
 			}, 1L);
 //		}
 		
-		cp.setCommonsScoreboard(new LobbyScoreboard(cp));
+		//cp.setCommonsScoreboard(new LobbyScoreboard(cp));
 	}
 }

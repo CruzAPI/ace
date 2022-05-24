@@ -1,5 +1,7 @@
 package br.com.acenetwork.lobby;
 
+import java.util.ResourceBundle;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,9 +13,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import br.com.acenetwork.commons.CommonsHotbar;
 import br.com.acenetwork.commons.CommonsUtil;
-import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.lobby.inventory.ServerSelector;
+import net.md_5.bungee.api.ChatColor;
 
 public class LobbyHotbar extends CommonsHotbar
 {
@@ -25,11 +27,13 @@ public class LobbyHotbar extends CommonsHotbar
 		
 		Player p = cp.getPlayer();
 		
+		ResourceBundle bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
 		ItemMeta meta;
 		
 		serverSelector = new ItemStack(Material.NETHER_STAR);
 		meta = serverSelector.getItemMeta();
-		meta.setDisplayName(Message.getMessage(locale, "lobby.hotbar.server-selector"));
+		meta.setDisplayName(ChatColor.WHITE + bundle.getString("commons.words.server-selector"));
 		serverSelector.setItemMeta(meta);
 		
 		p.getInventory().setItem(4, serverSelector);
@@ -65,9 +69,11 @@ public class LobbyHotbar extends CommonsHotbar
 			return;
 		}
 		
+		ResourceBundle bundle = ResourceBundle.getBundle("message", cp.getLocale());
+		
 		ItemMeta meta;
 		meta = serverSelector.getItemMeta();
-		meta.setDisplayName(Message.getMessage(locale, "lobby.hotbar.server-selector"));
+		meta.setDisplayName(ChatColor.WHITE + bundle.getString("commons.words.server-selector"));
 		serverSelector.setItemMeta(meta);
 		
 		p.getInventory().setItem(4, serverSelector);

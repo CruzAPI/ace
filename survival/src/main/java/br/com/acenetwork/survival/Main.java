@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.Commons;
+import br.com.acenetwork.commons.executor.BroadcastCMD;
 import br.com.acenetwork.survival.executor.Buy;
 import br.com.acenetwork.survival.executor.Delhome;
 import br.com.acenetwork.survival.executor.Home;
@@ -76,6 +77,14 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Sethome(), "sethome");
 		Commons.registerCommand(new Spawn(), "spawn");
 		Commons.registerCommand(new Track(), "track");
+		
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.1");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.2");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.3");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.4");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.5");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.6");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.7");
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
 		{

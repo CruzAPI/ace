@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.executor.BroadcastCMD;
+import br.com.acenetwork.commons.inventory.AnvilCommand;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
@@ -1079,6 +1080,8 @@ public class Temp implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
+		new AnvilCommand(CraftCommonPlayer.get((Player) sender), "Input clan tag", "/clan criar {0} oi");
+		
 		if(true)
 		{
 			sender.sendMessage("Unknown command. Type \"/help\" for help.");

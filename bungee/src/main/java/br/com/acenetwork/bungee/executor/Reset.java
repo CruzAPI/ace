@@ -3,30 +3,34 @@ package br.com.acenetwork.bungee.executor;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
+
+import org.bukkit.entity.Player;
 
 import br.com.acenetwork.bungee.Main;
 import br.com.acenetwork.bungee.Util;
 import br.com.acenetwork.bungee.manager.Config;
-import br.com.acenetwork.bungee.manager.Message;
 import br.com.acenetwork.bungee.manager.Config.Type;
 import br.com.acenetwork.bungee.manager.Database;
+import br.com.acenetwork.bungee.manager.Message;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Command;
-import net.md_5.bungee.api.scheduler.GroupedThreadFactory.BungeeGroup;
 import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
@@ -43,28 +47,33 @@ public class Reset extends Command
 	@Override
 	public void execute(CommandSender sender, String[] args)
 	{
-		String locale = "en_us";
+		boolean hasPermission = true;
+		ResourceBundle bundle = ResourceBundle.getBundle("message");
 		
-		if(sender instanceof ProxiedPlayer)
+		if(sender instanceof Player)
 		{
 			ProxiedPlayer p = (ProxiedPlayer) sender;
-			locale = p.getLocale().toString().toLowerCase();
-			
-			if(!Util.hasPermission(p.getUniqueId().toString(), "cmd.reset"))
-			{
-				p.sendMessage(Message.getMessage(locale, "cmd.permission"));
-				return;
-			}
+			hasPermission = Util.hasPermission(p.getUniqueId().toString(), "cmd.reset");
+			bundle = ResourceBundle.getBundle("message", p.getLocale());
+		}
+		
+		if(!hasPermission)
+		{
+			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
+			text.setColor(ChatColor.RED);
+			sender.sendMessage(text);
+			return;
 		}
 		
 		if(args.length == 0)
 		{
-			if(Main.TEST)
-			{
-				sender.sendMessage("§5§lTEST MODE!");
-			}
+			TextComponent[] extra = new TextComponent[1];
 			
-			sender.sendMessage(Message.getMessage(locale, "cmd.reset.confirm"));
+			extra[0] = new TextComponent("/reset confirm");
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("raid.cmd.reset.confirm"), extra);
+			text.setColor(ChatColor.RED);
+			sender.sendMessage(text);
 		}
 		else if(args.length == 1 && args[0].equalsIgnoreCase("confirm"))
 		{
@@ -72,16 +81,26 @@ public class Reset extends Command
 			{
 				reset();
 			}
-			catch(SQLException e)
+			catch(Exception e)
 			{
 				e.printStackTrace();
-				sender.sendMessage(Message.getMessage(locale, "commons.unexpected-error"));
+				TextComponent text = new TextComponent(bundle.getString("commons.unexpected-error"));
+				text.setColor(ChatColor.RED);
+				sender.sendMessage(text);
 			}
 		}
 		else
 		{
-			sender.sendMessage(Message.getMessage(locale, "cmd.wrong-syntax-try", "/" + getName()));
+			TextComponent[] extra = new TextComponent[1];
+			
+			extra[0] = new TextComponent("/" + getName());
+			
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmds.wrong-syntax-try"), extra);
+			text.setColor(ChatColor.RED);
+			sender.sendMessage(text);
 		}
+		
+		return;
 	}
 	
 	public static int getTodayResetDayOfMonth()
@@ -215,18 +234,30 @@ public class Reset extends Command
 			resetConfig.set("last-reset", getTodayResetDayOfMonth());
 			provider.save(resetConfig, resetFile);
 			
-			ProxyServer.getInstance().getPlayers().stream().forEach(x -> 
-			x.sendMessage(Message.getMessage(x.getLocale().toString().toLowerCase(), "cmd.reset.points-reset")));
+			List<CommandSender> senderList = new ArrayList<CommandSender>(ProxyServer.getInstance().getPlayers());
+			senderList.add(ProxyServer.getInstance().getConsole());
 			
-			ProxyServer.getInstance().getConsole().sendMessage(Message.getMessage("en_us", "cmd.reset.points-reset"));
+			for(CommandSender sender : senderList)
+			{
+				ResourceBundle bundle = ResourceBundle.getBundle("message");
+				
+				if(sender instanceof ProxiedPlayer)
+				{
+					bundle = ResourceBundle.getBundle("message", ((ProxiedPlayer) sender).getLocale());
+				}
+				
+				TextComponent text = new TextComponent(bundle.getString("raid.cmd.reset.points-reset"));
+				text.setColor(ChatColor.RED);
+				sender.sendMessage(text);
+			}
 			
 			if(Main.TEST)
 			{
-				Runtime.getRuntime().exec(System.getProperty("user.home") + "/reset/testpay.bash");
+//				Runtime.getRuntime().exec(System.getProperty("user.home") + "/reset/testpay.bash");
 			}
 			else
 			{
-				Runtime.getRuntime().exec(System.getProperty("user.home") + "/reset/pay.bash");
+//				Runtime.getRuntime().exec(System.getProperty("user.home") + "/reset/pay.bash");
 			}
 			
 			return true;

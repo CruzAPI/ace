@@ -11,7 +11,11 @@ public class Config
 {
 	public enum Type
 	{
-		BOT, COMBATLOG, PRICE, PLAYER_INFO;
+		BOT, 
+		COMBATLOG, 
+		PRICE, 
+		PLAYER_INFO,
+		;
 	}
 
 	public static File getFile(Type type, boolean createNewFile, Object... args)
