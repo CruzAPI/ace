@@ -1,8 +1,12 @@
 package br.com.acenetwork.commons;
 
+import java.io.DataInputStream;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -16,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.event.PlayerModeEvent;
+import br.com.acenetwork.commons.event.SocketEvent;
 import br.com.acenetwork.commons.executor.AdminCMD;
 import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.executor.BanCMD;
@@ -47,6 +52,7 @@ import br.com.acenetwork.commons.listener.PlayerDeath;
 import br.com.acenetwork.commons.listener.PlayerJoin;
 import br.com.acenetwork.commons.listener.PlayerLogin;
 import br.com.acenetwork.commons.listener.PlayerQuit;
+import br.com.acenetwork.commons.listener.SocketListener;
 import br.com.acenetwork.commons.manager.Broadcast;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
@@ -82,6 +88,7 @@ public class Commons
 		Bukkit.getPluginManager().registerEvents(new PlayerJoin(), plugin);
 		Bukkit.getPluginManager().registerEvents(new PlayerLogin(), plugin);
 		Bukkit.getPluginManager().registerEvents(new PlayerQuit(), plugin);
+		Bukkit.getPluginManager().registerEvents(new SocketListener(), plugin);
 
 		registerCommand(new AdminCMD(), "admin");
 		registerCommand(new Balance(), "balance", "bal", "points", "coins");
@@ -131,6 +138,27 @@ public class Commons
 				e.printStackTrace();
 			}
 		}
+		
+		new Thread(() ->
+		{
+			while(true)
+			{
+				try
+				(
+						ServerSocket ss = new ServerSocket(50000);
+						Socket s = ss.accept();
+				)
+				{
+//					Bukkit.getScheduler().runTask(plugin, () -> 
+					Bukkit.getPluginManager().callEvent(new SocketEvent(s));
+//					);
+				}
+				catch(IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+		}).start();
 	}
 	
 	public static void registerCommand(TabExecutor executor, String name, String... aliases)

@@ -73,7 +73,6 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Price(), "price");
 		Commons.registerCommand(new Pricechart(), "pricechart");
 		Commons.registerCommand(new Randomtp(), "randomtp");		
-		Commons.registerCommand(new Reset(), "reset");		
 		Commons.registerCommand(new Sell(), "sell");
 		Commons.registerCommand(new Sellall(), "sellall");
 		Commons.registerCommand(new Sethome(), "sethome");

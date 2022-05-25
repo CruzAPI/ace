@@ -2,6 +2,7 @@ package br.com.acenetwork.bungee;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import br.com.acenetwork.bungee.executor.Alert;
@@ -24,11 +25,12 @@ public class Main extends Plugin
 	{
 		instance = this;
 		
+		Locale.setDefault(new Locale("en", "US"));
 		ProxyServer.getInstance().registerChannel("commons:commons");
 		
 		if(TEST)
 		{
-			ProxyServer.getInstance().getConsole().sendMessage("§dServer is in test mode!");
+			ProxyServer.getInstance().getConsole().sendMessage("§dServer is in test mode!Default locale: " + Locale.getDefault());
 		}
 		else
 		{

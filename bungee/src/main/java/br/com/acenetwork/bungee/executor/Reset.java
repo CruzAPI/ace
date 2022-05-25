@@ -17,8 +17,6 @@ import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
-import org.bukkit.entity.Player;
-
 import br.com.acenetwork.bungee.Main;
 import br.com.acenetwork.bungee.Util;
 import br.com.acenetwork.bungee.manager.Config;
@@ -50,7 +48,7 @@ public class Reset extends Command
 		boolean hasPermission = true;
 		ResourceBundle bundle = ResourceBundle.getBundle("message");
 		
-		if(sender instanceof Player)
+		if(sender instanceof ProxiedPlayer)
 		{
 			ProxiedPlayer p = (ProxiedPlayer) sender;
 			hasPermission = Util.hasPermission(p.getUniqueId().toString(), "cmd.reset");
@@ -71,7 +69,7 @@ public class Reset extends Command
 			
 			extra[0] = new TextComponent("/reset confirm");
 			
-			TextComponent text = Message.getTextComponent(bundle.getString("raid.cmd.reset.confirm"), extra);
+			TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.reset.confirm"), extra);
 			text.setColor(ChatColor.RED);
 			sender.sendMessage(text);
 		}
@@ -191,12 +189,8 @@ public class Reset extends Command
 			{
 				UUID uuid = entry.getKey();
 				double balance = entry.getValue();
-				
-				File playerFile = Config.getFile(Type.PLAYER, false, uuid);
-				Configuration playerConfig = provider.load(playerFile);
-				String name = playerConfig.getString("name");
-				
-				sql += "(default, '" + uuid + "', '" + name + "', " + balance + "), ";
+								
+				sql += "(default, '" + uuid + "', 'aaa', " + balance + "), ";
 			}
 			
 			sql = sql.substring(0, sql.length() - 2) + ";";
@@ -246,7 +240,7 @@ public class Reset extends Command
 					bundle = ResourceBundle.getBundle("message", ((ProxiedPlayer) sender).getLocale());
 				}
 				
-				TextComponent text = new TextComponent(bundle.getString("raid.cmd.reset.points-reset"));
+				TextComponent text = new TextComponent(bundle.getString("commons.cmd.reset.points-reset"));
 				text.setColor(ChatColor.RED);
 				sender.sendMessage(text);
 			}
