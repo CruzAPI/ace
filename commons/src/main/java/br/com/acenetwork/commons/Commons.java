@@ -1,13 +1,17 @@
 package br.com.acenetwork.commons;
 
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketImpl;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -44,6 +48,7 @@ import br.com.acenetwork.commons.executor.Tell;
 import br.com.acenetwork.commons.executor.Test;
 import br.com.acenetwork.commons.executor.Tp;
 import br.com.acenetwork.commons.executor.Unmute;
+import br.com.acenetwork.commons.executor.Wallet;
 import br.com.acenetwork.commons.executor.WatchCMD;
 import br.com.acenetwork.commons.listener.EntitySpawn;
 import br.com.acenetwork.commons.listener.InventoryClose;
@@ -115,6 +120,7 @@ public class Commons
 		registerCommand(new Tp(), "teleport", "tp");
 		registerCommand(new Unmute(), "unmute");
 		registerCommand(new WatchCMD(), "watch");
+		registerCommand(new Wallet(), "wallet");
 		
 		for(Player all : Bukkit.getOnlinePlayers())
 		{
@@ -143,15 +149,24 @@ public class Commons
 		{
 			while(true)
 			{
-				try
-				(
-						ServerSocket ss = new ServerSocket(50000);
-						Socket s = ss.accept();
-				)
+				try(ServerSocket ss = new ServerSocket(getSocketPort()); Socket s = ss.accept();
+						DataInputStream in = new DataInputStream(s.getInputStream()))
 				{
-//					Bukkit.getScheduler().runTask(plugin, () -> 
-					Bukkit.getPluginManager().callEvent(new SocketEvent(s));
-//					);
+					List<String> list = new ArrayList<>();
+					
+					while(true)
+					{
+						try
+						{
+							list.add(in.readUTF());
+						}
+						catch(EOFException ex)
+						{
+							break;
+						}
+					}
+					
+					Bukkit.getPluginManager().callEvent(new SocketEvent(list.toArray(String[]::new)));
 				}
 				catch(IOException e)
 				{
@@ -161,6 +176,11 @@ public class Commons
 		}).start();
 	}
 	
+	public static int getSocketPort()
+	{
+		return Bukkit.getPort() + 5000;
+	}
+
 	public static void registerCommand(TabExecutor executor, String name, String... aliases)
 	{
 		try

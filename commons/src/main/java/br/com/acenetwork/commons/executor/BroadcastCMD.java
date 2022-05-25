@@ -40,7 +40,7 @@ public class BroadcastCMD implements TabExecutor
 		BROADCASTS.add("commons.broadcast.3");
 		BROADCASTS.add("commons.broadcast.4");
 		BROADCASTS.add("commons.broadcast.5");
-//		BROADCASTS.add("commons.broadcast.6");
+		BROADCASTS.add("commons.broadcast.6");
 		suffle();
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Commons.getPlugin(), new Runnable()

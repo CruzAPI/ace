@@ -1,7 +1,5 @@
 package br.com.acenetwork.commons.event;
 
-import java.net.Socket;
-
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -9,18 +7,18 @@ public class SocketEvent extends Event
 {
 	private static final HandlerList HANDLER = new HandlerList();
 	
-	private final Socket s;
+	private final String[] args;
 	
-	public SocketEvent(Socket s)
+	public SocketEvent(String[] args)
 	{
 		super(true);
 		
-		this.s = s;
+		this.args = args;
 	}
 	
-	public Socket getSocket()
+	public String[] getArgs()
 	{
-		return s;
+		return args;
 	}
 	
 	public static HandlerList getHandlerList()
