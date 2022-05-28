@@ -154,43 +154,9 @@ public class Land implements Listener
 		this.z = z;
 		this.type = type;
 		
-		if(id == 68)
-		{
-			for(OfflinePlayer ops : Bukkit.getOfflinePlayers())
-			{
-				if(ops.getName().equalsIgnoreCase("CruzAPI"))
-				{
-					owner = ops;
-					break;
-				}
-			}
-		}
-		
-		if(id == 69)
-		{
-			for(OfflinePlayer ops : Bukkit.getOfflinePlayers())
-			{
-				if(ops.getName().equalsIgnoreCase("Eul4"))
-				{
-					owner = ops;
-					break;
-				}
-			}
-		}
-		
-		if(id == 70)
-		{
-			for(OfflinePlayer ops : Bukkit.getOfflinePlayers())
-			{
-				if(ops.getName().equalsIgnoreCase("zyonNZ"))
-				{
-					owner = ops;
-					break;
-				}
-			}
-		}
-		
 		Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
+		
+		
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)

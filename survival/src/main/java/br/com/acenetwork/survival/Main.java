@@ -12,6 +12,7 @@ import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.survival.executor.Buy;
 import br.com.acenetwork.survival.executor.Delhome;
 import br.com.acenetwork.survival.executor.Home;
+import br.com.acenetwork.survival.executor.LandCMD;
 import br.com.acenetwork.survival.executor.Price;
 import br.com.acenetwork.survival.executor.Pricechart;
 import br.com.acenetwork.survival.executor.Randomtp;
@@ -77,6 +78,7 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Sethome(), "sethome");
 		Commons.registerCommand(new Spawn(), "spawn");
 		Commons.registerCommand(new Track(), "track");
+		Commons.registerCommand(new LandCMD(), "land");
 		
 		Land.loadLands();
 		
