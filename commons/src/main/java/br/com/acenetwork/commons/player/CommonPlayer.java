@@ -41,4 +41,8 @@ public interface CommonPlayer extends Listener
 	void reset();
 	Locale getLocale();
 	void sendMessage(String string, Object... args);
+	String getWalletAddress();
+	void setWalletAddress(String address);
+	int requestDatabase();
+	int requestDatabase(long timeout);
 }

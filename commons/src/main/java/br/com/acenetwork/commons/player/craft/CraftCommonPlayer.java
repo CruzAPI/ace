@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,6 +33,7 @@ import br.com.acenetwork.commons.inventory.GUI;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.player.CommonPlayer;
+import net.md_5.bungee.api.ChatColor;
 
 public abstract class CraftCommonPlayer implements CommonPlayer
 {
@@ -49,6 +51,7 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	private boolean specs;
 	private boolean invis;
 	private boolean ignoreInvisAndSpecs;
+	private String walletAddress;
 	
 	public CraftCommonPlayer(Player p)
 	{
@@ -87,6 +90,25 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 		reset();
 		HandlerList.unregisterAll(this);
 		return SET.remove(this);
+	}
+	
+	@Override
+	public int requestDatabase()
+	{
+		return requestDatabase(20L * 5L);
+	}
+	
+	@Override
+	public int requestDatabase(long timeout)
+	{
+		ResourceBundle bundle = ResourceBundle.getBundle("message", getLocale());
+		
+//		p.sendMessage(ChatColor.GREEN + bundle.getString("commons.cmds.checking-database"));
+		
+		return Bukkit.getScheduler().scheduleSyncDelayedTask(Commons.getPlugin(), () ->
+		{
+			p.sendMessage(ChatColor.RED + bundle.getString("commons.cmds.request-timed-out"));
+		}, timeout);
 	}
 	
 	@Override
@@ -504,5 +526,17 @@ public abstract class CraftCommonPlayer implements CommonPlayer
 	public Locale getLocale()
 	{
 		return CommonsUtil.getLocaleFromMinecraft(p.getLocale());
+	}
+	
+	@Override
+	public String getWalletAddress()
+	{
+		return walletAddress;
+	}
+	
+	@Override
+	public void setWalletAddress(String address)
+	{
+		this.walletAddress = address;
 	}
 }
