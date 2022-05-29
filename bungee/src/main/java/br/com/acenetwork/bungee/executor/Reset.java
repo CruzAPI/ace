@@ -251,7 +251,7 @@ public class Reset extends Command
 			}
 			else
 			{
-//				Runtime.getRuntime().exec(System.getProperty("user.home") + "/reset/pay.bash");
+				Runtime.getRuntime().exec("screen -dmS payment /home/ace/reset/payment.sh");
 			}
 			
 			return true;
