@@ -13,9 +13,11 @@ import org.bukkit.Material;
 import org.bukkit.block.Beacon;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -40,9 +42,12 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.LeavesDecayEvent;
+import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.entity.SheepRegrowWoolEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
@@ -53,6 +58,7 @@ import org.bukkit.event.world.StructureGrowEvent;
 
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.event.CustomBlockFertilizeEvent;
+import br.com.acenetwork.commons.event.CustomSpongeAbsorbEvent;
 import br.com.acenetwork.commons.event.CustomStructureGrowEvent;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Util;
@@ -61,14 +67,30 @@ import br.com.acenetwork.survival.executor.Track.TrackType;
 
 public class SpawnProtection implements Listener
 {
-//	@EventHandler(priority = EventPriority.HIGHEST)
-//	public void a(CreatureSpawnEvent e)
-//	{
-//		if(Util.isSpawn(e.getLocation()))
-//		{
-//			e.setCancelled(true);
-//		}
-//	}
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void aasda(CustomSpongeAbsorbEvent ce)
+	{
+		SpongeAbsorbEvent e = ce.getSpongeAbsorbEvent();
+		e.getBlocks().removeAll(e.getBlocks().stream().filter(x -> Util.isSpawn(x.getLocation())).collect(Collectors.toList()));
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void aasdas(EntityPlaceEvent e)
+	{
+		
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void aasdas(CreatureSpawnEvent e)
+	{
+		SpawnReason reason = e.getSpawnReason();
+		
+		if(Util.isSpawn(e.getLocation()) && 
+				(reason == SpawnReason.BUILD_IRONGOLEM || reason == SpawnReason.BUILD_SNOWMAN || reason == SpawnReason.BUILD_WITHER))
+		{
+			e.setCancelled(true);
+		}
+	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockSpreadEvent e)
@@ -100,11 +122,17 @@ public class SpawnProtection implements Listener
 //		e.
 //	}
 	
-//	@EventHandler(priority = EventPriority.HIGHEST)
-//	public void a(BlockDispenseEvent e)
-//	{
-//		e.
-//	}
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void a(BlockDispenseEvent e)
+	{
+		Block b = e.getBlock();
+		Dispenser dispenser = (Dispenser) b.getState().getBlockData();
+		
+		if(Util.isSpawn(b) || (Util.isSpawn(b.getRelative(dispenser.getFacing())) && Util.isDispensable(e.getItem().getType())))
+		{
+			e.setCancelled(true);
+		}
+	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockPhysicsEvent e)
@@ -153,15 +181,8 @@ public class SpawnProtection implements Listener
 //	
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void a(CreatureSpawnEvent e)
-	{
-//		e.getSpawnReason().
-	}
-	
-	@EventHandler(priority = EventPriority.HIGHEST)
 	public void a(BlockFormEvent e)
 	{
-//		e.get
 		Block b = e.getBlock();
 		
 		if(Util.isSpawn(b))

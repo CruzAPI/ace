@@ -40,13 +40,7 @@ public class BroadcastCMD implements TabExecutor
 		BROADCASTS.add("commons.broadcast.3");
 		BROADCASTS.add("commons.broadcast.4");
 		BROADCASTS.add("commons.broadcast.5");
-		BROADCASTS.add("raid.broadcast.1");
-		BROADCASTS.add("raid.broadcast.2");
-		BROADCASTS.add("raid.broadcast.3");
-		BROADCASTS.add("raid.broadcast.4");
-		BROADCASTS.add("raid.broadcast.5");
-		BROADCASTS.add("raid.broadcast.6");
-		BROADCASTS.add("raid.broadcast.7");
+		BROADCASTS.add("commons.broadcast.6");
 		suffle();
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Commons.getPlugin(), new Runnable()
@@ -180,6 +174,15 @@ public class BroadcastCMD implements TabExecutor
 						extra[1].addExtra(" [" + bundle.getString("commons.words.player") + "]");
 						extra[1].setColor(ChatColor.WHITE);
 					}
+					else if(key.equals("commons.broadcast.6"))
+					{
+						text.setColor(ChatColor.GREEN);
+						
+						extra = new TextComponent[1];
+						
+						extra[0] = new TextComponent("/wallet");
+						extra[0].setColor(ChatColor.DARK_GREEN);
+					}
 					else if(key.equals("raid.broadcast.1"))
 					{
 						text.setColor(ChatColor.AQUA);
@@ -262,6 +265,7 @@ public class BroadcastCMD implements TabExecutor
 					
 					sender.spigot().sendMessage(text);
 				}
+				
 				i++;
 			}
 		}, 5L * 60L * 20L, 5L * 60L * 20L);

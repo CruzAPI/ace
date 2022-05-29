@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.Commons;
+import br.com.acenetwork.commons.executor.BroadcastCMD;
 import br.com.acenetwork.survival.executor.Buy;
 import br.com.acenetwork.survival.executor.Delhome;
 import br.com.acenetwork.survival.executor.Home;
@@ -25,6 +26,7 @@ import br.com.acenetwork.survival.executor.Temp;
 import br.com.acenetwork.survival.executor.Track;
 import br.com.acenetwork.survival.listener.AlertOreFound;
 import br.com.acenetwork.survival.listener.EntityTarget;
+import br.com.acenetwork.survival.listener.LagClear;
 import br.com.acenetwork.survival.listener.PlayerDeath;
 import br.com.acenetwork.survival.listener.PlayerJoin;
 import br.com.acenetwork.survival.listener.PlayerLogin;
@@ -63,6 +65,7 @@ public class Main extends JavaPlugin
 		Bukkit.getPluginManager().registerEvents(new PlayerQuit(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerRespawn(), this);
 		Bukkit.getPluginManager().registerEvents(new SpawnProtection(), this);
+		Bukkit.getPluginManager().registerEvents(new LagClear(), this);
 		
 		Commons.registerCommand(new Temp(), "temp");
 		
@@ -72,7 +75,6 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Price(), "price");
 		Commons.registerCommand(new Pricechart(), "pricechart");
 		Commons.registerCommand(new Randomtp(), "randomtp");		
-		Commons.registerCommand(new Reset(), "reset");		
 		Commons.registerCommand(new Sell(), "sell");
 		Commons.registerCommand(new Sellall(), "sellall");
 		Commons.registerCommand(new Sethome(), "sethome");
@@ -81,6 +83,14 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new LandCMD(), "land");
 		
 		Land.loadLands();
+		
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.1");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.2");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.3");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.4");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.5");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.6");
+		BroadcastCMD.BROADCASTS.add("raid.broadcast.7");
 		
 		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () ->
 		{

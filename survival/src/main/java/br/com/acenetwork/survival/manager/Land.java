@@ -2,15 +2,22 @@ package br.com.acenetwork.survival.manager;
 
 import static br.com.acenetwork.survival.manager.Land.Direction.SOUTH;
 
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.Dispenser;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -20,6 +27,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockFertilizeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockGrowEvent;
@@ -29,21 +37,28 @@ import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 
+import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.event.CustomBlockFertilizeEvent;
+import br.com.acenetwork.commons.event.CustomSpongeAbsorbEvent;
 import br.com.acenetwork.commons.event.CustomStructureGrowEvent;
+import br.com.acenetwork.commons.event.SocketEvent;
 import br.com.acenetwork.survival.Main;
 import br.com.acenetwork.survival.Util;
 import br.com.acenetwork.survival.event.TrackEvent;
 import br.com.acenetwork.survival.executor.Track.TrackType;
+import io.papermc.paper.event.block.BlockPreDispenseEvent;
 
 public class Land implements Listener
 {
+	public static final Set<Land> SET = new HashSet<>();
+	
 	private OfflinePlayer owner;
 	
 	public enum Direction
@@ -147,16 +162,64 @@ public class Land implements Listener
 		return owner != null && p != null && owner.getUniqueId().equals(p.getUniqueId());
 	}
 	
-	public Land(int id, int x, int z, Type type)
+	private Land(int id, int x, int z, Type type)
 	{
 		this.id = id;
 		this.x = x;
 		this.z = z;
 		this.type = type;
 		
+		SET.add(this);
+		
 		Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
 		
+		if(id == 69)
+		{
+			owner = Bukkit.getOfflinePlayer("CruzAPI");
+		}
 		
+		try
+		{
+			Runtime.getRuntime().exec(String.format("node %s/reset/syncland %s %s", System.getProperty("user.home"), 
+					Commons.getSocketPort(), id));
+		}
+		catch(IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public static Land getById(int id)
+	{
+		return SET.stream().filter(x -> x.id == id).findAny().orElse(null);
+	}
+	
+	@EventHandler
+	public void aa(SocketEvent e)
+	{
+		String[] args = e.getArgs();
+		String cmd = args[0];
+		
+		if(cmd.equals("syncland"))
+		{
+			int id = Integer.valueOf(args[1]);
+			
+			if(this.id != id)
+			{
+				return;
+			}
+			
+			String uuid = args[2];
+			
+			try
+			{
+				owner = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+			}
+			catch(IllegalArgumentException ex)
+			{
+				owner = null;
+			}
+		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -458,6 +521,47 @@ public class Land implements Listener
 				{
 					e.getBlocks().add(blocks);
 				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void a(CustomSpongeAbsorbEvent ce)
+	{
+		SpongeAbsorbEvent e = ce.getSpongeAbsorbEvent();
+		
+		Block b = e.getBlock();
+		
+		if(isLand(b))
+		{
+			e.getBlocks().clear();
+			
+			for(BlockState blocks : ce.getOriginalBlocks())
+			{
+				if(isLand(blocks.getLocation()))
+				{
+					e.getBlocks().add(blocks);
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void asd(BlockDispenseEvent e)
+	{
+		Block b = e.getBlock();
+		
+		if(isLand(b))
+		{
+			Dispenser dispenser = (Dispenser) b.getState().getBlockData();
+			
+			Bukkit.broadcastMessage(e.getItem().toString());
+			Bukkit.broadcastMessage(dispenser.getFacing().toString());
+			Bukkit.broadcastMessage("isDispensable " + Util.isDispensable(e.getItem().getType()));
+			
+			if(!Util.isDispensable(e.getItem().getType()) || isLand(b.getRelative(dispenser.getFacing())))
+			{
+				e.setCancelled(false);
 			}
 		}
 	}

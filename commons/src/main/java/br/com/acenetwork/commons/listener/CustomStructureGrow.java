@@ -5,9 +5,11 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFertilizeEvent;
+import org.bukkit.event.block.SpongeAbsorbEvent;
 import org.bukkit.event.world.StructureGrowEvent;
 
 import br.com.acenetwork.commons.event.CustomBlockFertilizeEvent;
+import br.com.acenetwork.commons.event.CustomSpongeAbsorbEvent;
 import br.com.acenetwork.commons.event.CustomStructureGrowEvent;
 
 public class CustomStructureGrow implements Listener
@@ -22,5 +24,11 @@ public class CustomStructureGrow implements Listener
 	public void on(BlockFertilizeEvent e)
 	{
 		Bukkit.getPluginManager().callEvent(new CustomBlockFertilizeEvent(e));
+	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void on(SpongeAbsorbEvent e)
+	{
+		Bukkit.getPluginManager().callEvent(new CustomSpongeAbsorbEvent(e));
 	}
 }

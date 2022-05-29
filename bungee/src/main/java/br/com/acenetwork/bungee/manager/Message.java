@@ -1,48 +1,48 @@
 package br.com.acenetwork.bungee.manager;
 
-import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import br.com.acenetwork.bungee.manager.Config.Type;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.config.ConfigurationProvider;
-import net.md_5.bungee.config.YamlConfiguration;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class Message
 {
-	public static String getMessage(String locale, String key, Object... args)
+	public static TextComponent getTextComponent(String pattern, TextComponent[] extra)
 	{
-		try
+		List<Integer> indexes = new ArrayList<>();
+		
+		for(int i = 0; i < pattern.length(); i++)
 		{
-			switch(locale)
+			try
 			{
-//				case "pt_br":
-//					break;
-				default:
-					locale = "en_us";
-					break;
+				if(pattern.charAt(i) == '{')
+				{
+					indexes.add(Integer.valueOf(pattern.charAt(i + 1) + "")); 
+				}
 			}
-			
-			ConfigurationProvider provider = ConfigurationProvider.getProvider(YamlConfiguration.class);
-			File file = Config.getFile(Type.MESSAGE, false, locale);
-			Configuration config = provider.load(file);
-			
-			String value = config.getString(key.replace('.', ':'));
-			
-			if(value == null)
+			catch(Exception e)
 			{
-				return key;
+				continue;
 			}
-			
-			for(int i = 0; i < args.length; i++)
-			{
-				value = value.replace("{" + i + "}", args[i] + "");
-			}
-			
-			return value;
 		}
-		catch(Exception e)
+		
+		String[] split = pattern.split("\\{[0-9][^}]*\\}");
+		
+		TextComponent base = new TextComponent();
+		
+		for(int i = 0; ; i++)
 		{
-			return key;
+			try
+			{
+				base.addExtra(split[i]);
+				base.addExtra(extra[indexes.get(i)]);
+			}
+			catch(Exception e)
+			{
+				break;
+			}
 		}
+		
+		return base;
 	}
 }

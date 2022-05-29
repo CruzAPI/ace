@@ -68,7 +68,7 @@ public class Invsee implements TabExecutor
 		
 		bundle = ResourceBundle.getBundle("message", cp.getLocale());
 		
-		if(!cp.hasPermission("cmd.admin"))
+		if(!cp.hasPermission("cmd.invsee"))
 		{
 			TextComponent text = new TextComponent(bundle.getString("commons.cmds.permission"));
 			text.setColor(ChatColor.RED);

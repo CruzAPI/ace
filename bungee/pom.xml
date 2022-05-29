@@ -14,6 +14,12 @@
   </repositories>
   <dependencies>
     <dependency>
+      <groupId>br.com.acenetwork.commons</groupId>
+      <artifactId>commons</artifactId>
+      <version>dev-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
        <groupId>net.md-5</groupId>
        <artifactId>bungeecord-api</artifactId>
        <version>1.17-R0.1-SNAPSHOT</version>
@@ -38,6 +44,41 @@
           <finalName>Bungee</finalName>
           <forceCreation>true</forceCreation> <!-- Required to prevent shading the jar multiple times -->
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.3</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <filters>
+            <filter>
+              <artifact>*:*</artifact>
+              <excludes>
+                <exclude>**/*.java</exclude>
+                <exclude>**/*.SF</exclude>
+                <exclude>**/*.DSA</exclude>
+              </excludes>
+            </filter>
+          </filters>
+          <transformers>
+            <transformer implementation="com.github.edwgiz.maven_shade_plugin.log4j2_cache_transformer.PluginsCacheFileTransformer" />
+          </transformers>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.github.edwgiz</groupId>
+            <artifactId>maven-shade-plugin.log4j2-cachefile-transformer</artifactId>
+            <version>2.13.2</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>

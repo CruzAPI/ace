@@ -38,9 +38,6 @@ public class CommonsConfig
 			config = YamlConfiguration.loadConfiguration(file);
 			config.set("max-balance", 3000.0D);
 			break;
-		case CLANS_JSON:
-			file = new File(Commons.getDataFolder(), "ace_clans.json");
-			break;
 		case MESSAGE:
 			file = new File(Commons.getDataFolder() + "/messages", args[0] + ".yml");
 			break;
