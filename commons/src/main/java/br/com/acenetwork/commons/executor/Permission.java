@@ -280,7 +280,7 @@ public class Permission implements TabExecutor
 					extra[1] = new TextComponent(group);
 					extra[1].setColor(ChatColor.YELLOW);
 
-					TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.permission.user-removed-from-user"), extra);
+					TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.permission.user-removed-from-group"), extra);
 					text.setColor(ChatColor.GREEN);
 					sender.spigot().sendMessage(text);
 				}

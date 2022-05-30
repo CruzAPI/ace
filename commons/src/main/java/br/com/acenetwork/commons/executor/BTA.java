@@ -26,6 +26,7 @@ import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 
@@ -100,7 +101,6 @@ public class BTA implements TabExecutor, Listener
 			Player p = Bukkit.getPlayer(UUID.fromString(args[2]));
 			CommonPlayer cp = CraftCommonPlayer.get(p);
 			double price = Double.valueOf(args[3]);
-			double balance = Double.valueOf(args[4]);
 			
 			if(cp != null && Bukkit.getScheduler().isQueued(taskId))
 			{
@@ -119,13 +119,31 @@ public class BTA implements TabExecutor, Listener
 				
 				df.applyPattern("0.00");
 				
-				extra[0] = new TextComponent(df.format(balance) + " $BTA ");
-				extra[0].setColor(ChatColor.DARK_PURPLE);
-				extra[0].addExtra(new ComponentBuilder("(≈" + df.format(balance * price) + " USD)").color(ChatColor.DARK_GRAY).getCurrentComponent());
-				
-				TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.bta.show-balance"), extra);
-				text.setColor(ChatColor.LIGHT_PURPLE);
-				p.spigot().sendMessage(text);
+				try
+				{
+					double balance = Double.valueOf(args[4]);
+					
+					extra[0] = new TextComponent(df.format(balance) + " $BTA ");
+					extra[0].setColor(ChatColor.DARK_PURPLE);
+					extra[0].addExtra(new ComponentBuilder("(≈" + df.format(balance * price) + " USD)").color(ChatColor.DARK_GRAY).getCurrentComponent());
+					
+					TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.bta.show-balance"), extra);
+					text.setColor(ChatColor.LIGHT_PURPLE);
+					p.spigot().sendMessage(text);
+				}
+				catch(NumberFormatException ex)
+				{
+					p.sendMessage(ChatColor.RED + bundle.getString("commons.cmd.wallet.do-not-have-any-wallet"));
+					
+					extra = new TextComponent[1];
+					
+					extra[0] = new TextComponent("/wallet <" + bundle.getString("commons.words.address").toLowerCase() + ">");
+					extra[0].setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/wallet "));
+					
+					TextComponent text = Message.getTextComponent(bundle.getString("commons.cmd.wallet.to-link-your-wallet-type"), extra);
+					text.setColor(ChatColor.RED);
+					p.spigot().sendMessage(text);
+				}
 			}
 		}
 	}

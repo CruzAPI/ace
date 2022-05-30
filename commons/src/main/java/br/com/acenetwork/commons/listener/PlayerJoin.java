@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -17,6 +18,7 @@ import org.bukkit.event.player.PlayerLocaleChangeEvent;
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.CommonsUtil;
 import br.com.acenetwork.commons.event.PlayerModeEvent;
+import br.com.acenetwork.commons.event.SocketEvent;
 import br.com.acenetwork.commons.manager.CommonsConfig;
 import br.com.acenetwork.commons.manager.CommonsConfig.Type;
 import br.com.acenetwork.commons.player.CommonPlayer;
@@ -104,6 +106,40 @@ public class PlayerJoin implements Listener
 			}
 		}, 1L, 1L);
 		
+		try
+		{
+			Runtime.getRuntime().exec(String.format("node %s/reset/isbetatester %s %s", System.getProperty("user.home"),
+					Commons.getSocketPort(), p.getUniqueId()));
+		}
+		catch(IOException e1)
+		{
+			e1.printStackTrace();
+		}
+		
 		TASK.put(p, id);
+	}
+	
+	@EventHandler
+	public void asdads(SocketEvent e)
+	{
+		String[] args = e.getArgs();
+		
+		String cmd = args[0];
+		
+		if(cmd.equals("isbetatester"))
+		{
+			Player p = Bukkit.getPlayer(UUID.fromString(args[1]));
+			CommonPlayer cp = CraftCommonPlayer.get(p);
+			boolean isBetaTester = Boolean.valueOf(args[2]);
+			
+			if(cp != null && isBetaTester)
+			{
+				Bukkit.getScheduler().runTask(Commons.getPlugin(), () ->
+				{
+					Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "pex group mod user add " + p.getName());
+					cp.setTag(cp.getBestTag());
+				});
+			}
+		}
 	}
 }
