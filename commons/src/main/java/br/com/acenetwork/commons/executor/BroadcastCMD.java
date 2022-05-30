@@ -41,6 +41,7 @@ public class BroadcastCMD implements TabExecutor
 		BROADCASTS.add("commons.broadcast.4");
 		BROADCASTS.add("commons.broadcast.5");
 		BROADCASTS.add("commons.broadcast.6");
+		BROADCASTS.add("commons.broadcast.7");
 		suffle();
 		
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(Commons.getPlugin(), new Runnable()
@@ -183,6 +184,21 @@ public class BroadcastCMD implements TabExecutor
 						extra[0] = new TextComponent("/wallet");
 						extra[0].setColor(ChatColor.DARK_GREEN);
 					}
+					else if(key.equals("commons.broadcast.7"))
+					{
+						text.setColor(ChatColor.LIGHT_PURPLE);
+						
+						extra = new TextComponent[2];
+						
+						extra[0] = new TextComponent("$BTA");
+						extra[0].setColor(ChatColor.DARK_PURPLE);
+						
+						extra[1] = new TextComponent("/bta");
+						extra[1].setColor(ChatColor.DARK_PURPLE);
+						extra[1].setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/bta"));
+						extra[1].setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder(
+								bundle.getString("commons.cmd.bta.click-to-see-your-balance")).color(ChatColor.DARK_PURPLE).create()));
+					}
 					else if(key.equals("raid.broadcast.1"))
 					{
 						text.setColor(ChatColor.AQUA);
@@ -268,7 +284,7 @@ public class BroadcastCMD implements TabExecutor
 				
 				i++;
 			}
-		}, 5L * 60L * 20L, 5L * 60L * 20L);
+		}, 4L * 60L * 20L, 4L * 60L * 20L);
 //		}, 50L, 50L);
 	}
 	

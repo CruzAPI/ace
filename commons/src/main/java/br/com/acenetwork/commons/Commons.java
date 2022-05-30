@@ -26,6 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import br.com.acenetwork.commons.event.PlayerModeEvent;
 import br.com.acenetwork.commons.event.SocketEvent;
 import br.com.acenetwork.commons.executor.AdminCMD;
+import br.com.acenetwork.commons.executor.BTA;
 import br.com.acenetwork.commons.executor.Balance;
 import br.com.acenetwork.commons.executor.BanCMD;
 import br.com.acenetwork.commons.executor.BroadcastCMD;
@@ -100,6 +101,7 @@ public class Commons
 		registerCommand(new BanCMD(), "ban");
 		registerCommand(new BroadcastCMD(), "broadcast", "bc", "shout");
 		registerCommand(new Build(), "build");
+		registerCommand(new BTA(), "bta");
 		registerCommand(new ChatClean(), "chatclean", "cc");
 		registerCommand(new ChatCMD(), "chat");
 		registerCommand(new Ignore(), "ignore");
