@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.executor.BroadcastCMD;
+import br.com.acenetwork.commons.executor.Setip;
 import br.com.acenetwork.survival.executor.Buy;
 import br.com.acenetwork.survival.executor.Delhome;
 import br.com.acenetwork.survival.executor.Home;
@@ -78,6 +79,7 @@ public class Main extends JavaPlugin
 		Commons.registerCommand(new Sethome(), "sethome");
 		Commons.registerCommand(new Spawn(), "spawn");
 		Commons.registerCommand(new Track(), "track");
+		Commons.registerCommand(new Setip(), "setip");
 		
 		BroadcastCMD.BROADCASTS.add("raid.broadcast.1");
 		BroadcastCMD.BROADCASTS.add("raid.broadcast.2");

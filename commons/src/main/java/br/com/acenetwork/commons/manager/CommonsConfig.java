@@ -11,6 +11,7 @@ public class CommonsConfig
 {
 	public enum Type
 	{
+		WHITELISTED_IP,
 		BALANCE_FOLDER, BALANCE_RAID_PLAYER, BALANCE_RAID_FOLDER, 
 		CLANS_JSON, MESSAGE, GROUP, USER, 
 		PLAYER, 
@@ -24,6 +25,9 @@ public class CommonsConfig
 
 		switch(type)
 		{
+		case WHITELISTED_IP:
+			file = new File(Commons.getDataFolder(), "whitelisted_ips.yml");
+			break;
 		case DATABASE:
 			file = new File(Commons.getDataFolder(), "database.yml");
 			break;
