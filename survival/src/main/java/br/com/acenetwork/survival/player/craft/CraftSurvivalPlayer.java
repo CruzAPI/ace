@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityPoseChangeEvent;
@@ -33,6 +34,7 @@ import br.com.acenetwork.commons.manager.Message;
 import br.com.acenetwork.commons.player.CommonPlayer;
 import br.com.acenetwork.commons.player.craft.CraftCommonPlayer;
 import br.com.acenetwork.survival.Main;
+import br.com.acenetwork.survival.ability.Ability;
 import br.com.acenetwork.survival.executor.Spawn;
 import br.com.acenetwork.survival.manager.ChannelCommand;
 import br.com.acenetwork.survival.manager.Config;
@@ -48,6 +50,7 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 	private boolean blindness;
 	private boolean spawnProtection;
 	
+	private Ability ability;
 	
 	private int channelTaskId;
 	private long channelTaskTicks;
@@ -435,5 +438,25 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 		}
 		
 		cancelChannel(true);
+	}
+
+	@Override
+	public Ability getAbility()
+	{
+		return ability;
+	}
+
+	@Override
+	public void setAbility(Ability ability)
+	{
+		if(this.ability != null)
+		{
+			HandlerList.unregisterAll(this.ability);
+		}
+		
+		if((this.ability = ability) != null)
+		{
+			Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
+		}
 	}
 }

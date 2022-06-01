@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import br.com.acenetwork.commons.Commons;
 import br.com.acenetwork.commons.executor.BroadcastCMD;
+import br.com.acenetwork.survival.ability.Archer;
 import br.com.acenetwork.survival.executor.Buy;
 import br.com.acenetwork.survival.executor.Delhome;
 import br.com.acenetwork.survival.executor.Home;
@@ -64,8 +65,9 @@ public class Main extends JavaPlugin
 		Bukkit.getPluginManager().registerEvents(new PlayerRespawn(), this);
 		Bukkit.getPluginManager().registerEvents(new SpawnProtection(), this);
 		Bukkit.getPluginManager().registerEvents(new LagClear(), this);
+		Bukkit.getPluginManager().registerEvents(new Archer(), this);
 		
-//		Commons.registerCommand(new Temp(), "temp");
+		Commons.registerCommand(new Temp(), "temp");
 		
 		Commons.registerCommand(new Buy(), "buy");
 		Commons.registerCommand(new Delhome(), "delhome");

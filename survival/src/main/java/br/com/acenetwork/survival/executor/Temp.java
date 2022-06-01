@@ -21,6 +21,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -1080,7 +1081,15 @@ public class Temp implements TabExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String aliases, String[] args)
 	{
-		new AnvilCommand(CraftCommonPlayer.get((Player) sender), "Input clan tag", "/clan criar {0} oi");
+		
+		Player p = (Player) sender;
+		Location l = p.getLocation().clone();
+		
+		l.setYaw(Float.valueOf(args[0]));
+		l.setPitch(Float.valueOf(args[1]));
+		p.teleport(l);
+		
+//		new AnvilCommand(CraftCommonPlayer.get((Player) sender), "Input clan tag", "/clan criar {0} oi");
 		
 		if(true)
 		{
