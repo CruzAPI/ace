@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -38,6 +39,8 @@ public class PlayerJoin implements Listener
 	{
 		Player p = e.getPlayer();
 		CommonPlayer cp = CraftCommonPlayer.get(p);
+		
+		p.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(16.0D);
 		
 //		ItemStack book = new ItemStack(Material.WRITABLE_BOOK);
 //		BookMeta zbook = (BookMeta) book.getItemMeta();

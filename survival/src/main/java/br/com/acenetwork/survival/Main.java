@@ -25,6 +25,7 @@ import br.com.acenetwork.survival.executor.Spawn;
 import br.com.acenetwork.survival.executor.Temp;
 import br.com.acenetwork.survival.executor.Track;
 import br.com.acenetwork.survival.listener.AlertOreFound;
+import br.com.acenetwork.survival.listener.EntityDamageByEntity;
 import br.com.acenetwork.survival.listener.EntityTarget;
 import br.com.acenetwork.survival.listener.LagClear;
 import br.com.acenetwork.survival.listener.PlayerDeath;
@@ -65,6 +66,7 @@ public class Main extends JavaPlugin
 		Bukkit.getPluginManager().registerEvents(new PlayerRespawn(), this);
 		Bukkit.getPluginManager().registerEvents(new SpawnProtection(), this);
 		Bukkit.getPluginManager().registerEvents(new LagClear(), this);
+		Bukkit.getPluginManager().registerEvents(new EntityDamageByEntity(), this);
 		
 //		Commons.registerCommand(new Temp(), "temp");
 		
