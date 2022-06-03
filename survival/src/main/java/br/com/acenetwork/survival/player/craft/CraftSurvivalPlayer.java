@@ -21,11 +21,18 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageModifier;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -334,6 +341,91 @@ public class CraftSurvivalPlayer extends CraftCommonPlayer implements SurvivalPl
 			if(hasSpawnProtection())
 			{
 				e.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler
+	public void a(InventoryDragEvent e)
+	{
+		if(e.getWhoClicked() != p)
+		{
+			return;
+		}
+		
+		Inventory upper = e.getInventory();
+		ItemStack oldCursor = e.getOldCursor();
+		
+		if(upper != null && oldCursor != null && upper.getType() == InventoryType.ENDER_CHEST 
+				&& e.getRawSlots().stream().filter(x -> x < upper.getSize()).findAny().isPresent()
+				&& oldCursor.getType().name().contains("SHULKER_BOX"))
+		{
+			e.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void a(InventoryClickEvent e)
+	{
+		if(e.getWhoClicked() != p)
+		{
+			return;
+		}
+		
+		Inventory clicked = e.getClickedInventory();
+		Inventory upper = e.getInventory();
+		InventoryAction action = e.getAction();
+		
+		ItemStack current = e.getCurrentItem();
+		ItemStack cursor = e.getCursor();
+		
+		if(clicked != null)
+		{
+			if(clicked.getType() == InventoryType.ENDER_CHEST)
+			{
+				switch(action)
+				{
+				case SWAP_WITH_CURSOR:
+				case PLACE_ALL:
+				case PLACE_ONE:
+				case PLACE_SOME:
+					
+					if(cursor != null && cursor.getType().name().contains("SHULKER_BOX"))
+					{
+						e.setCancelled(true);
+					}
+					
+					return;
+				case HOTBAR_SWAP:
+				case HOTBAR_MOVE_AND_READD:
+					
+					ItemStack swap = p.getInventory().getItem(e.getHotbarButton());
+					
+					if(swap != null && swap.getType().name().contains("SHULKER_BOX"))
+					{
+						e.setCancelled(true);
+					}
+					
+					return;
+				default:
+					break;
+				}
+			}
+			else if(upper != null && upper != clicked && upper.getType() == InventoryType.ENDER_CHEST)
+			{
+				switch(action)
+				{
+				case MOVE_TO_OTHER_INVENTORY:
+					
+					if(current != null && current.getType().name().contains("SHULKER_BOX"))
+					{
+						e.setCancelled(true);
+					}
+					
+					return;
+				default:
+					break;
+				}
 			}
 		}
 	}
