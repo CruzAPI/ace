@@ -180,7 +180,7 @@ public class Commons
 	
 	public static int getSocketPort()
 	{
-		return Bukkit.getPort() + 5000;
+		return Bukkit.getPort() + 5001;
 	}
 
 	public static void registerCommand(TabExecutor executor, String name, String... aliases)

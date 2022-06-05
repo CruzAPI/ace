@@ -3,6 +3,7 @@ package br.com.acenetwork.survival.manager;
 import static br.com.acenetwork.survival.manager.Land.Direction.SOUTH;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -81,6 +82,7 @@ public class Land implements Listener
 	
 	private static final int PATH_WIDTH = 5;
 	
+	private final World w;
 	private final int x, z;
 	private final int id;
 	private final Type type;
@@ -154,16 +156,17 @@ public class Land implements Listener
 	
 	private boolean isLand(World w, int x, int z)
 	{
-		return w.getName().equals("world") && x >= this.x && x < this.x + type.size && z <= this.z && z > this.z - type.size;
+		return this.w == w && x >= this.x && x < this.x + type.size && z <= this.z && z > this.z - type.size;
 	}
 	
-	private boolean isOwner(Player p)
+	public boolean isOwner(Player p)
 	{
 		return owner != null && p != null && owner.getUniqueId().equals(p.getUniqueId());
 	}
 	
 	private Land(int id, int x, int z, Type type)
 	{
+		this.w = Bukkit.getWorld("world");
 		this.id = id;
 		this.x = x;
 		this.z = z;
@@ -173,14 +176,9 @@ public class Land implements Listener
 		
 		Bukkit.getPluginManager().registerEvents(this, Main.getInstance());
 		
-		if(id == 69)
-		{
-			owner = Bukkit.getOfflinePlayer("CruzAPI");
-		}
-		
 		try
 		{
-			Runtime.getRuntime().exec(String.format("node %s/reset/syncland %s %s", System.getProperty("user.home"), 
+			Runtime.getRuntime().exec(String.format("node %s/reset/landuuid %s %s", System.getProperty("user.home"), 
 					Commons.getSocketPort(), id));
 		}
 		catch(IOException e)
@@ -200,7 +198,7 @@ public class Land implements Listener
 		String[] args = e.getArgs();
 		String cmd = args[0];
 		
-		if(cmd.equals("syncland"))
+		if(cmd.equals("landuuid"))
 		{
 			int id = Integer.valueOf(args[1]);
 			
@@ -240,7 +238,6 @@ public class Land implements Listener
 		Block b = e.getSource();
 		BlockState block = e.getNewState();
 		
-		
 		if(isLand(b) && isLand(block.getLocation()) && owner != null)
 		{
 			e.setCancelled(false);
@@ -251,6 +248,7 @@ public class Land implements Listener
 	public void on(PlayerInteractEvent e)
 	{
 		Action a = e.getAction();
+		
 		if(a == Action.RIGHT_CLICK_BLOCK)
 		{
 			Player p = e.getPlayer();
@@ -268,7 +266,6 @@ public class Land implements Listener
 				}
 			}
 		}
-		
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -290,8 +287,6 @@ public class Land implements Listener
 				{
 					p = (Player) projectile.getShooter();
 				}
-				
-				Bukkit.broadcastMessage(projectile.getShooter() + "");
 			}
 			else if(remover instanceof Player)
 			{
@@ -311,7 +306,7 @@ public class Land implements Listener
 				{
 					if(isLand(((Block) projectile.getShooter())))
 					{
-						
+						e.setCancelled(false);
 					}
 				}
 			}
@@ -555,14 +550,35 @@ public class Land implements Listener
 		{
 			Dispenser dispenser = (Dispenser) b.getState().getBlockData();
 			
-			Bukkit.broadcastMessage(e.getItem().toString());
-			Bukkit.broadcastMessage(dispenser.getFacing().toString());
-			Bukkit.broadcastMessage("isDispensable " + Util.isDispensable(e.getItem().getType()));
-			
 			if(!Util.isDispensable(e.getItem().getType()) || isLand(b.getRelative(dispenser.getFacing())))
 			{
 				e.setCancelled(false);
 			}
 		}
+	}
+	
+	public int getX()
+	{
+		return x;
+	}
+	
+	public int getZ()
+	{
+		return z;
+	}
+	
+	public World getWorld()
+	{
+		return w;
+	}
+	
+	public String getBeautyId()
+	{
+		return new DecimalFormat("000").format(id + 1);
+	}
+	
+	public void setOwner(OfflinePlayer op)
+	{
+		this.owner = op;
 	}
 }

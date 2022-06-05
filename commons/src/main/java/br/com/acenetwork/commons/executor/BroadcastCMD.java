@@ -67,6 +67,9 @@ public class BroadcastCMD implements TabExecutor
 				List<CommandSender> senderList = new ArrayList<CommandSender>(Bukkit.getOnlinePlayers());
 				senderList.add(Bukkit.getConsoleSender());
 				
+				File linksFile = CommonsConfig.getFile(Type.LINKS, true);
+				YamlConfiguration linksConfig = YamlConfiguration.loadConfiguration(linksFile);
+				
 				for(CommandSender sender : senderList)
 				{
 					Locale locale = Locale.getDefault();
@@ -119,8 +122,11 @@ public class BroadcastCMD implements TabExecutor
 						extra[0] = new TextComponent("$BTA");
 						extra[0].setColor(ChatColor.DARK_PURPLE);
 						
-						extra[1] = new TextComponent("https://www.acetokennetwork.com");
+						String url = linksConfig.getString("website");
+						
+						extra[1] = new TextComponent(url);
 						extra[1].setColor(ChatColor.GRAY);
+						extra[1].setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
 					}
 					else if(key.equals("commons.broadcast.2"))
 					{
@@ -131,8 +137,11 @@ public class BroadcastCMD implements TabExecutor
 						extra[0] = new TextComponent("DISCORD");
 						extra[0].setColor(ChatColor.DARK_AQUA);
 						
-						extra[1] = new TextComponent("https://discord.gg/EYV538gQt7");
+						String url = linksConfig.getString("discord");
+						
+						extra[1] = new TextComponent(url);
 						extra[1].setColor(ChatColor.GRAY);
+						extra[1].setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
 					}
 					else if(key.equals("commons.broadcast.3"))
 					{
